@@ -75,7 +75,8 @@ private:
 
 
 	DEFINE_PARAMETERS(
-		(ParamInt<px4::params::SYS_AUTOSTART>) _sys_autostart,   /**< example parameter */
+		(ParamInt<px4::params::NEW>) _new,   /**< example parameter */
+		(ParamInt<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
 		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig  /**< another parameter */
 	)
 };
