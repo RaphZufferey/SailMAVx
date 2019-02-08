@@ -85,8 +85,19 @@
 #include <px4_module_params.h>
 #include "params.c"
 
+float myPi = (float)M_PI;
+
 template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
+}
+
+template <typename T> float wrapToPi(T val) {
+    
+    val = fmod(val + myPi,2*myPi);
+    if (val < 0)
+        val += 2*myPi;
+    return val - myPi;
+
 }
 
 extern "C" __EXPORT int sailing_main(int argc, char *argv[]);
@@ -302,10 +313,14 @@ void Sailing::run()
 			float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi();
 			//PX4_INFO("Yaw: \t%d", (int)(current_yaw*100));
 
-			float wnd_angle_to_n_rad = wnd_angle_to_n*(float)M_PI/180;
-			float sail_angle = -sgn(current_yaw)*M_PI/2*((cos(wnd_angle_to_n_rad - current_yaw)+1)/2);
+			float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180;
+			float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
+			float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
+			
 			float cmd_sail_angle = sail_angle/sail_angle_max;
-			//PX4_INFO("actuators: \t%d", (int)((cmd_sail_angle*180.0f/(float)M_PI)));
+			// PX4_INFO("Yaw  \t%d, actuators: \t%d", 
+			// 	(int)((current_yaw*180.0f/myPi)),
+			// 	(int)((cmd_sail_angle*180.0f/myPi)));
 
 
 
