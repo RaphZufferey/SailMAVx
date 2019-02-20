@@ -5,5 +5,5 @@ param set SYS_MC_EST_GROUP 2
 param save
 fi
 ekf2 start
-sailing start
+fw_att_control start
 land_detector start fixedwing
