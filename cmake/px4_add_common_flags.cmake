@@ -66,6 +66,7 @@ function(px4_add_common_flags)
 		-Werror
 
 		-Warray-bounds
+		-Wcast-align
 		-Wdisabled-optimization
 		-Wdouble-promotion
 		-Wfatal-errors
@@ -97,7 +98,6 @@ function(px4_add_common_flags)
 			add_compile_options(
 				-Qunused-arguments
 
-				-Wno-address-of-packed-member
 				-Wno-unknown-warning-option
 				-Wno-unused-const-variable
 				-Wno-varargs

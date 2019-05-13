@@ -23,6 +23,7 @@ px4_add_board(
 		#barometer # all available barometer drivers
 		barometer/ms5611
 		#batt_smbus
+		#camera_capture
 		#camera_trigger
 		#differential_pressure # all available differential pressure drivers
 		differential_pressure/ms4525
@@ -48,7 +49,7 @@ px4_add_board(
 		#pca9685
 		#protocol_splitter
 		#pwm_input
-		#pwm_out_sim
+		pwm_out_sim
 		px4flow
 		px4fmu
 		px4io
@@ -118,8 +119,8 @@ px4_add_board(
 		#hwtest # Hardware test
 		#matlab_csv_serial
 		#position_estimator_inav
-		#px4_mavlink_debug # Tutorial code from https://px4.io/dev/debug_values
-		#px4_simple_app # Tutorial code from https://px4.io/dev/px4_simple_app
+		#px4_mavlink_debug # Tutorial code from http://dev.px4.io/en/debug/debug_values.html
+		#px4_simple_app # Tutorial code from http://dev.px4.io/en/apps/hello_sky.html
 		#rover_steering_control # Rover example app
 		#segway
 		#uuv_example_app

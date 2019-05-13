@@ -569,6 +569,19 @@ protected:
 		const bool updated_battery = _battery_status_sub->update(&_battery_status_timestamp, &battery_status);
 
 		if (updated_status || updated_battery || updated_cpuload) {
+
+			if (!updated_status) {
+				_status_sub->update(&status);
+			}
+
+			if (!updated_battery) {
+				_battery_status_sub->update(&battery_status);
+			}
+
+			if (!updated_cpuload) {
+				_cpuload_sub->update(&cpuload);
+			}
+
 			mavlink_sys_status_t msg = {};
 
 			msg.onboard_control_sensors_present = status.onboard_control_sensors_present;
@@ -2361,11 +2374,15 @@ protected:
 			msg.yawspeed = odom.yawspeed;
 
 			// get the covariance matrix size
+
+			// pose_covariance
 			static constexpr size_t POS_URT_SIZE = sizeof(odom.pose_covariance) / sizeof(odom.pose_covariance[0]);
-			static constexpr size_t VEL_URT_SIZE = sizeof(odom.velocity_covariance) / sizeof(odom.velocity_covariance[0]);
 			static_assert(POS_URT_SIZE == (sizeof(msg.pose_covariance) / sizeof(msg.pose_covariance[0])),
 				      "Odometry Pose Covariance matrix URT array size mismatch");
-			static_assert(VEL_URT_SIZE == (sizeof(msg.twist_covariance) / sizeof(msg.twist_covariance[0])),
+
+			// velocity_covariance
+			static constexpr size_t VEL_URT_SIZE = sizeof(odom.velocity_covariance) / sizeof(odom.velocity_covariance[0]);
+			static_assert(VEL_URT_SIZE == (sizeof(msg.velocity_covariance) / sizeof(msg.velocity_covariance[0])),
 				      "Odometry Velocity Covariance matrix URT array size mismatch");
 
 			// copy pose covariances
@@ -2376,7 +2393,7 @@ protected:
 			// copy velocity covariances
 			//TODO: Apply rotation matrix to transform from body-fixed NED to earth-fixed NED frame
 			for (size_t i = 0; i < VEL_URT_SIZE; i++) {
-				msg.twist_covariance[i] = odom.velocity_covariance[i];
+				msg.velocity_covariance[i] = odom.velocity_covariance[i];
 			}
 
 			mavlink_msg_odometry_send_struct(_mavlink->get_channel(), &msg);
@@ -3118,7 +3135,7 @@ protected:
 
 		if (control_mode.flag_control_position_enabled) {
 
-			position_setpoint_triplet_s pos_sp_triplet;
+			position_setpoint_triplet_s pos_sp_triplet = {};
 			_pos_sp_triplet_sub->update(&pos_sp_triplet);
 
 			if (pos_sp_triplet.timestamp > 0 && pos_sp_triplet.current.valid
@@ -4191,7 +4208,7 @@ protected:
 			msg.min_distance = dist_sensor.min_distance * 100.0f; /* m to cm */
 			msg.max_distance = dist_sensor.max_distance * 100.0f; /* m to cm */
 			msg.current_distance = dist_sensor.current_distance * 100.0f; /* m to cm */
-			msg.covariance = dist_sensor.covariance;
+			msg.covariance = dist_sensor.variance * 1e4f; // m^2 to cm^2
 
 			mavlink_msg_distance_sensor_send_struct(_mavlink->get_channel(), &msg);
 
@@ -4662,12 +4679,13 @@ protected:
 			msg.yawspeed = att.yawspeed;
 
 			// vehicle_global_position -> hil_state_quaternion
-			msg.lat = gpos.lat;
-			msg.lon = gpos.lon;
-			msg.alt = gpos.alt;
-			msg.vx = gpos.vel_n;
-			msg.vy = gpos.vel_e;
-			msg.vz = gpos.vel_d;
+			// same units as defined in mavlink/common.xml
+			msg.lat = gpos.lat * 1e7;
+			msg.lon = gpos.lon * 1e7;
+			msg.alt = gpos.alt * 1e3f;
+			msg.vx = gpos.vel_n * 1e2f;
+			msg.vy = gpos.vel_e * 1e2f;
+			msg.vz = gpos.vel_d * 1e2f;
 			msg.ind_airspeed = 0;
 			msg.true_airspeed = 0;
 			msg.xacc = 0;

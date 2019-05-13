@@ -13,15 +13,16 @@ px4_add_board(
 	#UAVCAN_INTERFACES 2
 
 	SERIAL_PORTS
-		GPS1:/dev/ttyS0
+		GPS1:/dev/ttyS3
 		TEL1:/dev/ttyS1
 		TEL2:/dev/ttyS2
-		TEL4:/dev/ttyS3
+		TEL4:/dev/ttyS6
 
 	DRIVERS
 		#barometer # all available barometer drivers
 		barometer/ms5611
 		#batt_smbus
+		camera_capture
 		camera_trigger
 		#differential_pressure # all available differential pressure drivers
 		#differential_pressure/ms4525
@@ -111,8 +112,8 @@ px4_add_board(
 		#fixedwing_control # Tutorial code from https://px4.io/dev/example_fixedwing_control
 		#hello
 		#hwtest # Hardware test
-		#px4_mavlink_debug # Tutorial code from https://px4.io/dev/debug_values
-		#px4_simple_app # Tutorial code from https://px4.io/dev/px4_simple_app
+		#px4_mavlink_debug # Tutorial code from http://dev.px4.io/en/debug/debug_values.html
+		#px4_simple_app # Tutorial code from http://dev.px4.io/en/apps/hello_sky.html
 		#rover_steering_control # Rover example app
 		#segway
 	)

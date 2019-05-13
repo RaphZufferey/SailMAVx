@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2012-2016 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2012-2019 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 /**
- * @file px4fmu_init.c
+ * @file init.c
  *
  * PX4FMU-specific early startup code.  This file implements the
  * nsh_archinitialize() function that is called early by nsh during startup.
@@ -45,9 +45,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <px4_config.h>
-#include <px4_tasks.h>
-#include <px4_log.h>
+#include "board_config.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -55,6 +53,7 @@
 #include <debug.h>
 #include <errno.h>
 
+#include <nuttx/config.h>
 #include <nuttx/board.h>
 #include <nuttx/spi/spi.h>
 #include <nuttx/i2c/i2c_master.h>
@@ -62,22 +61,16 @@
 #include <nuttx/mmcsd.h>
 #include <nuttx/analog/adc.h>
 #include <nuttx/mm/gran.h>
-
 #include <chip.h>
-#include "board_config.h"
-
 #include <stm32_uart.h>
-
 #include <arch/board/board.h>
+#include "up_internal.h"
 
 #include <drivers/drv_hrt.h>
 #include <drivers/drv_board_led.h>
-
 #include <systemlib/px4_macros.h>
-
 #include <px4_init.h>
 
-#include "up_internal.h"
 /****************************************************************************
  * Pre-Processor Definitions
  ****************************************************************************/
@@ -217,6 +210,7 @@ __EXPORT void board_on_reset(int status)
 #ifdef CONFIG_BOARDCTL_FINALINIT
 int board_app_finalinitialize(uintptr_t arg)
 {
+	board_configure_dcache(1);
 	return 0;
 }
 #endif
@@ -285,6 +279,8 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 {
 	/* Power on Interfaces */
 
+	board_configure_dcache(0);
+
 	VDD_3V3_SD_CARD_EN(true);
 	VDD_5V_PERIPH_EN(true);
 	VDD_5V_HIPOWER_EN(true);
@@ -295,10 +291,11 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 
 
 	if (OK == board_determine_hw_info()) {
-		PX4_INFO("Rev 0x%1x : Ver 0x%1x %s", board_get_hw_revision(), board_get_hw_version(), board_get_hw_type_name());
+		syslog(LOG_INFO, "[boot] Rev 0x%1x : Ver 0x%1x %s\n", board_get_hw_revision(), board_get_hw_version(),
+		       board_get_hw_type_name());
 
 	} else {
-		PX4_ERR("Failed to read HW revision and version");
+		syslog(LOG_ERR, "[boot] Failed to read HW revision and version\n");
 	}
 
 	px4_platform_init();
@@ -306,7 +303,7 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 	/* configure the DMA allocator */
 
 	if (board_dma_alloc_init() < 0) {
-		PX4_ERR("DMA alloc FAILED");
+		syslog(LOG_ERR, "[boot] DMA alloc FAILED\n");
 	}
 
 	/* set up the serial DMA polling */
@@ -337,26 +334,15 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 		led_on(LED_RED);
 	}
 
-#ifdef CONFIG_SPI
-	int ret = stm32_spi_bus_initialize();
-
-	if (ret != OK) {
-		led_on(LED_RED);
-		return ret;
-	}
-
-#endif
-
 #ifdef CONFIG_MMCSD
-
-	ret = stm32_sdio_initialize();
+	int ret = stm32_sdio_initialize();
 
 	if (ret != OK) {
 		led_on(LED_RED);
 		return ret;
 	}
 
-#endif
+#endif /* CONFIG_MMCSD */
 
 	return OK;
 }

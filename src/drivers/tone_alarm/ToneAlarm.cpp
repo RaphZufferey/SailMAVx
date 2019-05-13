@@ -98,7 +98,7 @@ void ToneAlarm::next_note()
 		_silence_length = 0;
 
 	} else if (_play_tone) {
-		int parse_ret_val = _tunes.get_next_tune(frequency, duration, _silence_length);
+		int parse_ret_val = _tunes.get_next_note(frequency, duration, _silence_length);
 
 		if (parse_ret_val > 0) {
 			// Continue playing.
@@ -139,7 +139,10 @@ void ToneAlarm::orb_update()
 
 	if (updated) {
 		orb_copy(ORB_ID(tune_control), _tune_control_sub, &_tune);
-		_play_tone = _tunes.set_control(_tune) == 0;
+
+		if (_tune.timestamp > 0) {
+			_play_tone = _tunes.set_control(_tune) == 0;
+		}
 	}
 }
 

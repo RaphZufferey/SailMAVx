@@ -21,7 +21,6 @@ pipeline {
             sh 'ccache -z'
             sh 'make px4_sitl_default'
             sh 'ccache -s'
-            sh 'make tests'
           }
           post {
             always {
@@ -51,6 +50,27 @@ pipeline {
           }
         } // stage px4_fmu-v5_default
 
+        stage('sitl tests (OSX)') {
+          agent {
+            label 'mac'
+          }
+          environment {
+            CCACHE_BASEDIR = "${env.WORKSPACE}"
+          }
+          steps {
+            sh 'export'
+            sh 'make distclean'
+            sh 'ccache -z'
+            sh 'make tests'
+            sh 'ccache -s'
+          }
+          post {
+            always {
+              sh 'make distclean'
+            }
+          }
+        } // stage sitl tests
+
       } // parallel
     } // stage Build
 
@@ -61,7 +81,7 @@ pipeline {
     CI = true
   }
   options {
-    buildDiscarder(logRotator(numToKeepStr: '5', artifactDaysToKeepStr: '14'))
-    timeout(time: 60, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '10', artifactDaysToKeepStr: '30'))
+    timeout(time: 120, unit: 'MINUTES')
   }
 }

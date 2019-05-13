@@ -149,7 +149,7 @@ void Tiltrotor::update_vtol_state()
 
 				// check if airspeed is invalid and transition by time
 				transition_to_p2 |= _params->airspeed_disabled &&
-						    _tilt_control > _params_tiltrotor.tilt_transition &&
+						    _tilt_control >= _params_tiltrotor.tilt_transition &&
 						    time_since_trans_start > _params->front_trans_time_openloop;
 
 				if (transition_to_p2) {
@@ -373,7 +373,7 @@ void Tiltrotor::fill_actuator_outputs()
 
 	} else {
 		_actuators_out_1->control[actuator_controls_s::INDEX_ROLL] =
-			-_actuators_fw_in->control[actuator_controls_s::INDEX_ROLL];
+			_actuators_fw_in->control[actuator_controls_s::INDEX_ROLL];
 		_actuators_out_1->control[actuator_controls_s::INDEX_PITCH] =
 			_actuators_fw_in->control[actuator_controls_s::INDEX_PITCH];
 		_actuators_out_1->control[actuator_controls_s::INDEX_YAW] =
