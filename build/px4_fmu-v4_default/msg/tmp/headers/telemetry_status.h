@@ -41,12 +41,28 @@
 
 
 #ifndef __cplusplus
-#define TELEMETRY_STATUS_TELEMETRY_STATUS_RADIO_TYPE_GENERIC 0
-#define TELEMETRY_STATUS_TELEMETRY_STATUS_RADIO_TYPE_3DR_RADIO 1
-#define TELEMETRY_STATUS_TELEMETRY_STATUS_RADIO_TYPE_UBIQUITY_BULLET 2
-#define TELEMETRY_STATUS_TELEMETRY_STATUS_RADIO_TYPE_WIRE 3
-#define TELEMETRY_STATUS_TELEMETRY_STATUS_RADIO_TYPE_USB 4
-#define TELEMETRY_STATUS_TELEMETRY_STATUS_RADIO_TYPE_IRIDIUM 5
+#define TELEMETRY_STATUS_LINK_TYPE_GENERIC 0
+#define TELEMETRY_STATUS_LINK_TYPE_3DR_RADIO 1
+#define TELEMETRY_STATUS_LINK_TYPE_UBIQUITY_BULLET 2
+#define TELEMETRY_STATUS_LINK_TYPE_WIRE 3
+#define TELEMETRY_STATUS_LINK_TYPE_USB 4
+#define TELEMETRY_STATUS_LINK_TYPE_IRIDIUM 5
+#define TELEMETRY_STATUS_COMPONENT_ID_ALL 0
+#define TELEMETRY_STATUS_COMPONENT_ID_AUTOPILOT1 1
+#define TELEMETRY_STATUS_COMPONENT_ID_CAMERA 100
+#define TELEMETRY_STATUS_COMPONENT_ID_OBSTACLE_AVOIDANCE 196
+#define TELEMETRY_STATUS_MAV_TYPE_GENERIC 0
+#define TELEMETRY_STATUS_MAV_TYPE_GCS 6
+#define TELEMETRY_STATUS_MAV_TYPE_ONBOARD_CONTROLLER 18
+#define TELEMETRY_STATUS_MAV_STATE_UNINIT 0
+#define TELEMETRY_STATUS_MAV_STATE_BOOT 1
+#define TELEMETRY_STATUS_MAV_STATE_CALIBRATING 2
+#define TELEMETRY_STATUS_MAV_STATE_STANDBY 3
+#define TELEMETRY_STATUS_MAV_STATE_ACTIVE 4
+#define TELEMETRY_STATUS_MAV_STATE_CRITICAL 5
+#define TELEMETRY_STATUS_MAV_STATE_EMERGENCY 6
+#define TELEMETRY_STATUS_MAV_STATE_POWEROFF 7
+#define TELEMETRY_STATUS_MAV_STATE_FLIGHT_TERMINATION 8
 
 #endif
 
@@ -63,25 +79,43 @@ struct telemetry_status_s {
 	float rate_rx;
 	float rate_tx;
 	float rate_txerr;
+	uint8_t remote_system_id;
+	uint8_t remote_component_id;
+	uint8_t remote_type;
+	uint8_t remote_system_status;
 	uint8_t type;
-	uint8_t system_id;
-	uint8_t component_id;
 	uint8_t mode;
 	bool flow_control;
 	bool forwarding;
 	bool mavlink_v2;
 	bool ftp;
 	uint8_t streams;
-	uint8_t _padding0[3]; // required for logger
+	uint8_t _padding0[1]; // required for logger
 
 
 #ifdef __cplusplus
-	static constexpr uint8_t TELEMETRY_STATUS_RADIO_TYPE_GENERIC = 0;
-	static constexpr uint8_t TELEMETRY_STATUS_RADIO_TYPE_3DR_RADIO = 1;
-	static constexpr uint8_t TELEMETRY_STATUS_RADIO_TYPE_UBIQUITY_BULLET = 2;
-	static constexpr uint8_t TELEMETRY_STATUS_RADIO_TYPE_WIRE = 3;
-	static constexpr uint8_t TELEMETRY_STATUS_RADIO_TYPE_USB = 4;
-	static constexpr uint8_t TELEMETRY_STATUS_RADIO_TYPE_IRIDIUM = 5;
+	static constexpr uint8_t LINK_TYPE_GENERIC = 0;
+	static constexpr uint8_t LINK_TYPE_3DR_RADIO = 1;
+	static constexpr uint8_t LINK_TYPE_UBIQUITY_BULLET = 2;
+	static constexpr uint8_t LINK_TYPE_WIRE = 3;
+	static constexpr uint8_t LINK_TYPE_USB = 4;
+	static constexpr uint8_t LINK_TYPE_IRIDIUM = 5;
+	static constexpr uint8_t COMPONENT_ID_ALL = 0;
+	static constexpr uint8_t COMPONENT_ID_AUTOPILOT1 = 1;
+	static constexpr uint8_t COMPONENT_ID_CAMERA = 100;
+	static constexpr uint8_t COMPONENT_ID_OBSTACLE_AVOIDANCE = 196;
+	static constexpr uint8_t MAV_TYPE_GENERIC = 0;
+	static constexpr uint8_t MAV_TYPE_GCS = 6;
+	static constexpr uint8_t MAV_TYPE_ONBOARD_CONTROLLER = 18;
+	static constexpr uint8_t MAV_STATE_UNINIT = 0;
+	static constexpr uint8_t MAV_STATE_BOOT = 1;
+	static constexpr uint8_t MAV_STATE_CALIBRATING = 2;
+	static constexpr uint8_t MAV_STATE_STANDBY = 3;
+	static constexpr uint8_t MAV_STATE_ACTIVE = 4;
+	static constexpr uint8_t MAV_STATE_CRITICAL = 5;
+	static constexpr uint8_t MAV_STATE_EMERGENCY = 6;
+	static constexpr uint8_t MAV_STATE_POWEROFF = 7;
+	static constexpr uint8_t MAV_STATE_FLIGHT_TERMINATION = 8;
 
 #endif
 };

@@ -222,6 +222,8 @@ void listener_generated(char * topic_name, int topic_instance, int topic_rate, i
 		listener(listener_print_topic<collision_constraints_s>, ORB_ID(collision_constraints), num_msgs, topic_instance, topic_interval);
 	} else if (strcmp(topic_name,"camera_trigger") == 0) {
 		listener(listener_print_topic<camera_trigger_s>, ORB_ID(camera_trigger), num_msgs, topic_instance, topic_interval);
+	} else if (strcmp(topic_name,"camera_trigger_secondary") == 0) {
+		listener(listener_print_topic<camera_trigger_s>, ORB_ID(camera_trigger_secondary), num_msgs, topic_instance, topic_interval);
 	} else if (strcmp(topic_name,"adc_report") == 0) {
 		listener(listener_print_topic<adc_report_s>, ORB_ID(adc_report), num_msgs, topic_instance, topic_interval);
 	} else if (strcmp(topic_name,"sensor_correction") == 0) {

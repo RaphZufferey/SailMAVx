@@ -60,7 +60,5 @@ if param greater SENS_EN_TRANGER 0
 then
 teraranger start -a
 fi
-icm20948 -X -M -R 6 start
-px4flow start &
 usleep 20000
 sensors start

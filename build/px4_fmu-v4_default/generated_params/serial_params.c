@@ -364,6 +364,7 @@ PARAM_DEFINE_INT32(MAV_2_FORWARD, 0);
  * @value 4 Magic
  * @value 5 Config
  * @value 7 Minimal
+ * @value 8 External Vision
  * @reboot_required True
  */
 PARAM_DEFINE_INT32(MAV_0_MODE, 0);
@@ -383,6 +384,7 @@ PARAM_DEFINE_INT32(MAV_0_MODE, 0);
  * @value 4 Magic
  * @value 5 Config
  * @value 7 Minimal
+ * @value 8 External Vision
  * @reboot_required True
  */
 PARAM_DEFINE_INT32(MAV_1_MODE, 2);
@@ -402,6 +404,7 @@ PARAM_DEFINE_INT32(MAV_1_MODE, 2);
  * @value 4 Magic
  * @value 5 Config
  * @value 7 Minimal
+ * @value 8 External Vision
  * @reboot_required True
  */
 PARAM_DEFINE_INT32(MAV_2_MODE, 0);

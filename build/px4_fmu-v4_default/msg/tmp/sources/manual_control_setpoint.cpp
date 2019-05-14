@@ -41,9 +41,9 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_manual_control_setpoint_fields[] = "uint64_t timestamp;float x;float y;float z;float r;float flaps;float aux1;float aux2;float aux3;float aux4;float aux5;uint8_t mode_switch;uint8_t return_switch;uint8_t rattitude_switch;uint8_t posctl_switch;uint8_t loiter_switch;uint8_t acro_switch;uint8_t offboard_switch;uint8_t kill_switch;uint8_t arm_switch;uint8_t transition_switch;uint8_t gear_switch;int8_t mode_slot;uint8_t data_source;uint8_t stab_switch;uint8_t man_switch;uint8_t[1] _padding0;";
+constexpr char __orb_manual_control_setpoint_fields[] = "uint64_t timestamp;float x;float y;float z;float r;float flaps;float aux1;float aux2;float aux3;float aux4;float aux5;float aux6;uint8_t mode_switch;uint8_t return_switch;uint8_t rattitude_switch;uint8_t posctl_switch;uint8_t loiter_switch;uint8_t acro_switch;uint8_t offboard_switch;uint8_t kill_switch;uint8_t arm_switch;uint8_t transition_switch;uint8_t gear_switch;int8_t mode_slot;uint8_t data_source;uint8_t stab_switch;uint8_t man_switch;uint8_t[5] _padding0;";
 
-ORB_DEFINE(manual_control_setpoint, struct manual_control_setpoint_s, 63, __orb_manual_control_setpoint_fields);
+ORB_DEFINE(manual_control_setpoint, struct manual_control_setpoint_s, 67, __orb_manual_control_setpoint_fields);
 
 
 void print_message(const manual_control_setpoint_s& message)
@@ -64,6 +64,7 @@ void print_message(const manual_control_setpoint_s& message)
 	PX4_INFO_RAW("\taux3: %.4f\n", (double)message.aux3);
 	PX4_INFO_RAW("\taux4: %.4f\n", (double)message.aux4);
 	PX4_INFO_RAW("\taux5: %.4f\n", (double)message.aux5);
+	PX4_INFO_RAW("\taux6: %.4f\n", (double)message.aux6);
 	PX4_INFO_RAW("\tmode_switch: %u\n", message.mode_switch);
 	PX4_INFO_RAW("\treturn_switch: %u\n", message.return_switch);
 	PX4_INFO_RAW("\trattitude_switch: %u\n", message.rattitude_switch);

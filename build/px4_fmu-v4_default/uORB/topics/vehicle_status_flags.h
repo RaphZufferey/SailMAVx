@@ -79,7 +79,9 @@ struct vehicle_status_flags_s {
 	bool rc_calibration_valid;
 	bool vtol_transition_failure;
 	bool usb_connected;
-	uint8_t _padding0[4]; // required for logger
+	bool avoidance_system_required;
+	bool avoidance_system_valid;
+	uint8_t _padding0[2]; // required for logger
 
 
 #ifdef __cplusplus

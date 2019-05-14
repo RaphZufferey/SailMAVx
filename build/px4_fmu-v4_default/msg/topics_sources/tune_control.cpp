@@ -41,7 +41,7 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_tune_control_fields[] = "uint64_t timestamp;uint32_t duration;uint32_t silence;uint16_t frequency;uint8_t tune_id;uint8_t tune_override;uint8_t strength;uint8_t[3] _padding0;";
+constexpr char __orb_tune_control_fields[] = "uint64_t timestamp;uint32_t duration;uint32_t silence;uint16_t frequency;uint8_t tune_id;uint8_t tune_override;uint8_t volume;uint8_t[3] _padding0;";
 
 ORB_DEFINE(tune_control, struct tune_control_s, 21, __orb_tune_control_fields);
 
@@ -59,6 +59,6 @@ void print_message(const tune_control_s& message)
 	PX4_INFO_RAW("\tfrequency: %u\n", message.frequency);
 	PX4_INFO_RAW("\ttune_id: %u\n", message.tune_id);
 	PX4_INFO_RAW("\ttune_override: %u\n", message.tune_override);
-	PX4_INFO_RAW("\tstrength: %u\n", message.strength);
+	PX4_INFO_RAW("\tvolume: %u\n", message.volume);
 	
 }

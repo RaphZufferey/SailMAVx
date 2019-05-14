@@ -93,6 +93,8 @@ struct vehicle_status_s {
 	uint32_t onboard_control_sensors_present;
 	uint32_t onboard_control_sensors_enabled;
 	uint32_t onboard_control_sensors_health;
+	float arspd_check_level;
+	float load_factor_ratio;
 	uint8_t nav_state;
 	uint8_t arming_state;
 	uint8_t hil_state;
@@ -108,11 +110,16 @@ struct vehicle_status_s {
 	bool rc_signal_lost;
 	uint8_t rc_input_mode;
 	bool data_link_lost;
-	bool high_latency_data_link_active;
 	uint8_t data_link_lost_counter;
+	bool high_latency_data_link_lost;
 	bool engine_failure;
 	bool mission_failure;
 	uint8_t failure_detector_status;
+	bool aspd_check_failing;
+	bool aspd_fault_declared;
+	bool aspd_use_inhibit;
+	bool aspd_fail_rtl;
+	uint8_t _padding0[4]; // required for logger
 
 
 #ifdef __cplusplus

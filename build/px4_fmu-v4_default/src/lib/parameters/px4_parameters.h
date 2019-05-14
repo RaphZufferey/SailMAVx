@@ -131,7 +131,10 @@ struct px4_parameters_t {
 	const struct param_info_s __param__CAL_MAG3_ZSCALE;
 	const struct param_info_s __param__CAL_MAG_PRIME;
 	const struct param_info_s __param__CAL_MAG_SIDES;
-	const struct param_info_s __param__CAM_FBACK_MODE;
+	const struct param_info_s __param__CAM_CAP_DELAY;
+	const struct param_info_s __param__CAM_CAP_EDGE;
+	const struct param_info_s __param__CAM_CAP_FBACK;
+	const struct param_info_s __param__CAM_CAP_MODE;
 	const struct param_info_s __param__CBRK_AIRSPD_CHK;
 	const struct param_info_s __param__CBRK_BUZZER;
 	const struct param_info_s __param__CBRK_ENGINEFAIL;
@@ -156,9 +159,11 @@ struct px4_parameters_t {
 	const struct param_info_s __param__COM_ARM_MIS_REQ;
 	const struct param_info_s __param__COM_ARM_SWISBTN;
 	const struct param_info_s __param__COM_ARM_WO_GPS;
+	const struct param_info_s __param__COM_ASPD_FS_ACT;
+	const struct param_info_s __param__COM_ASPD_FS_DLY;
+	const struct param_info_s __param__COM_ASPD_STALL;
 	const struct param_info_s __param__COM_DISARM_LAND;
 	const struct param_info_s __param__COM_DL_LOSS_T;
-	const struct param_info_s __param__COM_DL_REG_T;
 	const struct param_info_s __param__COM_EF_C2T;
 	const struct param_info_s __param__COM_EF_THROT;
 	const struct param_info_s __param__COM_EF_TIME;
@@ -174,8 +179,10 @@ struct px4_parameters_t {
 	const struct param_info_s __param__COM_HOME_H_T;
 	const struct param_info_s __param__COM_HOME_V_T;
 	const struct param_info_s __param__COM_LOW_BAT_ACT;
+	const struct param_info_s __param__COM_OA_BOOT_T;
 	const struct param_info_s __param__COM_OBL_ACT;
 	const struct param_info_s __param__COM_OBL_RC_ACT;
+	const struct param_info_s __param__COM_OBS_AVOID;
 	const struct param_info_s __param__COM_OF_LOSS_T;
 	const struct param_info_s __param__COM_POSCTL_NAVL;
 	const struct param_info_s __param__COM_POS_FS_DELAY;
@@ -189,6 +196,10 @@ struct px4_parameters_t {
 	const struct param_info_s __param__COM_RC_OVERRIDE;
 	const struct param_info_s __param__COM_RC_STICK_OV;
 	const struct param_info_s __param__COM_TAKEOFF_ACT;
+	const struct param_info_s __param__COM_TAS_FS_INNOV;
+	const struct param_info_s __param__COM_TAS_FS_INTEG;
+	const struct param_info_s __param__COM_TAS_FS_T1;
+	const struct param_info_s __param__COM_TAS_FS_T2;
 	const struct param_info_s __param__COM_VEL_FS_EVH;
 	const struct param_info_s __param__EKF2_ABIAS_INIT;
 	const struct param_info_s __param__EKF2_ABL_ACCLIM;
@@ -222,6 +233,8 @@ struct px4_parameters_t {
 	const struct param_info_s __param__EKF2_EV_POS_Z;
 	const struct param_info_s __param__EKF2_FUSE_BETA;
 	const struct param_info_s __param__EKF2_GBIAS_INIT;
+	const struct param_info_s __param__EKF2_GND_EFF_DZ;
+	const struct param_info_s __param__EKF2_GND_MAX_HGT;
 	const struct param_info_s __param__EKF2_GPS_CHECK;
 	const struct param_info_s __param__EKF2_GPS_DELAY;
 	const struct param_info_s __param__EKF2_GPS_MASK;
@@ -271,7 +284,8 @@ struct px4_parameters_t {
 	const struct param_info_s __param__EKF2_OF_QMIN;
 	const struct param_info_s __param__EKF2_PCOEF_XN;
 	const struct param_info_s __param__EKF2_PCOEF_XP;
-	const struct param_info_s __param__EKF2_PCOEF_Y;
+	const struct param_info_s __param__EKF2_PCOEF_YN;
+	const struct param_info_s __param__EKF2_PCOEF_YP;
 	const struct param_info_s __param__EKF2_PCOEF_Z;
 	const struct param_info_s __param__EKF2_REQ_EPH;
 	const struct param_info_s __param__EKF2_REQ_EPV;
@@ -481,6 +495,7 @@ struct px4_parameters_t {
 	const struct param_info_s __param__LNDMC_ALT_MAX;
 	const struct param_info_s __param__LNDMC_FFALL_THR;
 	const struct param_info_s __param__LNDMC_FFALL_TTRI;
+	const struct param_info_s __param__LNDMC_LOW_T_THR;
 	const struct param_info_s __param__LNDMC_ROT_MAX;
 	const struct param_info_s __param__LNDMC_XY_VEL_MAX;
 	const struct param_info_s __param__LNDMC_Z_VEL_MAX;
@@ -591,7 +606,6 @@ struct px4_parameters_t {
 	const struct param_info_s __param__MC_YAWRATE_I;
 	const struct param_info_s __param__MC_YAWRATE_MAX;
 	const struct param_info_s __param__MC_YAWRATE_P;
-	const struct param_info_s __param__MC_YAWRAUTO_MAX;
 	const struct param_info_s __param__MC_YAW_P;
 	const struct param_info_s __param__MC_YR_INT_LIM;
 	const struct param_info_s __param__MIS_ALTMODE;
@@ -600,6 +614,7 @@ struct px4_parameters_t {
 	const struct param_info_s __param__MIS_LTRMIN_ALT;
 	const struct param_info_s __param__MIS_MNT_YAW_CTL;
 	const struct param_info_s __param__MIS_TAKEOFF_ALT;
+	const struct param_info_s __param__MIS_TAKEOFF_REQ;
 	const struct param_info_s __param__MIS_YAW_ERR;
 	const struct param_info_s __param__MIS_YAW_TMT;
 	const struct param_info_s __param__MKBLCTRL_TEST;
@@ -642,7 +657,6 @@ struct px4_parameters_t {
 	const struct param_info_s __param__MPC_MANTHR_MIN;
 	const struct param_info_s __param__MPC_MAN_TILT_MAX;
 	const struct param_info_s __param__MPC_MAN_Y_MAX;
-	const struct param_info_s __param__MPC_OBS_AVOID;
 	const struct param_info_s __param__MPC_POS_MODE;
 	const struct param_info_s __param__MPC_SPOOLUP_TIME;
 	const struct param_info_s __param__MPC_THR_CURVE;
@@ -663,6 +677,7 @@ struct px4_parameters_t {
 	const struct param_info_s __param__MPC_XY_VEL_I;
 	const struct param_info_s __param__MPC_XY_VEL_MAX;
 	const struct param_info_s __param__MPC_XY_VEL_P;
+	const struct param_info_s __param__MPC_YAWRAUTO_MAX;
 	const struct param_info_s __param__MPC_YAW_EXPO;
 	const struct param_info_s __param__MPC_YAW_MODE;
 	const struct param_info_s __param__MPC_Z_MAN_EXPO;
@@ -921,6 +936,7 @@ struct px4_parameters_t {
 	const struct param_info_s __param__RC_MAP_AUX3;
 	const struct param_info_s __param__RC_MAP_AUX4;
 	const struct param_info_s __param__RC_MAP_AUX5;
+	const struct param_info_s __param__RC_MAP_AUX6;
 	const struct param_info_s __param__RC_MAP_FAILSAFE;
 	const struct param_info_s __param__RC_MAP_FLAPS;
 	const struct param_info_s __param__RC_MAP_FLTMODE;
@@ -1003,6 +1019,25 @@ struct px4_parameters_t {
 	const struct param_info_s __param__SER_GPS1_BAUD;
 	const struct param_info_s __param__SER_TEL1_BAUD;
 	const struct param_info_s __param__SER_TEL2_BAUD;
+	const struct param_info_s __param__SIH_IXX;
+	const struct param_info_s __param__SIH_IXY;
+	const struct param_info_s __param__SIH_IXZ;
+	const struct param_info_s __param__SIH_IYY;
+	const struct param_info_s __param__SIH_IYZ;
+	const struct param_info_s __param__SIH_IZZ;
+	const struct param_info_s __param__SIH_KDV;
+	const struct param_info_s __param__SIH_KDW;
+	const struct param_info_s __param__SIH_LOC_H0;
+	const struct param_info_s __param__SIH_LOC_LAT0;
+	const struct param_info_s __param__SIH_LOC_LON0;
+	const struct param_info_s __param__SIH_LOC_MU_X;
+	const struct param_info_s __param__SIH_LOC_MU_Y;
+	const struct param_info_s __param__SIH_LOC_MU_Z;
+	const struct param_info_s __param__SIH_L_PITCH;
+	const struct param_info_s __param__SIH_L_ROLL;
+	const struct param_info_s __param__SIH_MASS;
+	const struct param_info_s __param__SIH_Q_MAX;
+	const struct param_info_s __param__SIH_T_MAX;
 	const struct param_info_s __param__SYS_AUTOCONFIG;
 	const struct param_info_s __param__SYS_AUTOSTART;
 	const struct param_info_s __param__SYS_BL_UPDATE;
@@ -1208,6 +1243,7 @@ struct px4_parameters_t {
 	const struct param_info_s __param__UAVCAN_ENABLE;
 	const struct param_info_s __param__UAVCAN_ESC_IDLT;
 	const struct param_info_s __param__UAVCAN_NODE_ID;
+	const struct param_info_s __param__V19_VT_ROLLDIR;
 	const struct param_info_s __param__VT_ARSP_BLEND;
 	const struct param_info_s __param__VT_ARSP_TRANS;
 	const struct param_info_s __param__VT_B_DEC_MSS;

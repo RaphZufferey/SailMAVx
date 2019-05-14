@@ -145,7 +145,7 @@
 #include <uORB/topics/wind_estimate.h>
 
 
-const size_t _uorb_topics_count = 126;
+const size_t _uorb_topics_count = 127;
 const constexpr struct orb_metadata* const _uorb_topics_list[_uorb_topics_count] = {
     ORB_ID(vehicle_mocap_odometry),
     ORB_ID(vehicle_visual_odometry),
@@ -236,6 +236,7 @@ const constexpr struct orb_metadata* const _uorb_topics_list[_uorb_topics_count]
     ORB_ID(vehicle_magnetometer),
     ORB_ID(vehicle_land_detected),
     ORB_ID(mission_result),
+    ORB_ID(camera_trigger_secondary),
     ORB_ID(satellite_info),
     ORB_ID(vtol_vehicle_status),
     ORB_ID(qshell_req),

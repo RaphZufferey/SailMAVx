@@ -56,6 +56,8 @@ struct vehicle_land_detected_s {
 	bool freefall;
 	bool ground_contact;
 	bool maybe_landed;
+	bool in_ground_effect;
+	uint8_t _padding0[7]; // required for logger
 
 
 #ifdef __cplusplus

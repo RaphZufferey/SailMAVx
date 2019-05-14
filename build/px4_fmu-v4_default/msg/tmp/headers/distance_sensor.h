@@ -64,7 +64,7 @@ struct distance_sensor_s {
 	float min_distance;
 	float max_distance;
 	float current_distance;
-	float covariance;
+	float variance;
 	int8_t signal_quality;
 	uint8_t type;
 	uint8_t id;

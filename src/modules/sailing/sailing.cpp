@@ -305,7 +305,7 @@ void Sailing::run()
 			/* get the RC (or otherwise user based) input */
 			{
 				orb_copy(ORB_ID(manual_control_setpoint), manual_sp_sub, &manual_sp);
-				PX4_INFO("manual sp: %f ", (double)(manual_sp.get().r));
+				PX4_INFO("manual sp: %f ", (double)(manual_sp.r));
 	//				,(int)(manual_sp.x*100.0f)
 	//				,(int)(manual_sp.y*100.0f));
 			}

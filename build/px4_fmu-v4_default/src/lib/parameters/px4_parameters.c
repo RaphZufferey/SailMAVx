@@ -875,7 +875,28 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
-		"CAM_FBACK_MODE",
+		"CAM_CAP_DELAY",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.0
+	},
+
+	{
+		"CAM_CAP_EDGE",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 0
+	},
+
+	{
+		"CAM_CAP_FBACK",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 0
+	},
+
+	{
+		"CAM_CAP_MODE",
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
 		.val.i = 0
@@ -1050,6 +1071,27 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
+		"COM_ASPD_FS_ACT",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 0
+	},
+
+	{
+		"COM_ASPD_FS_DLY",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 0
+	},
+
+	{
+		"COM_ASPD_STALL",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 10.0
+	},
+
+	{
 		"COM_DISARM_LAND",
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
@@ -1061,13 +1103,6 @@ struct px4_parameters_t px4_parameters = {
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
 		.val.i = 10
-	},
-
-	{
-		"COM_DL_REG_T",
-		PARAM_TYPE_INT32,
-		.volatile_param = 0,
-		.val.i = 0
 	},
 
 	{
@@ -1176,6 +1211,13 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
+		"COM_OA_BOOT_T",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 100
+	},
+
+	{
 		"COM_OBL_ACT",
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
@@ -1184,6 +1226,13 @@ struct px4_parameters_t px4_parameters = {
 
 	{
 		"COM_OBL_RC_ACT",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 0
+	},
+
+	{
+		"COM_OBS_AVOID",
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
 		.val.i = 0
@@ -1278,6 +1327,34 @@ struct px4_parameters_t px4_parameters = {
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
 		.val.i = 0
+	},
+
+	{
+		"COM_TAS_FS_INNOV",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 1.0
+	},
+
+	{
+		"COM_TAS_FS_INTEG",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = -1.0
+	},
+
+	{
+		"COM_TAS_FS_T1",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 3
+	},
+
+	{
+		"COM_TAS_FS_T2",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 100
 	},
 
 	{
@@ -1509,6 +1586,20 @@ struct px4_parameters_t px4_parameters = {
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
 		.val.f = 0.1
+	},
+
+	{
+		"EKF2_GND_EFF_DZ",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.0
+	},
+
+	{
+		"EKF2_GND_MAX_HGT",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.5
 	},
 
 	{
@@ -1855,7 +1946,14 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
-		"EKF2_PCOEF_Y",
+		"EKF2_PCOEF_YN",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.0
+	},
+
+	{
+		"EKF2_PCOEF_YP",
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
 		.val.f = 0.0
@@ -2278,7 +2376,7 @@ struct px4_parameters_t px4_parameters = {
 		"FW_LND_EARLYCFG",
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
-		.val.i = 1
+		.val.i = 0
 	},
 
 	{
@@ -3013,7 +3111,7 @@ struct px4_parameters_t px4_parameters = {
 		"IMU_GYRO_CUTOFF",
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
-		.val.f = 80.0
+		.val.f = 30.0
 	},
 
 	{
@@ -3319,6 +3417,13 @@ struct px4_parameters_t px4_parameters = {
 
 	{
 		"LNDMC_FFALL_TTRI",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.3
+	},
+
+	{
+		"LNDMC_LOW_T_THR",
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
 		.val.f = 0.3
@@ -3909,7 +4014,7 @@ struct px4_parameters_t px4_parameters = {
 		"MC_DTERM_CUTOFF",
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
-		.val.f = 30.
+		.val.f = 0.
 	},
 
 	{
@@ -4095,13 +4200,6 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
-		"MC_YAWRAUTO_MAX",
-		PARAM_TYPE_FLOAT,
-		.volatile_param = 0,
-		.val.f = 45.0
-	},
-
-	{
 		"MC_YAW_P",
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
@@ -4155,6 +4253,13 @@ struct px4_parameters_t px4_parameters = {
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
 		.val.f = 2.5
+	},
+
+	{
+		"MIS_TAKEOFF_REQ",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 0
 	},
 
 	{
@@ -4452,13 +4557,6 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
-		"MPC_OBS_AVOID",
-		PARAM_TYPE_INT32,
-		.volatile_param = 0,
-		.val.i = 0
-	},
-
-	{
 		"MPC_POS_MODE",
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
@@ -4596,6 +4694,13 @@ struct px4_parameters_t px4_parameters = {
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
 		.val.f = 0.09
+	},
+
+	{
+		"MPC_YAWRAUTO_MAX",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 45.0
 	},
 
 	{
@@ -6405,6 +6510,13 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
+		"RC_MAP_AUX6",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 0
+	},
+
+	{
 		"RC_MAP_FAILSAFE",
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
@@ -6976,6 +7088,139 @@ struct px4_parameters_t px4_parameters = {
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
 		.val.i = 921600
+	},
+
+	{
+		"SIH_IXX",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.025
+	},
+
+	{
+		"SIH_IXY",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.0
+	},
+
+	{
+		"SIH_IXZ",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.0
+	},
+
+	{
+		"SIH_IYY",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.025
+	},
+
+	{
+		"SIH_IYZ",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.0
+	},
+
+	{
+		"SIH_IZZ",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.030
+	},
+
+	{
+		"SIH_KDV",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 1.0
+	},
+
+	{
+		"SIH_KDW",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.025
+	},
+
+	{
+		"SIH_LOC_H0",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 32.34
+	},
+
+	{
+		"SIH_LOC_LAT0",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 454671160
+	},
+
+	{
+		"SIH_LOC_LON0",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = -737578370
+	},
+
+	{
+		"SIH_LOC_MU_X",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.179
+	},
+
+	{
+		"SIH_LOC_MU_Y",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = -0.045
+	},
+
+	{
+		"SIH_LOC_MU_Z",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.504
+	},
+
+	{
+		"SIH_L_PITCH",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.2
+	},
+
+	{
+		"SIH_L_ROLL",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.2
+	},
+
+	{
+		"SIH_MASS",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 1.0
+	},
+
+	{
+		"SIH_Q_MAX",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.1
+	},
+
+	{
+		"SIH_T_MAX",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 5.0
 	},
 
 	{
@@ -8414,6 +8659,13 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
+		"V19_VT_ROLLDIR",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 1
+	},
+
+	{
 		"VT_ARSP_BLEND",
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
@@ -8721,7 +8973,7 @@ struct px4_parameters_t px4_parameters = {
 		.val.f = 90.0
 	},
 
-	1244
+	1280
 };
 
 //extern const struct px4_parameters_t px4_parameters;

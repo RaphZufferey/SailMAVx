@@ -41,9 +41,9 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_vehicle_status_flags_fields[] = "uint64_t timestamp;bool condition_calibration_enabled;bool condition_system_sensors_initialized;bool condition_system_hotplug_timeout;bool condition_system_returned_to_home;bool condition_auto_mission_available;bool condition_global_position_valid;bool condition_home_position_valid;bool condition_local_position_valid;bool condition_local_velocity_valid;bool condition_local_altitude_valid;bool condition_power_input_valid;bool condition_battery_healthy;bool circuit_breaker_engaged_power_check;bool circuit_breaker_engaged_airspd_check;bool circuit_breaker_engaged_enginefailure_check;bool circuit_breaker_engaged_gpsfailure_check;bool circuit_breaker_flight_termination_disabled;bool circuit_breaker_engaged_usb_check;bool circuit_breaker_engaged_posfailure_check;bool offboard_control_signal_found_once;bool offboard_control_signal_lost;bool offboard_control_set_by_command;bool offboard_control_loss_timeout;bool rc_signal_found_once;bool rc_input_blocked;bool rc_calibration_valid;bool vtol_transition_failure;bool usb_connected;uint8_t[4] _padding0;";
+constexpr char __orb_vehicle_status_flags_fields[] = "uint64_t timestamp;bool condition_calibration_enabled;bool condition_system_sensors_initialized;bool condition_system_hotplug_timeout;bool condition_system_returned_to_home;bool condition_auto_mission_available;bool condition_global_position_valid;bool condition_home_position_valid;bool condition_local_position_valid;bool condition_local_velocity_valid;bool condition_local_altitude_valid;bool condition_power_input_valid;bool condition_battery_healthy;bool circuit_breaker_engaged_power_check;bool circuit_breaker_engaged_airspd_check;bool circuit_breaker_engaged_enginefailure_check;bool circuit_breaker_engaged_gpsfailure_check;bool circuit_breaker_flight_termination_disabled;bool circuit_breaker_engaged_usb_check;bool circuit_breaker_engaged_posfailure_check;bool offboard_control_signal_found_once;bool offboard_control_signal_lost;bool offboard_control_set_by_command;bool offboard_control_loss_timeout;bool rc_signal_found_once;bool rc_input_blocked;bool rc_calibration_valid;bool vtol_transition_failure;bool usb_connected;bool avoidance_system_required;bool avoidance_system_valid;uint8_t[2] _padding0;";
 
-ORB_DEFINE(vehicle_status_flags, struct vehicle_status_flags_s, 36, __orb_vehicle_status_flags_fields);
+ORB_DEFINE(vehicle_status_flags, struct vehicle_status_flags_s, 38, __orb_vehicle_status_flags_fields);
 
 
 void print_message(const vehicle_status_flags_s& message)
@@ -82,5 +82,7 @@ void print_message(const vehicle_status_flags_s& message)
 	PX4_INFO_RAW("\trc_calibration_valid: %s\n", (message.rc_calibration_valid ? "True" : "False"));
 	PX4_INFO_RAW("\tvtol_transition_failure: %s\n", (message.vtol_transition_failure ? "True" : "False"));
 	PX4_INFO_RAW("\tusb_connected: %s\n", (message.usb_connected ? "True" : "False"));
+	PX4_INFO_RAW("\tavoidance_system_required: %s\n", (message.avoidance_system_required ? "True" : "False"));
+	PX4_INFO_RAW("\tavoidance_system_valid: %s\n", (message.avoidance_system_valid ? "True" : "False"));
 	
 }

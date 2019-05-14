@@ -41,9 +41,9 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_rc_channels_fields[] = "uint64_t timestamp;uint64_t timestamp_last_valid;float[18] channels;uint32_t frame_drop_count;uint8_t channel_count;int8_t[26] function;uint8_t rssi;bool signal_lost;uint8_t[7] _padding0;";
+constexpr char __orb_rc_channels_fields[] = "uint64_t timestamp;uint64_t timestamp_last_valid;float[18] channels;uint32_t frame_drop_count;uint8_t channel_count;int8_t[27] function;uint8_t rssi;bool signal_lost;uint8_t[6] _padding0;";
 
-ORB_DEFINE(rc_channels, struct rc_channels_s, 121, __orb_rc_channels_fields);
+ORB_DEFINE(rc_channels, struct rc_channels_s, 122, __orb_rc_channels_fields);
 
 
 void print_message(const rc_channels_s& message)
@@ -58,7 +58,7 @@ void print_message(const rc_channels_s& message)
 	PX4_INFO_RAW("\tchannels: [%.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f]\n", (double)message.channels[0], (double)message.channels[1], (double)message.channels[2], (double)message.channels[3], (double)message.channels[4], (double)message.channels[5], (double)message.channels[6], (double)message.channels[7], (double)message.channels[8], (double)message.channels[9], (double)message.channels[10], (double)message.channels[11], (double)message.channels[12], (double)message.channels[13], (double)message.channels[14], (double)message.channels[15], (double)message.channels[16], (double)message.channels[17]);
 	PX4_INFO_RAW("\tframe_drop_count: %" PRIu32 "\n", message.frame_drop_count);
 	PX4_INFO_RAW("\tchannel_count: %u\n", message.channel_count);
-	PX4_INFO_RAW("\tfunction: [%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d]\n", message.function[0], message.function[1], message.function[2], message.function[3], message.function[4], message.function[5], message.function[6], message.function[7], message.function[8], message.function[9], message.function[10], message.function[11], message.function[12], message.function[13], message.function[14], message.function[15], message.function[16], message.function[17], message.function[18], message.function[19], message.function[20], message.function[21], message.function[22], message.function[23], message.function[24], message.function[25]);
+	PX4_INFO_RAW("\tfunction: [%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d]\n", message.function[0], message.function[1], message.function[2], message.function[3], message.function[4], message.function[5], message.function[6], message.function[7], message.function[8], message.function[9], message.function[10], message.function[11], message.function[12], message.function[13], message.function[14], message.function[15], message.function[16], message.function[17], message.function[18], message.function[19], message.function[20], message.function[21], message.function[22], message.function[23], message.function[24], message.function[25], message.function[26]);
 	PX4_INFO_RAW("\trssi: %u\n", message.rssi);
 	PX4_INFO_RAW("\tsignal_lost: %s\n", (message.signal_lost ? "True" : "False"));
 	

@@ -131,6 +131,10 @@ if param compare SYS_AUTOSTART 1001
 then
 sh 1001_rc_quad_x.hil
 fi
+if param compare SYS_AUTOSTART 1100
+then
+sh 1100_rc_quad_x_sih.hil
+fi
 if param compare SYS_AUTOSTART 4100
 then
 sh 4100_tiltquadrotor
@@ -246,6 +250,10 @@ fi
 if param compare SYS_AUTOSTART 13013
 then
 sh 13013_deltaquad
+fi
+if param compare SYS_AUTOSTART 13014
+then
+sh 13014_vtol_babyshark
 fi
 if param compare SYS_AUTOSTART 13001
 then

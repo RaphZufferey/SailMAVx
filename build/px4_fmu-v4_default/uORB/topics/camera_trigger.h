@@ -53,7 +53,8 @@ struct camera_trigger_s {
 	uint64_t timestamp;
 	uint64_t timestamp_utc;
 	uint32_t seq;
-	uint8_t _padding0[4]; // required for logger
+	bool feedback;
+	uint8_t _padding0[3]; // required for logger
 
 
 #ifdef __cplusplus
@@ -63,6 +64,7 @@ struct camera_trigger_s {
 
 /* register this as object request broker structure */
 ORB_DECLARE(camera_trigger);
+ORB_DECLARE(camera_trigger_secondary);
 
 
 #ifdef __cplusplus

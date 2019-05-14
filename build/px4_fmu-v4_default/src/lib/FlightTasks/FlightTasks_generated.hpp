@@ -45,6 +45,7 @@
 #include "FlightTasks.hpp"
 #include "FlightTaskManualAltitude.hpp"
 #include "FlightTaskManualAltitudeSmooth.hpp"
+#include "FlightTaskManualAltitudeSmoothVel.hpp"
 #include "FlightTaskManualPosition.hpp"
 #include "FlightTaskManualPositionSmooth.hpp"
 #include "FlightTaskManualPositionSmoothVel.hpp"
@@ -61,6 +62,7 @@ enum class FlightTaskIndex : int {
     None = -1,
     ManualAltitude,
     ManualAltitudeSmooth,
+    ManualAltitudeSmoothVel,
     ManualPosition,
     ManualPositionSmooth,
     ManualPositionSmoothVel,
@@ -82,6 +84,7 @@ union TaskUnion {
 
     FlightTaskManualAltitude manualAltitude;
     FlightTaskManualAltitudeSmooth manualAltitudeSmooth;
+    FlightTaskManualAltitudeSmoothVel manualAltitudeSmoothVel;
     FlightTaskManualPosition manualPosition;
     FlightTaskManualPositionSmooth manualPositionSmooth;
     FlightTaskManualPositionSmoothVel manualPositionSmoothVel;

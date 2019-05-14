@@ -41,7 +41,7 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_distance_sensor_fields[] = "uint64_t timestamp;float min_distance;float max_distance;float current_distance;float covariance;int8_t signal_quality;uint8_t type;uint8_t id;uint8_t orientation;uint8_t[4] _padding0;";
+constexpr char __orb_distance_sensor_fields[] = "uint64_t timestamp;float min_distance;float max_distance;float current_distance;float variance;int8_t signal_quality;uint8_t type;uint8_t id;uint8_t orientation;uint8_t[4] _padding0;";
 
 ORB_DEFINE(distance_sensor, struct distance_sensor_s, 28, __orb_distance_sensor_fields);
 
@@ -57,7 +57,7 @@ void print_message(const distance_sensor_s& message)
 	PX4_INFO_RAW("\tmin_distance: %.4f\n", (double)message.min_distance);
 	PX4_INFO_RAW("\tmax_distance: %.4f\n", (double)message.max_distance);
 	PX4_INFO_RAW("\tcurrent_distance: %.4f\n", (double)message.current_distance);
-	PX4_INFO_RAW("\tcovariance: %.4f\n", (double)message.covariance);
+	PX4_INFO_RAW("\tvariance: %.4f\n", (double)message.variance);
 	PX4_INFO_RAW("\tsignal_quality: %d\n", message.signal_quality);
 	PX4_INFO_RAW("\ttype: %u\n", message.type);
 	PX4_INFO_RAW("\tid: %u\n", message.id);

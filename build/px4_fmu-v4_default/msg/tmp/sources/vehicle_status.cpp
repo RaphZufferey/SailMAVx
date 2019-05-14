@@ -41,9 +41,9 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_vehicle_status_fields[] = "uint64_t timestamp;uint32_t onboard_control_sensors_present;uint32_t onboard_control_sensors_enabled;uint32_t onboard_control_sensors_health;uint8_t nav_state;uint8_t arming_state;uint8_t hil_state;bool failsafe;uint8_t system_type;uint8_t system_id;uint8_t component_id;bool is_rotary_wing;bool is_vtol;bool vtol_fw_permanent_stab;bool in_transition_mode;bool in_transition_to_fw;bool rc_signal_lost;uint8_t rc_input_mode;bool data_link_lost;bool high_latency_data_link_active;uint8_t data_link_lost_counter;bool engine_failure;bool mission_failure;uint8_t failure_detector_status;";
+constexpr char __orb_vehicle_status_fields[] = "uint64_t timestamp;uint32_t onboard_control_sensors_present;uint32_t onboard_control_sensors_enabled;uint32_t onboard_control_sensors_health;float arspd_check_level;float load_factor_ratio;uint8_t nav_state;uint8_t arming_state;uint8_t hil_state;bool failsafe;uint8_t system_type;uint8_t system_id;uint8_t component_id;bool is_rotary_wing;bool is_vtol;bool vtol_fw_permanent_stab;bool in_transition_mode;bool in_transition_to_fw;bool rc_signal_lost;uint8_t rc_input_mode;bool data_link_lost;uint8_t data_link_lost_counter;bool high_latency_data_link_lost;bool engine_failure;bool mission_failure;uint8_t failure_detector_status;bool aspd_check_failing;bool aspd_fault_declared;bool aspd_use_inhibit;bool aspd_fail_rtl;uint8_t[4] _padding0;";
 
-ORB_DEFINE(vehicle_status, struct vehicle_status_s, 40, __orb_vehicle_status_fields);
+ORB_DEFINE(vehicle_status, struct vehicle_status_s, 52, __orb_vehicle_status_fields);
 
 
 void print_message(const vehicle_status_s& message)
@@ -57,6 +57,8 @@ void print_message(const vehicle_status_s& message)
 	PX4_INFO_RAW("\tonboard_control_sensors_present: %" PRIu32 "\n", message.onboard_control_sensors_present);
 	PX4_INFO_RAW("\tonboard_control_sensors_enabled: %" PRIu32 "\n", message.onboard_control_sensors_enabled);
 	PX4_INFO_RAW("\tonboard_control_sensors_health: %" PRIu32 "\n", message.onboard_control_sensors_health);
+	PX4_INFO_RAW("\tarspd_check_level: %.4f\n", (double)message.arspd_check_level);
+	PX4_INFO_RAW("\tload_factor_ratio: %.4f\n", (double)message.load_factor_ratio);
 	PX4_INFO_RAW("\tnav_state: %u\n", message.nav_state);
 	PX4_INFO_RAW("\tarming_state: %u\n", message.arming_state);
 	PX4_INFO_RAW("\thil_state: %u\n", message.hil_state);
@@ -72,10 +74,14 @@ void print_message(const vehicle_status_s& message)
 	PX4_INFO_RAW("\trc_signal_lost: %s\n", (message.rc_signal_lost ? "True" : "False"));
 	PX4_INFO_RAW("\trc_input_mode: %u\n", message.rc_input_mode);
 	PX4_INFO_RAW("\tdata_link_lost: %s\n", (message.data_link_lost ? "True" : "False"));
-	PX4_INFO_RAW("\thigh_latency_data_link_active: %s\n", (message.high_latency_data_link_active ? "True" : "False"));
 	PX4_INFO_RAW("\tdata_link_lost_counter: %u\n", message.data_link_lost_counter);
+	PX4_INFO_RAW("\thigh_latency_data_link_lost: %s\n", (message.high_latency_data_link_lost ? "True" : "False"));
 	PX4_INFO_RAW("\tengine_failure: %s\n", (message.engine_failure ? "True" : "False"));
 	PX4_INFO_RAW("\tmission_failure: %s\n", (message.mission_failure ? "True" : "False"));
 	PX4_INFO_RAW("\tfailure_detector_status: %u\n", message.failure_detector_status);
-
+	PX4_INFO_RAW("\taspd_check_failing: %s\n", (message.aspd_check_failing ? "True" : "False"));
+	PX4_INFO_RAW("\taspd_fault_declared: %s\n", (message.aspd_fault_declared ? "True" : "False"));
+	PX4_INFO_RAW("\taspd_use_inhibit: %s\n", (message.aspd_use_inhibit ? "True" : "False"));
+	PX4_INFO_RAW("\taspd_fail_rtl: %s\n", (message.aspd_fail_rtl ? "True" : "False"));
+	
 }

@@ -41,9 +41,10 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_camera_trigger_fields[] = "uint64_t timestamp;uint64_t timestamp_utc;uint32_t seq;uint8_t[4] _padding0;";
+constexpr char __orb_camera_trigger_fields[] = "uint64_t timestamp;uint64_t timestamp_utc;uint32_t seq;bool feedback;uint8_t[3] _padding0;";
 
-ORB_DEFINE(camera_trigger, struct camera_trigger_s, 20, __orb_camera_trigger_fields);
+ORB_DEFINE(camera_trigger, struct camera_trigger_s, 21, __orb_camera_trigger_fields);
+ORB_DEFINE(camera_trigger_secondary, struct camera_trigger_s, 21, __orb_camera_trigger_fields);
 
 
 void print_message(const camera_trigger_s& message)
@@ -56,5 +57,6 @@ void print_message(const camera_trigger_s& message)
 	}
 	PX4_INFO_RAW("\ttimestamp_utc: %" PRIu64 "\n", message.timestamp_utc);
 	PX4_INFO_RAW("\tseq: %" PRIu32 "\n", message.seq);
+	PX4_INFO_RAW("\tfeedback: %s\n", (message.feedback ? "True" : "False"));
 	
 }

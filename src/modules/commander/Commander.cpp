@@ -481,6 +481,9 @@ int commander_main(int argc, char *argv[])
 			} else if (!strcmp(argv[2], "auto:precland")) {
 				new_main_state = commander_state_s::MAIN_STATE_AUTO_PRECLAND;
 
+			} else if (!strcmp(argv[2], "sail")) {
+				new_main_state = commander_state_s::MAIN_STATE_SAIL;
+
 			} else {
 				PX4_ERR("argument %s unsupported.", argv[2]);
 			}
@@ -494,6 +497,47 @@ int commander_main(int argc, char *argv[])
 		} else {
 			PX4_ERR("missing argument");
 		}
+	}
+
+	if (!strcmp(argv[1], "currentmode")) {
+
+		//Convert flight mode integer to string
+		if(internal_state.main_state == 0) {
+			PX4_INFO("Current flight mode is manual");
+		} else if(internal_state.main_state == 1) {
+			PX4_INFO("Current flight mode is altitude control");
+		} else if(internal_state.main_state == 2) {
+			PX4_INFO("Current flight mode is position control");
+		} else if(internal_state.main_state == 3) {
+			PX4_INFO("Current flight mode is auto mission");
+		} else if(internal_state.main_state == 4) {
+			PX4_INFO("Current flight mode is auto loiter");
+		} else if(internal_state.main_state == 5) {
+			PX4_INFO("Current flight mode is auto rtl");
+		} else if(internal_state.main_state == 6) {
+			PX4_INFO("Current flight mode is acro");
+		} else if(internal_state.main_state == 7) {
+			PX4_INFO("Current flight mode is offboard");
+		} else if(internal_state.main_state == 8) {
+			PX4_INFO("Current flight mode is stabilized");
+		} else if(internal_state.main_state == 9) {
+			PX4_INFO("Current flight mode is rattitude");
+		} else if(internal_state.main_state == 10) {
+			PX4_INFO("Current flight mode is auto takeoff");
+		} else if(internal_state.main_state == 11) {
+			PX4_INFO("Current flight mode is auto land");
+		} else if(internal_state.main_state == 12) {
+			PX4_INFO("Current flight mode is auto follow target");
+		} else if(internal_state.main_state == 13) {
+			PX4_INFO("Current flight mode is auto precland");
+		} else if(internal_state.main_state == 14) {
+			PX4_INFO("Current flight mode is orbit");
+		} else if(internal_state.main_state == 15) {
+			PX4_INFO("Current flight mode is max");
+		} else if(internal_state.main_state == 16) {
+			PX4_INFO("Current flight mode is sail");
+		}
+		return 0;
 	}
 
 	if (!strcmp(argv[1], "lockdown")) {
@@ -519,7 +563,7 @@ void usage(const char *reason)
 		PX4_INFO("%s", reason);
 	}
 
-	PX4_INFO("usage: commander {start|stop|status|calibrate|check|arm|disarm|takeoff|land|transition|mode}\n");
+	PX4_INFO("usage: commander {start|stop|status|calibrate|check|arm|disarm|takeoff|land|transition|mode|currentmode}\n");
 }
 
 void print_status()
@@ -3158,7 +3202,24 @@ set_control_mode()
 	control_mode.flag_control_offboard_enabled = false;
 
 	switch (status.nav_state) {
+
+	case vehicle_status_s::NAVIGATION_STATE_SAIL
+		control_mode.flag_control_sail_enabled = true;
+		control_mode.flag_control_manual_enabled = true;
+		control_mode.flag_control_auto_enabled = false;
+		control_mode.flag_control_rates_enabled = false;
+		control_mode.flag_control_attitude_enabled = false;
+		control_mode.flag_control_rattitude_enabled = false;
+		control_mode.flag_control_altitude_enabled = false;
+		control_mode.flag_control_climb_rate_enabled = false;
+		control_mode.flag_control_position_enabled = false;
+		control_mode.flag_control_velocity_enabled = false;
+		control_mode.flag_control_acceleration_enabled = false;
+		control_mode.flag_control_termination_enabled = false;
+		break;
+
 	case vehicle_status_s::NAVIGATION_STATE_MANUAL:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = true;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = stabilization_required();
@@ -3173,6 +3234,7 @@ set_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_STAB:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = true;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = true;
@@ -3187,6 +3249,7 @@ set_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_RATTITUDE:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = true;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = true;
@@ -3201,6 +3264,7 @@ set_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_ALTCTL:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = true;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = true;
@@ -3215,6 +3279,7 @@ set_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_POSCTL:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = true;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = true;
@@ -3242,6 +3307,7 @@ set_control_mode()
 	case vehicle_status_s::NAVIGATION_STATE_AUTO_MISSION:
 	case vehicle_status_s::NAVIGATION_STATE_AUTO_LOITER:
 	case vehicle_status_s::NAVIGATION_STATE_AUTO_TAKEOFF:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = true;
 		control_mode.flag_control_rates_enabled = true;
@@ -3256,6 +3322,7 @@ set_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_AUTO_LANDGPSFAIL:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = true;
@@ -3270,6 +3337,7 @@ set_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_ACRO:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = true;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = true;
@@ -3285,6 +3353,7 @@ set_control_mode()
 
 	case vehicle_status_s::NAVIGATION_STATE_DESCEND:
 		/* TODO: check if this makes sense */
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = true;
 		control_mode.flag_control_rates_enabled = true;
@@ -3300,6 +3369,7 @@ set_control_mode()
 
 	case vehicle_status_s::NAVIGATION_STATE_TERMINATION:
 		/* disable all controllers on termination */
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = false;
@@ -3314,6 +3384,7 @@ set_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_OFFBOARD:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_offboard_enabled = true;
@@ -3354,6 +3425,7 @@ set_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_ORBIT:
+		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = true;

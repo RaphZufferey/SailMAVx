@@ -8,7 +8,6 @@ set FEXTRAS /fs/microsd/etc/extras.txt
 set FMU_ARGS ""
 set FMU_MODE pwm
 set FRC /fs/microsd/etc/rc.txt
-set IO_PRESENT no
 set IOFW "/etc/extras/px4_io-v2_default.bin"
 set IO_PRESENT no
 set LOG_FILE /fs/microsd/bootlog.txt
@@ -35,6 +34,7 @@ set PWM_RATE p:PWM_RATE
 set SDCARD_MIXERS_PATH /fs/microsd/etc/mixers
 set USE_IO no
 set VEHICLE_TYPE none
+set PARAM_DEFAULTS_VER 1
 mount -t procfs /proc
 sercon
 ver all
@@ -92,7 +92,12 @@ then
 param reset_nostart RC* COM_FLTMODE* LND_FLIGHT_T_* TC_* CAL_ACC* CAL_GYRO*
 set AUTOCNF yes
 else
+if param compare SYS_AUTOCONFIG 2
+then
+set AUTOCNF yes
+else
 set AUTOCNF no
+fi
 fi
 set BOARD_RC_DEFAULTS /etc/init.d/rc.board_defaults
 if [ -f $BOARD_RC_DEFAULTS ]
@@ -104,14 +109,12 @@ unset BOARD_RC_DEFAULTS
 dataman start $DATAMAN_OPT
 send_event start
 load_mon start
-if ! rgbled start
-then
+rgbled start
 rgbled_ncp5623c start
 rgbled_pwm start
 if blinkm start
 then
 blinkm systemstate
-fi
 fi
 tone_alarm start
 if param compare SYS_FMU_TASK 1
@@ -181,12 +184,16 @@ if [ $IO_PRESENT = no -o $USE_IO = no ]
 then
 rc_input start
 fi
-if param compare SYS_HITL 1
+if param greater SYS_HITL 0
 then
 set OUTPUT_MODE hil
 sensors start -h
 commander start --hil
 param set GPS_1_CONFIG 0
+if param compare SYS_HITL 2
+then
+sih start
+fi
 else
 set BOARD_RC_SENSORS /etc/init.d/rc.board_sensors
 if [ -f $BOARD_RC_SENSORS ]
@@ -214,7 +221,6 @@ set FMU_MODE none
 set AUX_MODE none
 fi
 camera_trigger start
-param set CAM_FBACK_MODE 1
 camera_feedback start
 fi
 if param greater UAVCAN_ENABLE 0
@@ -236,6 +242,13 @@ fi
 sh /etc/init.d/rc.mavlink
 sh /etc/init.d/rc.serial
 sh /etc/init.d/rc.vehicle_setup
+if param greater CAM_CAP_FBACK 0
+then
+if camera_capture start
+then
+camera_capture on
+fi
+fi
 navigator start
 if param compare WEST_EN 1
 then
@@ -246,6 +259,7 @@ if ! param compare MNT_MODE_IN -1
 then
 vmount start
 fi
+px4flow start &
 set BOARD_RC_EXTRAS /etc/init.d/rc.board_extras
 if [ -f $BOARD_RC_EXTRAS ]
 then
@@ -259,6 +273,14 @@ echo "Addons script: ${FEXTRAS}"
 sh $FEXTRAS
 fi
 sh /etc/init.d/rc.logging
+if ! param compare SYS_PARAM_VER ${PARAM_DEFAULTS_VER}
+then
+echo "Switched to different parameter version. Resetting parameters."
+param set SYS_PARAM_VER ${PARAM_DEFAULTS_VER}
+param set SYS_AUTOCONFIG 2
+param save
+reboot
+fi
 fi
 unset AUTOCNF
 unset AUX_MODE
@@ -282,6 +304,7 @@ unset MIXER_FILE
 unset MK_MODE
 unset MKBLCTRL_ARG
 unset OUTPUT_MODE
+unset PARAM_DEFAULTS_VER
 unset PARAM_FILE
 unset PWM_AUX_DISARMED
 unset PWM_AUX_MAX

@@ -78,6 +78,7 @@ struct manual_control_setpoint_s {
 	float aux3;
 	float aux4;
 	float aux5;
+	float aux6;
 	uint8_t mode_switch;
 	uint8_t return_switch;
 	uint8_t rattitude_switch;
@@ -93,7 +94,7 @@ struct manual_control_setpoint_s {
 	uint8_t data_source;
 	uint8_t stab_switch;
 	uint8_t man_switch;
-	uint8_t _padding0[1]; // required for logger
+	uint8_t _padding0[5]; // required for logger
 
 
 #ifdef __cplusplus

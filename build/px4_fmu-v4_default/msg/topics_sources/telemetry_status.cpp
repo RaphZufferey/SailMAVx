@@ -41,9 +41,9 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_telemetry_status_fields[] = "uint64_t timestamp;uint64_t heartbeat_time;float data_rate;float rate_multiplier;float rate_rx;float rate_tx;float rate_txerr;uint8_t type;uint8_t system_id;uint8_t component_id;uint8_t mode;bool flow_control;bool forwarding;bool mavlink_v2;bool ftp;uint8_t streams;uint8_t[3] _padding0;";
+constexpr char __orb_telemetry_status_fields[] = "uint64_t timestamp;uint64_t heartbeat_time;float data_rate;float rate_multiplier;float rate_rx;float rate_tx;float rate_txerr;uint8_t remote_system_id;uint8_t remote_component_id;uint8_t remote_type;uint8_t remote_system_status;uint8_t type;uint8_t mode;bool flow_control;bool forwarding;bool mavlink_v2;bool ftp;uint8_t streams;uint8_t[1] _padding0;";
 
-ORB_DEFINE(telemetry_status, struct telemetry_status_s, 45, __orb_telemetry_status_fields);
+ORB_DEFINE(telemetry_status, struct telemetry_status_s, 47, __orb_telemetry_status_fields);
 
 
 void print_message(const telemetry_status_s& message)
@@ -60,9 +60,11 @@ void print_message(const telemetry_status_s& message)
 	PX4_INFO_RAW("\trate_rx: %.4f\n", (double)message.rate_rx);
 	PX4_INFO_RAW("\trate_tx: %.4f\n", (double)message.rate_tx);
 	PX4_INFO_RAW("\trate_txerr: %.4f\n", (double)message.rate_txerr);
+	PX4_INFO_RAW("\tremote_system_id: %u\n", message.remote_system_id);
+	PX4_INFO_RAW("\tremote_component_id: %u\n", message.remote_component_id);
+	PX4_INFO_RAW("\tremote_type: %u\n", message.remote_type);
+	PX4_INFO_RAW("\tremote_system_status: %u\n", message.remote_system_status);
 	PX4_INFO_RAW("\ttype: %u\n", message.type);
-	PX4_INFO_RAW("\tsystem_id: %u\n", message.system_id);
-	PX4_INFO_RAW("\tcomponent_id: %u\n", message.component_id);
 	PX4_INFO_RAW("\tmode: %u\n", message.mode);
 	PX4_INFO_RAW("\tflow_control: %s\n", (message.flow_control ? "True" : "False"));
 	PX4_INFO_RAW("\tforwarding: %s\n", (message.forwarding ? "True" : "False"));

@@ -66,7 +66,8 @@
 #define RC_CHANNELS_RC_CHANNELS_FUNCTION_GEAR 22
 #define RC_CHANNELS_RC_CHANNELS_FUNCTION_ARMSWITCH 23
 #define RC_CHANNELS_RC_CHANNELS_FUNCTION_STAB 24
-#define RC_CHANNELS_RC_CHANNELS_FUNCTION_MAN 25
+#define RC_CHANNELS_RC_CHANNELS_FUNCTION_AUX_6 25
+#define RC_CHANNELS_RC_CHANNELS_FUNCTION_MAN 26
 
 #endif
 
@@ -81,10 +82,10 @@ struct rc_channels_s {
 	float channels[18];
 	uint32_t frame_drop_count;
 	uint8_t channel_count;
-	int8_t function[26];
+	int8_t function[27];
 	uint8_t rssi;
 	bool signal_lost;
-	uint8_t _padding0[7]; // required for logger
+	uint8_t _padding0[6]; // required for logger
 
 
 #ifdef __cplusplus
@@ -113,7 +114,8 @@ struct rc_channels_s {
 	static constexpr uint8_t RC_CHANNELS_FUNCTION_GEAR = 22;
 	static constexpr uint8_t RC_CHANNELS_FUNCTION_ARMSWITCH = 23;
 	static constexpr uint8_t RC_CHANNELS_FUNCTION_STAB = 24;
-	static constexpr uint8_t RC_CHANNELS_FUNCTION_MAN = 25;
+	static constexpr uint8_t RC_CHANNELS_FUNCTION_AUX_6 = 25;
+	static constexpr uint8_t RC_CHANNELS_FUNCTION_MAN = 26;
 
 #endif
 };

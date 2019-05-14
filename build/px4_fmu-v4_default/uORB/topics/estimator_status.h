@@ -73,6 +73,8 @@
 #define ESTIMATOR_STATUS_CS_ASPD 19
 #define ESTIMATOR_STATUS_CS_GND_EFFECT 20
 #define ESTIMATOR_STATUS_CS_RNG_STUCK 21
+#define ESTIMATOR_STATUS_CS_GPS_YAW 22
+#define ESTIMATOR_STATUS_CS_MAG_ALIGNED 23
 
 #endif
 
@@ -141,6 +143,8 @@ struct estimator_status_s {
 	static constexpr uint8_t CS_ASPD = 19;
 	static constexpr uint8_t CS_GND_EFFECT = 20;
 	static constexpr uint8_t CS_RNG_STUCK = 21;
+	static constexpr uint8_t CS_GPS_YAW = 22;
+	static constexpr uint8_t CS_MAG_ALIGNED = 23;
 
 #endif
 };

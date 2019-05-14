@@ -41,9 +41,9 @@
 
 
 #ifndef __cplusplus
-#define TUNE_CONTROL_STRENGTH_MIN 0
-#define TUNE_CONTROL_STRENGTH_NORMAL 40
-#define TUNE_CONTROL_STRENGTH_MAX 100
+#define TUNE_CONTROL_VOLUME_LEVEL_MIN 0
+#define TUNE_CONTROL_VOLUME_LEVEL_DEFAULT 40
+#define TUNE_CONTROL_VOLUME_LEVEL_MAX 100
 
 #endif
 
@@ -59,14 +59,14 @@ struct tune_control_s {
 	uint16_t frequency;
 	uint8_t tune_id;
 	uint8_t tune_override;
-	uint8_t strength;
+	uint8_t volume;
 	uint8_t _padding0[3]; // required for logger
 
 
 #ifdef __cplusplus
-	static constexpr uint8_t STRENGTH_MIN = 0;
-	static constexpr uint8_t STRENGTH_NORMAL = 40;
-	static constexpr uint8_t STRENGTH_MAX = 100;
+	static constexpr uint8_t VOLUME_LEVEL_MIN = 0;
+	static constexpr uint8_t VOLUME_LEVEL_DEFAULT = 40;
+	static constexpr uint8_t VOLUME_LEVEL_MAX = 100;
 
 #endif
 };

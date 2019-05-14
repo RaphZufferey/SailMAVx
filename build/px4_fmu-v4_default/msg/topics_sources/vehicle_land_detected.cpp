@@ -41,9 +41,9 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_vehicle_land_detected_fields[] = "uint64_t timestamp;float alt_max;bool landed;bool freefall;bool ground_contact;bool maybe_landed;";
+constexpr char __orb_vehicle_land_detected_fields[] = "uint64_t timestamp;float alt_max;bool landed;bool freefall;bool ground_contact;bool maybe_landed;bool in_ground_effect;uint8_t[7] _padding0;";
 
-ORB_DEFINE(vehicle_land_detected, struct vehicle_land_detected_s, 16, __orb_vehicle_land_detected_fields);
+ORB_DEFINE(vehicle_land_detected, struct vehicle_land_detected_s, 17, __orb_vehicle_land_detected_fields);
 
 
 void print_message(const vehicle_land_detected_s& message)
@@ -59,5 +59,6 @@ void print_message(const vehicle_land_detected_s& message)
 	PX4_INFO_RAW("\tfreefall: %s\n", (message.freefall ? "True" : "False"));
 	PX4_INFO_RAW("\tground_contact: %s\n", (message.ground_contact ? "True" : "False"));
 	PX4_INFO_RAW("\tmaybe_landed: %s\n", (message.maybe_landed ? "True" : "False"));
-
+	PX4_INFO_RAW("\tin_ground_effect: %s\n", (message.in_ground_effect ? "True" : "False"));
+	
 }

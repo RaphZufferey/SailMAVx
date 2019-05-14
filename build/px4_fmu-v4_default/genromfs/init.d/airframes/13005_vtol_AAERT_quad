@@ -19,7 +19,7 @@ param set MC_YAWRATE_I 0.02
 param set MC_YAWRATE_D 0
 param set MC_YAWRATE_FF 0
 param set MC_YAWRATE_MAX 40
-param set MC_YAWRAUTO_MAX 40
+param set MPC_YAWRAUTO_MAX 40
 param set FW_PR_FF 0.5
 param set FW_PR_I 0.02
 param set FW_PR_IMAX 0.4
@@ -35,6 +35,7 @@ param set VT_F_TRANS_THR 0.75
 param set VT_MOT_COUNT 4
 param set VT_IDLE_PWM_MC 1080
 param set VT_TYPE 2
+param set V19_VT_ROLLDIR 0
 fi
 set MAV_TYPE 22
 set MIXER quad_x

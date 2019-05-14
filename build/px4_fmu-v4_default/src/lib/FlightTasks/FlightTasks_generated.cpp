@@ -65,6 +65,10 @@ int FlightTasks::_initTask(FlightTaskIndex task_index)
 		_current_task.task = new (&_task_union.manualAltitudeSmooth) FlightTaskManualAltitudeSmooth();
 		break;
 
+	case FlightTaskIndex::ManualAltitudeSmoothVel:
+		_current_task.task = new (&_task_union.manualAltitudeSmoothVel) FlightTaskManualAltitudeSmoothVel();
+		break;
+
 	case FlightTaskIndex::ManualPosition:
 		_current_task.task = new (&_task_union.manualPosition) FlightTaskManualPosition();
 		break;

@@ -14,6 +14,9 @@
 # EXTERNAL cache entries
 ########################
 
+//Dependencies for the target
+AttitudeControl_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;
+
 //Path to a program.
 BLOATY_PROGRAM:FILEPATH=BLOATY_PROGRAM-NOTFOUND
 
@@ -184,8 +187,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 //Path to a program.
 CMAKE_STRIP:FILEPATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-strip
 
-//The CMake toolchain file
-CMAKE_TOOLCHAIN_FILE:FILEPATH=/home/arlpx/Documents/SailMAVpx/SailMAV/platforms/nuttx/cmake/Toolchain-arm-none-eabi.cmake
+//Configure test targets
+CMAKE_TESTING:BOOL=OFF
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -233,10 +236,13 @@ FlightTaskAutoMapper2_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;
 FlightTaskAutoMapper_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;FlightTaskAuto;
 
 //Dependencies for the target
-FlightTaskAuto_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;FlightTask;
+FlightTaskAuto_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;FlightTask;general;FlightTaskUtility;
 
 //Dependencies for the target
 FlightTaskFailsafe_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;FlightTask;
+
+//Dependencies for the target
+FlightTaskManualAltitudeSmoothVel_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;FlightTaskManualAltitude;general;FlightTaskUtility;
 
 //Dependencies for the target
 FlightTaskManualAltitudeSmooth_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;FlightTaskManualAltitude;general;FlightTaskUtility;
@@ -272,7 +278,7 @@ FlightTaskUtility_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;gene
 FlightTask_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;
 
 //Dependencies for the target
-FlightTasks_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;FlightTaskManualAltitude;general;FlightTaskManualAltitudeSmooth;general;FlightTaskManualPosition;general;FlightTaskManualPositionSmooth;general;FlightTaskManualPositionSmoothVel;general;FlightTaskSport;general;FlightTaskAutoLine;general;FlightTaskAutoLineSmoothVel;general;FlightTaskAutoFollowMe;general;FlightTaskOffboard;general;FlightTaskFailsafe;general;FlightTaskTransition;general;FlightTaskOrbit;
+FlightTasks_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;FlightTaskManualAltitude;general;FlightTaskManualAltitudeSmooth;general;FlightTaskManualAltitudeSmoothVel;general;FlightTaskManualPosition;general;FlightTaskManualPositionSmooth;general;FlightTaskManualPositionSmoothVel;general;FlightTaskSport;general;FlightTaskAutoLine;general;FlightTaskAutoLineSmoothVel;general;FlightTaskAutoFollowMe;general;FlightTaskOffboard;general;FlightTaskFailsafe;general;FlightTaskTransition;general;FlightTaskOrbit;
 
 //Path to a program.
 GDB:FILEPATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gdb
@@ -352,6 +358,10 @@ PY_JINJA2:STRING=/usr/local/lib/python2.7/dist-packages/jinja2
 //Path to a program.
 SHELLCHECK_PATH:FILEPATH=SHELLCHECK_PATH-NOTFOUND
 
+//Filter string for ctest to selectively only run specific tests
+// (ctest -R)
+TESTFILTER:STRING=
+
 //Verbose CMake configure output
 UAVCAN_CMAKE_VERBOSE:BOOL=OFF
 
@@ -398,6 +408,9 @@ drivers__adis16448_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;gen
 drivers__airspeed_LIB_DEPENDS:STATIC=general;px4_platform;general;uorb_msgs;general;m;general;nuttx_c;general;drivers__device;
 
 //Dependencies for the target
+drivers__ak09916_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
+
+//Dependencies for the target
 drivers__barometer__lps22hb_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
 
 //Dependencies for the target
@@ -423,6 +436,9 @@ drivers__bmp280_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;genera
 
 //Dependencies for the target
 drivers__bst_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
+
+//Dependencies for the target
+drivers__camera_capture_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
 
 //Dependencies for the target
 drivers__camera_trigger_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
@@ -468,6 +484,9 @@ drivers__icm20948_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;gene
 
 //Dependencies for the target
 drivers__imu__adis16477_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
+
+//Dependencies for the target
+drivers__imu__adis16497_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
 
 //Dependencies for the target
 drivers__iridiumsbd_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
@@ -546,6 +565,9 @@ drivers__px4flow_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;gener
 
 //Dependencies for the target
 drivers__px4fmu_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;general;circuit_breaker;general;mixer;general;pwm_limit;
+
+//Dependencies for the target
+drivers__qmc5883_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;
 
 //Dependencies for the target
 drivers__rc_input_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;general;rc;
@@ -770,7 +792,7 @@ modules__mavlink__mavlink_tests_LIB_DEPENDS:STATIC=general;px4_layer;general;px4
 modules__mavlink_original_LIB_DEPENDS:STATIC=general;airspeed;general;conversion;general;ecl_geo;general;version;
 
 //Dependencies for the target
-modules__mc_att_control_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;general;circuit_breaker;general;conversion;general;mathlib;
+modules__mc_att_control_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;general;circuit_breaker;general;conversion;general;mathlib;general;AttitudeControl;
 
 //Dependencies for the target
 modules__mc_pos_control_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;general;controllib;general;FlightTasks;general;ecl_geo;general;WeatherVane;general;CollisionPrevention;
@@ -786,6 +808,9 @@ modules__sailing_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;gener
 
 //Dependencies for the target
 modules__sensors_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;general;airspeed;general;battery;general;conversion;general;drivers__device;general;ecl_validation;general;mathlib;
+
+//Dependencies for the target
+modules__sih_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;general;mathlib;
 
 //Dependencies for the target
 modules__uORB_LIB_DEPENDS:STATIC=general;px4_layer;general;px4_platform;general;systemlib;general;cdev;general;uorb_msgs;
@@ -1043,7 +1068,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=230
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=237
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -1080,6 +1105,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 CMAKE_STRIP-ADVANCED:INTERNAL=1
 //system processor
 CMAKE_SYSTEM_PROCESSOR:INTERNAL=cortex-m4
+//toolchain file
+CMAKE_TOOLCHAIN_FILE:INTERNAL=Toolchain-arm-none-eabi
 //uname command
 CMAKE_UNAME:INTERNAL=/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
@@ -2063,7 +2090,7 @@ CONFIG_USEC_PER_TICK:INTERNAL=1000
 //NUTTX DEFCONFIG: CONFIG_USERMAIN_PRIORITY
 CONFIG_USERMAIN_PRIORITY:INTERNAL=100
 //NUTTX DEFCONFIG: CONFIG_USERMAIN_STACKSIZE
-CONFIG_USERMAIN_STACKSIZE:INTERNAL=2600
+CONFIG_USERMAIN_STACKSIZE:INTERNAL=2624
 //NUTTX DEFCONFIG: CONFIG_USER_ENTRYPOINT
 CONFIG_USER_ENTRYPOINT:INTERNAL=nsh_main
 //NUTTX DEFCONFIG: CONFIG_WATCHDOG
