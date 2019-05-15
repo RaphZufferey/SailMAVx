@@ -1126,6 +1126,9 @@ Commander::handle_command(vehicle_status_s *status_local, const vehicle_command_
 	case vehicle_command_s::VEHICLE_CMD_DO_SET_ROI_LOCATION:
 	case vehicle_command_s::VEHICLE_CMD_DO_SET_ROI_WPNEXT_OFFSET:
 	case vehicle_command_s::VEHICLE_CMD_DO_SET_ROI_NONE:
+	//
+	case vehicle_command_s::VEHICLE_CMD_SAIL_START:
+	case vehicle_command_s::VEHICLE_CMD_SAIL_STOP:
 		/* ignore commands that are handled by other parts of the system */
 		break;
 
@@ -3203,9 +3206,9 @@ set_control_mode()
 
 	switch (status.nav_state) {
 
-	case vehicle_status_s::NAVIGATION_STATE_SAIL
+	case vehicle_status_s::NAVIGATION_STATE_SAIL:
 		control_mode.flag_control_sail_enabled = true;
-		control_mode.flag_control_manual_enabled = true;
+		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_rates_enabled = false;
 		control_mode.flag_control_attitude_enabled = false;

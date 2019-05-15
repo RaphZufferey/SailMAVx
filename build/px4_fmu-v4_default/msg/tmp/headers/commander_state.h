@@ -57,6 +57,7 @@
 #define COMMANDER_STATE_MAIN_STATE_AUTO_PRECLAND 13
 #define COMMANDER_STATE_MAIN_STATE_ORBIT 14
 #define COMMANDER_STATE_MAIN_STATE_MAX 15
+#define COMMANDER_STATE_MAIN_STATE_SAIL 16
 
 #endif
 
@@ -88,6 +89,7 @@ struct commander_state_s {
 	static constexpr uint8_t MAIN_STATE_AUTO_PRECLAND = 13;
 	static constexpr uint8_t MAIN_STATE_ORBIT = 14;
 	static constexpr uint8_t MAIN_STATE_MAX = 15;
+	static constexpr uint8_t MAIN_STATE_SAIL = 16;
 
 #endif
 };

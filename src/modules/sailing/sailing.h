@@ -35,6 +35,16 @@
 
 #include <px4_module.h>
 #include <px4_module_params.h>
+#include <uORB/uORB.h>
+#include <uORB/topics/sensor_combined.h>                // this topics hold the acceleration data
+#include <uORB/topics/actuator_controls.h>              // this topic gives the actuators control input
+#include <uORB/topics/vehicle_attitude.h>                  // this topic holds the orientation of the hippocampus
+#include <uORB/topics/parameter_update.h>
+#include <uORB/topics/manual_control_setpoint.h> 
+// additions for navigation modes
+#include <uORB/topics/vehicle_control_mode.h>
+#include <uORB/topics/vehicle_status.h>
+
 
 extern "C" __EXPORT int sailing_main(int argc, char *argv[]);
 
@@ -64,14 +74,40 @@ public:
 	/** @see ModuleBase::print_status() */
 	int print_status() override;
 
+	/* */
+	void vehicle_poll();
+
+	void fold_sails(int direction);
+
 private:
+
+	bool sails_are_down = true;
+
+	// Publications
+	orb_advert_t vehicle_control_mode_pub;
+	orb_advert_t act_pub;
+
+	// Subscription
+	int vehicle_control_mode_sub;
+	int vehicle_attitude_sub;
+	int parameter_update_sub;
+	int manual_sp_sub;
+	int param_update_sub;
+	int vehicle_status_sub;
+
+	struct manual_control_setpoint_s manual_sp; 		// RC input
+	struct actuator_controls_s act;						// actuator outputs manual
+	struct vehicle_attitude_s raw_att;					// attitude
+	struct parameter_update_s param_upd;				// parameter handling (with QGC)
+	struct vehicle_control_mode_s vehicle_control_mode;	// flags
+	struct vehicle_status_s vehicle_status;				// navigation state
 
 	/**
 	 * Check for parameter changes and update them if needed.
 	 * @param parameter_update_sub uorb subscription to parameter_update
 	 * @param force for a parameter update
 	 */
-	void parameters_update(int parameter_update_sub, bool force = false);
+	void parameters_update(bool force = false);
 
 
 	DEFINE_PARAMETERS(

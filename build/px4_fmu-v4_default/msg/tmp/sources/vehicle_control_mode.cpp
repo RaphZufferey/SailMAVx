@@ -41,9 +41,9 @@
 #include <drivers/drv_hrt.h>
 #include <lib/drivers/device/Device.hpp>
 
-constexpr char __orb_vehicle_control_mode_fields[] = "uint64_t timestamp;bool flag_armed;bool flag_external_manual_override_ok;bool flag_control_manual_enabled;bool flag_control_auto_enabled;bool flag_control_offboard_enabled;bool flag_control_rates_enabled;bool flag_control_attitude_enabled;bool flag_control_rattitude_enabled;bool flag_control_force_enabled;bool flag_control_acceleration_enabled;bool flag_control_velocity_enabled;bool flag_control_position_enabled;bool flag_control_altitude_enabled;bool flag_control_climb_rate_enabled;bool flag_control_termination_enabled;bool flag_control_fixed_hdg_enabled;";
+constexpr char __orb_vehicle_control_mode_fields[] = "uint64_t timestamp;bool flag_armed;bool flag_external_manual_override_ok;bool flag_control_manual_enabled;bool flag_control_auto_enabled;bool flag_control_offboard_enabled;bool flag_control_rates_enabled;bool flag_control_attitude_enabled;bool flag_control_rattitude_enabled;bool flag_control_force_enabled;bool flag_control_acceleration_enabled;bool flag_control_velocity_enabled;bool flag_control_position_enabled;bool flag_control_altitude_enabled;bool flag_control_climb_rate_enabled;bool flag_control_termination_enabled;bool flag_control_fixed_hdg_enabled;bool flag_control_sail_enabled;uint8_t[7] _padding0;";
 
-ORB_DEFINE(vehicle_control_mode, struct vehicle_control_mode_s, 24, __orb_vehicle_control_mode_fields);
+ORB_DEFINE(vehicle_control_mode, struct vehicle_control_mode_s, 25, __orb_vehicle_control_mode_fields);
 
 
 void print_message(const vehicle_control_mode_s& message)
@@ -70,5 +70,6 @@ void print_message(const vehicle_control_mode_s& message)
 	PX4_INFO_RAW("\tflag_control_climb_rate_enabled: %s\n", (message.flag_control_climb_rate_enabled ? "True" : "False"));
 	PX4_INFO_RAW("\tflag_control_termination_enabled: %s\n", (message.flag_control_termination_enabled ? "True" : "False"));
 	PX4_INFO_RAW("\tflag_control_fixed_hdg_enabled: %s\n", (message.flag_control_fixed_hdg_enabled ? "True" : "False"));
-
+	PX4_INFO_RAW("\tflag_control_sail_enabled: %s\n", (message.flag_control_sail_enabled ? "True" : "False"));
+	
 }

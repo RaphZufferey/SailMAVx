@@ -67,6 +67,8 @@ struct vehicle_control_mode_s {
 	bool flag_control_climb_rate_enabled;
 	bool flag_control_termination_enabled;
 	bool flag_control_fixed_hdg_enabled;
+	bool flag_control_sail_enabled;
+	uint8_t _padding0[7]; // required for logger
 
 
 #ifdef __cplusplus

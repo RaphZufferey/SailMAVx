@@ -43,18 +43,9 @@
 #include <string.h>
 #include <math.h>
 
-// #include <fcntl.h>
-// #include <errno.h>
-// #include <poll.h>
-// #include <time.h>
-// #include <drivers/drv_hrt.h>
-
-
-
 #include <px4_getopt.h>
 #include <px4_log.h>
 #include <px4_posix.h>
-
 
 // system libraries
 #include <parameters/param.h>
@@ -67,16 +58,22 @@
 #include <lib/ecl/geo/geo.h>
 
 // Include uORB and the required topics for this app
-#include <uORB/uORB.h>
-#include <uORB/topics/sensor_combined.h>                // this topics hold the acceleration data
+//#include <uORB/uORB.h>
+/*#include <uORB/topics/sensor_combined.h>                // this topics hold the acceleration data
 #include <uORB/topics/actuator_controls.h>              // this topic gives the actuators control input
 #include <uORB/topics/vehicle_attitude.h>                  // this topic holds the orientation of the hippocampus
 #include <uORB/topics/parameter_update.h>
 #include <uORB/topics/manual_control_setpoint.h> 
+// additions for navigation modes
+#include <uORB/topics/vehicle_control_mode.h>*/
+
 
 //px4_module_params.h to get the DEFINE_PARAMETERS macro
 #include <px4_module_params.h>
 #include "params.c"
+
+#define DOWNWARDS 0
+#define UPWARDS 1
 
 float myPi = (float)M_PI;
 
@@ -122,34 +119,17 @@ $ module start -f -p 42
 	return 0;
 }
 
-int Sailing::print_status()
-{
+int Sailing::print_status(){
 	PX4_INFO("Running");
-	// TODO: print additional runtime information about the state of the module
-
 	return 0;
 }
 
-int Sailing::custom_command(int argc, char *argv[])
-{
-	/*
-	if (!is_running()) {
-		print_usage("not running");
-		return 1;
-	}
-	// additional custom commands can be handled like this:
-	if (!strcmp(argv[0], "do-something")) {
-		get_instance()->do_something();
-		return 0;
-	}
-	 */
-
+int Sailing::custom_command(int argc, char *argv[]){
 	return print_usage("unknown command");
 }
 
 
-int Sailing::task_spawn(int argc, char *argv[])
-{
+int Sailing::task_spawn(int argc, char *argv[]){
 	_task_id = px4_task_spawn_cmd("sailing",
 				      SCHED_DEFAULT,
 				      SCHED_PRIORITY_DEFAULT,
@@ -161,7 +141,6 @@ int Sailing::task_spawn(int argc, char *argv[])
 		_task_id = -1;
 		return -errno;
 	}
-
 	return 0;
 }
 
@@ -213,166 +192,183 @@ Sailing *Sailing::instantiate(int argc, char *argv[])
 Sailing::Sailing(int example_param, bool example_flag)
 	: ModuleParams(nullptr)
 {
+	memset(&manual_sp, 0, sizeof(manual_sp));	
+	memset(&act, 0, sizeof(act));
+	memset(&param_upd, 0, sizeof(param_upd));
+	memset(&raw_att, 0, sizeof(raw_att));
+}
+
+void Sailing::vehicle_poll()
+{
+    bool updated;
+    /* check if vehicle control mode has changed */
+    orb_check(vehicle_control_mode_sub, &updated);
+
+    if (updated) {
+        orb_copy(ORB_ID(vehicle_control_mode), vehicle_control_mode_sub, &vehicle_control_mode);
+    }
+
+    orb_check(vehicle_status_sub, &updated);
+	if (updated) {
+	    orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
+
+	    // set correct uORB ID, depending on if vehicle is VTOL or not
+/*	    if (!_attitude_setpoint_id) {
+	        if (vehicle_status.is_vtol) {
+	            _attitude_setpoint_id = ORB_ID(mc_virtual_attitude_setpoint);
+
+	        } else {
+	            _attitude_setpoint_id = ORB_ID(vehicle_attitude_setpoint);
+	        }
+	    }*/
+	}
+}
+
+void Sailing::parameters_update(bool force)
+{
+	bool updated;
+	orb_check(param_update_sub, &updated);
+	if (updated) {
+		orb_copy(ORB_ID(parameter_update), param_update_sub, &param_upd);
+	}
+	if (force || updated) {
+		updateParams();
+		//param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
+		//PX4_INFO("Wind angle parameter updated to : %d", wnd_angle_to_n);
+	}
+}
+
+void Sailing::fold_sails(int direction){
+	if (direction == UPWARDS) {
+		/* code */
+	}
+	else if (direction == DOWNWARDS) {
+
+	}
 }
 
 void Sailing::run()
 {
+	px4_usleep(50000);
+	PX4_INFO("sailing running");
 
-	float sail_angle_max = 60*(float)M_PI/180;
+	// Subscriptions and publications
+	parameter_update_sub = 		orb_subscribe(ORB_ID(parameter_update));
+	vehicle_attitude_sub = 		orb_subscribe(ORB_ID(vehicle_attitude));// 	/* subscribe to control_state topic */ 
+	manual_sp_sub = 			orb_subscribe(ORB_ID(manual_control_setpoint));// subscribe to manual control setpoint
+ 	vehicle_control_mode_sub = 	orb_subscribe(ORB_ID(vehicle_control_mode));// subscribe and advertise to vehicle control mode
+	vehicle_status_sub = 		orb_subscribe(ORB_ID(vehicle_status));
 
 
-	// 	/* subscribe to control_state topic */
-	int vehicle_attitude_sub_fd = orb_subscribe(ORB_ID(vehicle_attitude));
-	/* limit the update rate to X ms */
-	orb_set_interval(vehicle_attitude_sub_fd, 500); //200
+	vehicle_control_mode_pub = 	orb_advertise(ORB_ID(vehicle_control_mode), &vehicle_control_mode);
+	act_pub = 					orb_advertise(ORB_ID(actuator_controls_0), &act);/* advertise to actuator_control topic */
 
-	// subscribe to manual control setpoint
-	struct manual_control_setpoint_s manual_sp;
-	memset(&manual_sp, 0, sizeof(manual_sp));	
-	int manual_sp_sub = orb_subscribe(ORB_ID(manual_control_setpoint));
- 
-	/* advertise to actuator_control topic */
-	struct actuator_controls_s act;
-	memset(&act, 0, sizeof(act));
-	orb_advert_t act_pub = orb_advertise(ORB_ID(actuator_controls_0), &act);
+	// Options
+	orb_set_interval(vehicle_attitude_sub, 1000); //200 /* limit the update rate to X ms */
+	
+	vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
+
 
 	/* one could wait for multiple topics with this technique, just using one here */
 	px4_pollfd_struct_t fds[1] = {};
-	fds[0].fd = vehicle_attitude_sub_fd;
+	fds[0].fd = vehicle_attitude_sub;
 	fds[0].events = POLLIN;
 
-
-
+	float sail_angle_max = 60*(float)M_PI/180;
 	bool updated = false;
 	int wnd_angle_to_n = 179;
 	param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
 	param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
-	
-	struct parameter_update_s update;
-	memset(&update, 0, sizeof(update));
-	int parameter_update_sub = orb_subscribe(ORB_ID(parameter_update));
+		
 	// Get parameter updates
-
-	// orb_check(parameter_update_sub, &updated);
-	// if (updated) {
-	// 	// copy global position
-	// 	orb_copy(ORB_ID(parameter_update), parameter_update_sub, &update);
-
-	// 	// update all parameters
-	// 	param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
-	// }
-
-	// initialize parameters
-	//int parameter_update_sub = orb_subscribe(ORB_ID(parameter_update));
-	parameters_update(parameter_update_sub, true);
+	parameters_update(true);
 
 	//int i = 0;
+	PX4_INFO("sail controller loop starting");
+
 	while (!should_exit()) {
-
-		orb_check(parameter_update_sub, &updated);
-		if (updated) {
-			// copy global position
-			orb_copy(ORB_ID(parameter_update), parameter_update_sub, &update);
-
-			// update all parameters
-			param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
-			PX4_INFO("Wind angle parameter updated to : %d", wnd_angle_to_n);
-			parameters_update(parameter_update_sub, true);
-		}
-
-
-		//if(++i > 10) should_exit = TRUE;
-		//	PX4_INFO("Parameter %d", twindangle);
-
-		// wait for up to 1000ms for data
-		int pret = px4_poll(fds, (sizeof(fds) / sizeof(fds[0])), 1000);
-
-		if (pret == 0) {
-			// Timeout: let the loop run anyway, don't do `continue` here
-
-		} else if (pret < 0) {
-			// this is undesirable but not much we can do
-			PX4_ERR("poll error %d, %d", pret, errno);
-			px4_usleep(50000);
-			continue;
-
-		} else if (fds[0].revents & POLLIN) {
-
-
-			bool manual_sp_updated;
-			orb_check(manual_sp_sub, &manual_sp_updated);
-			if (manual_sp_updated)
-			/* get the RC (or otherwise user based) input */
+		// IS THIS CONDITION IN THE RIGHT PLACE?? 
+		vehicle_poll();
+		while((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL))
+				// && (vehicle_control_mode.flag_control_sail_enabled))
 			{
-				orb_copy(ORB_ID(manual_control_setpoint), manual_sp_sub, &manual_sp);
-				PX4_INFO("manual sp: %f ", (double)(manual_sp.r));
-	//				,(int)(manual_sp.x*100.0f)
-	//				,(int)(manual_sp.y*100.0f));
+
+			vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
+
+			/* CODE THAT RUNS ONCE WHEN WE ENTER THIS LOOP. SHOULD FOLD THE SAIL UP */
+			if (sails_are_down){
+				PX4_INFO("Folding sails up");
+				fold_sails(UPWARDS);
+				//act.control[?] = UP;
+				//orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
+				px4_usleep(1000000);
+				sails_are_down = false;
 			}
 
+			// wait for up to 1000ms for data
+			int pret = px4_poll(fds, (sizeof(fds) / sizeof(fds[0])), 1000);
+			if (pret == 0) {
+				// Timeout: let the loop run anyway, don't do `continue` here
+			} else if (pret < 0) {
+				// this is undesirable but not much we can do
+				PX4_ERR("poll error %d, %d", pret, errno);
+				px4_usleep(50000);
+				continue;
 
-
-
-			/* obtained data for the third file descriptor */
-			struct vehicle_attitude_s raw_att;
-			memset(&raw_att, 0, sizeof(raw_att));
-			/* copy sensors raw data into local buffer */
-			orb_copy(ORB_ID(vehicle_attitude), vehicle_attitude_sub_fd, &raw_att);
-			float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi();
-			//PX4_INFO("Yaw: \t%d", (int)(current_yaw*100));
-
-			float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180;
-			float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
-			float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
+			} else if (fds[0].revents & POLLIN) { // SLOW RUNNING LOOP
 			
-			float cmd_sail_angle = sail_angle/sail_angle_max;
-			// PX4_INFO("Yaw  \t%d, actuators: \t%d", 
-			// 	(int)((current_yaw*180.0f/myPi)),
-			// 	(int)((cmd_sail_angle*180.0f/myPi)));
+				orb_check(manual_sp_sub, &updated);/* get the RC (or otherwise user based) input */
+				if (updated)
+				{
+					orb_copy(ORB_ID(manual_control_setpoint), manual_sp_sub, &manual_sp);
+					PX4_INFO("manual sp: %f ", (double)(manual_sp.r)); //,(int)(manual_sp.x*100.0f),(int)(manual_sp.y*100.0f));
+				}
 
-			static int i = 0;
-			if(++i >= 99) i = -99;
+				orb_check(vehicle_attitude_sub, &updated);
+				if(updated){/* copy sensors raw data into local buffer */
+					orb_copy(ORB_ID(vehicle_attitude), vehicle_attitude_sub, &raw_att);
+				}
 
-	 		//Control 
-			//act.control[0] = current_yaw/3.1415f;   // roll = SAILS
-			act.control[0] = cmd_sail_angle;   // roll = SAILS
-			// act.control[1] = 1.0f;   // pitch
-			act.control[2] = i/100.0f;	 // yaw = RUDDER (in SailMAV : servo line 5)
-			// act.control[3] = 0.0f;	 // thrust
-			//act.timestamp = hrt_absolute_time();
+				float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi();
+				float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180;
+				float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
+				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
+				float cmd_sail_angle = sail_angle/sail_angle_max;
+				// PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
 
-			//PX4_INFO("Rudder: %d", (int)(act.control[2]*1000.0f));
-			// Write to actuators
-			orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
+				static int i = 0;
+				if(++i >= 99) i = -99;
 
+		 		//Control 
+				//act.control[0] = current_yaw/3.1415f;   // roll = SAILS
+				act.control[0] = cmd_sail_angle;   // roll = SAILS
+				// act.control[1] = 1.0f;   // pitch
+				act.control[2] = i/100.0f;	 // yaw = RUDDER (in SailMAV : servo line 5)
+				// act.control[3] = 0.0f;	 // thrust
+
+				//act.timestamp = hrt_absolute_time();
+
+				PX4_INFO("Rudder: %d", (int)(act.control[2]*1000.0f));
+				// Write to actuators
+				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
+			}
 		}
 
- 
-		
-		//parameters_update(parameter_update_sub);
-	}
+		if(!sails_are_down){
+			//bring sails down
+			fold_sails(DOWNWARDS);
+			sails_are_down = true;
 
-	orb_unsubscribe(vehicle_attitude_sub_fd);
+		}
+		// if we are not in the right mode, go to sleep
+		px4_usleep(50000);		
+	}
+	orb_unsubscribe(vehicle_attitude_sub);
 	orb_unsubscribe(parameter_update_sub);
 	orb_unsubscribe(manual_sp_sub);
+	orb_unsubscribe(vehicle_control_mode_sub);
+	orb_unsubscribe(vehicle_status_sub);
 }
-
-void Sailing::parameters_update(int parameter_update_sub, bool force)
-{
-	bool updated;
-	struct parameter_update_s param_upd;
-
-	orb_check(parameter_update_sub, &updated);
-
-	if (updated) {
-		orb_copy(ORB_ID(parameter_update), parameter_update_sub, &param_upd);
-	}
-
-	if (force || updated) {
-		updateParams();
-	}
-}
-
 
 int sailing_main(int argc, char *argv[])
 {

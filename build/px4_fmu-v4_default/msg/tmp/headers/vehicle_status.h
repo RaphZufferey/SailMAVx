@@ -77,6 +77,7 @@
 #define VEHICLE_STATUS_NAVIGATION_STATE_AUTO_PRECLAND 20
 #define VEHICLE_STATUS_NAVIGATION_STATE_ORBIT 21
 #define VEHICLE_STATUS_NAVIGATION_STATE_MAX 22
+#define VEHICLE_STATUS_NAVIGATION_STATE_SAIL 23
 #define VEHICLE_STATUS_RC_IN_MODE_DEFAULT 0
 #define VEHICLE_STATUS_RC_IN_MODE_OFF 1
 #define VEHICLE_STATUS_RC_IN_MODE_GENERATED 2
@@ -159,6 +160,7 @@ struct vehicle_status_s {
 	static constexpr uint8_t NAVIGATION_STATE_AUTO_PRECLAND = 20;
 	static constexpr uint8_t NAVIGATION_STATE_ORBIT = 21;
 	static constexpr uint8_t NAVIGATION_STATE_MAX = 22;
+	static constexpr uint8_t NAVIGATION_STATE_SAIL = 23;
 	static constexpr uint8_t RC_IN_MODE_DEFAULT = 0;
 	static constexpr uint8_t RC_IN_MODE_OFF = 1;
 	static constexpr uint8_t RC_IN_MODE_GENERATED = 2;
