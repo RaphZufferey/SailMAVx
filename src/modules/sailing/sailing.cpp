@@ -34,40 +34,6 @@
 
 #include "sailing.h"
 
-#include <px4_config.h>
-#include <px4_tasks.h>
-#include <px4_posix.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <poll.h>
-#include <string.h>
-#include <math.h>
-
-#include <px4_getopt.h>
-#include <px4_log.h>
-#include <px4_posix.h>
-
-// system libraries
-#include <parameters/param.h>
-#include <systemlib/err.h>
-#include <perf/perf_counter.h>
-
-// internal libraries
-#include <lib/mathlib/mathlib.h>
-#include <matrix/math.hpp>
-#include <lib/ecl/geo/geo.h>
-
-// Include uORB and the required topics for this app
-//#include <uORB/uORB.h>
-/*#include <uORB/topics/sensor_combined.h>                // this topics hold the acceleration data
-#include <uORB/topics/actuator_controls.h>              // this topic gives the actuators control input
-#include <uORB/topics/vehicle_attitude.h>                  // this topic holds the orientation of the hippocampus
-#include <uORB/topics/parameter_update.h>
-#include <uORB/topics/manual_control_setpoint.h> 
-// additions for navigation modes
-#include <uORB/topics/vehicle_control_mode.h>*/
-
-
 //px4_module_params.h to get the DEFINE_PARAMETERS macro
 #include <px4_module_params.h>
 #include "params.c"
@@ -77,17 +43,14 @@
 
 float myPi = (float)M_PI;
 
-template <typename T> int sgn(T val) {
+template <typename T> int sgn(T val) { 
     return (T(0) < val) - (val < T(0));
 }
 
 template <typename T> float wrapToPi(T val) {
-    
     val = fmod(val + myPi,2*myPi);
-    if (val < 0)
-        val += 2*myPi;
+    if (val < 0) val += 2*myPi;
     return val - myPi;
-
 }
 
 extern "C" __EXPORT int sailing_main(int argc, char *argv[]);
@@ -160,15 +123,12 @@ Sailing *Sailing::instantiate(int argc, char *argv[])
 		case 'p':
 			example_param = (int)strtol(myoptarg, nullptr, 10);
 			break;
-
 		case 'f':
 			example_flag = true;
 			break;
-
 		case '?':
 			error_flag = true;
 			break;
-
 		default:
 			PX4_WARN("unrecognized flag");
 			error_flag = true;
@@ -179,13 +139,11 @@ Sailing *Sailing::instantiate(int argc, char *argv[])
 	if (error_flag) {
 		return nullptr;
 	}
-
 	Sailing *instance = new Sailing(example_param, example_flag);
 
 	if (instance == nullptr) {
 		PX4_ERR("alloc failed");
 	}
-
 	return instance;
 }
 
@@ -211,16 +169,6 @@ void Sailing::vehicle_poll()
     orb_check(vehicle_status_sub, &updated);
 	if (updated) {
 	    orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
-
-	    // set correct uORB ID, depending on if vehicle is VTOL or not
-/*	    if (!_attitude_setpoint_id) {
-	        if (vehicle_status.is_vtol) {
-	            _attitude_setpoint_id = ORB_ID(mc_virtual_attitude_setpoint);
-
-	        } else {
-	            _attitude_setpoint_id = ORB_ID(vehicle_attitude_setpoint);
-	        }
-	    }*/
 	}
 }
 
@@ -264,7 +212,7 @@ void Sailing::run()
 	act_pub = 					orb_advertise(ORB_ID(actuator_controls_0), &act);/* advertise to actuator_control topic */
 
 	// Options
-	orb_set_interval(vehicle_attitude_sub, 1000); //200 /* limit the update rate to X ms */
+	orb_set_interval(vehicle_attitude_sub, 100); //200 /* limit the update rate to X ms */
 	
 	vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
 
@@ -274,9 +222,8 @@ void Sailing::run()
 	fds[0].fd = vehicle_attitude_sub;
 	fds[0].events = POLLIN;
 
-	float sail_angle_max = 60*(float)M_PI/180;
+	
 	bool updated = false;
-	int wnd_angle_to_n = 179;
 	param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
 	param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
 		
@@ -289,6 +236,8 @@ void Sailing::run()
 	while (!should_exit()) {
 		// IS THIS CONDITION IN THE RIGHT PLACE?? 
 		vehicle_poll();
+
+		// Not checking for flags at this point, doesnt seem to be required
 		while((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL))
 				// && (vehicle_control_mode.flag_control_sail_enabled))
 			{
@@ -317,12 +266,8 @@ void Sailing::run()
 
 			} else if (fds[0].revents & POLLIN) { // SLOW RUNNING LOOP
 			
-				orb_check(manual_sp_sub, &updated);/* get the RC (or otherwise user based) input */
-				if (updated)
-				{
-					orb_copy(ORB_ID(manual_control_setpoint), manual_sp_sub, &manual_sp);
-					PX4_INFO("manual sp: %f ", (double)(manual_sp.r)); //,(int)(manual_sp.x*100.0f),(int)(manual_sp.y*100.0f));
-				}
+				orb_copy(ORB_ID(manual_control_setpoint), manual_sp_sub, &manual_sp);
+				//PX4_INFO("manual sp: %f ", (double)(manual_sp.r)*100); //,(int)(manual_sp.x*100.0f),(int)(manual_sp.y*100.0f));
 
 				orb_check(vehicle_attitude_sub, &updated);
 				if(updated){/* copy sensors raw data into local buffer */
@@ -336,19 +281,13 @@ void Sailing::run()
 				float cmd_sail_angle = sail_angle/sail_angle_max;
 				// PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
 
-				static int i = 0;
-				if(++i >= 99) i = -99;
-
 		 		//Control 
-				//act.control[0] = current_yaw/3.1415f;   // roll = SAILS
-				act.control[0] = cmd_sail_angle;   // roll = SAILS
-				// act.control[1] = 1.0f;   // pitch
-				act.control[2] = i/100.0f;	 // yaw = RUDDER (in SailMAV : servo line 5)
-				// act.control[3] = 0.0f;	 // thrust
-
+				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
+				//act.control[actuator_controls_s::INDEX_PITCH] DEACTIVATED 
+				act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
+				// act.control[actuator_controls_s::INDEX_THROTTLE] = manual_sp.z;	 // thrust
 				//act.timestamp = hrt_absolute_time();
-
-				PX4_INFO("Rudder: %d", (int)(act.control[2]*1000.0f));
+				//PX4_INFO("Rudder: %d", (int)(act.control[2]*100.0f));
 				// Write to actuators
 				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 			}

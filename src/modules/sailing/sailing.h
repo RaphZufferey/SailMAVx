@@ -33,6 +33,30 @@
 
 #pragma once
 
+#include <px4_config.h>
+#include <px4_tasks.h>
+#include <px4_posix.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <poll.h>
+#include <string.h>
+#include <math.h>
+
+#include <px4_getopt.h>
+#include <px4_log.h>
+#include <px4_posix.h>
+
+// system libraries
+#include <parameters/param.h>
+#include <systemlib/err.h>
+#include <perf/perf_counter.h>
+
+// internal libraries
+#include <lib/mathlib/mathlib.h>
+#include <matrix/math.hpp>
+#include <lib/ecl/geo/geo.h>
+
+
 #include <px4_module.h>
 #include <px4_module_params.h>
 #include <uORB/uORB.h>
@@ -82,6 +106,9 @@ public:
 private:
 
 	bool sails_are_down = true;
+	float sail_angle_max = 60*(float)M_PI/180;
+	int wnd_angle_to_n = 179;
+
 
 	// Publications
 	orb_advert_t vehicle_control_mode_pub;
