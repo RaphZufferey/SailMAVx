@@ -6636,6 +6636,13 @@ struct px4_parameters_t px4_parameters = {
 	},
 
 	{
+		"RC_MAP_SAIL_SW",
+		PARAM_TYPE_INT32,
+		.volatile_param = 0,
+		.val.i = 0
+	},
+
+	{
 		"RC_MAP_STAB_SW",
 		PARAM_TYPE_INT32,
 		.volatile_param = 0,
@@ -6686,6 +6693,13 @@ struct px4_parameters_t px4_parameters = {
 
 	{
 		"RC_RETURN_TH",
+		PARAM_TYPE_FLOAT,
+		.volatile_param = 0,
+		.val.f = 0.5
+	},
+
+	{
+		"RC_SAIL_TH",
 		PARAM_TYPE_FLOAT,
 		.volatile_param = 0,
 		.val.f = 0.5
@@ -8973,7 +8987,7 @@ struct px4_parameters_t px4_parameters = {
 		.val.f = 90.0
 	},
 
-	1280
+	1282
 };
 
 //extern const struct px4_parameters_t px4_parameters;

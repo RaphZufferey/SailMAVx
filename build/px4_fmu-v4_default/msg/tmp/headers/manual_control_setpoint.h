@@ -94,7 +94,8 @@ struct manual_control_setpoint_s {
 	uint8_t data_source;
 	uint8_t stab_switch;
 	uint8_t man_switch;
-	uint8_t _padding0[5]; // required for logger
+	uint8_t sail_switch;
+	uint8_t _padding0[4]; // required for logger
 
 
 #ifdef __cplusplus

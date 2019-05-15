@@ -954,6 +954,7 @@ struct px4_parameters_t {
 	const struct param_info_s __param__RC_MAP_RATT_SW;
 	const struct param_info_s __param__RC_MAP_RETURN_SW;
 	const struct param_info_s __param__RC_MAP_ROLL;
+	const struct param_info_s __param__RC_MAP_SAIL_SW;
 	const struct param_info_s __param__RC_MAP_STAB_SW;
 	const struct param_info_s __param__RC_MAP_THROTTLE;
 	const struct param_info_s __param__RC_MAP_TRANS_SW;
@@ -962,6 +963,7 @@ struct px4_parameters_t {
 	const struct param_info_s __param__RC_POSCTL_TH;
 	const struct param_info_s __param__RC_RATT_TH;
 	const struct param_info_s __param__RC_RETURN_TH;
+	const struct param_info_s __param__RC_SAIL_TH;
 	const struct param_info_s __param__RC_STAB_TH;
 	const struct param_info_s __param__RC_TRANS_TH;
 	const struct param_info_s __param__RTL_DESCEND_ALT;

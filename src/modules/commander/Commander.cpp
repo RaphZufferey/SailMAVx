@@ -2752,7 +2752,8 @@ Commander::set_main_state_rc(const vehicle_status_s &status_local, bool *changed
 		|| (_last_sp_man.loiter_switch != sp_man.loiter_switch)
 		|| (_last_sp_man.mode_slot != sp_man.mode_slot)
 		|| (_last_sp_man.stab_switch != sp_man.stab_switch)
-		|| (_last_sp_man.man_switch != sp_man.man_switch);
+		|| (_last_sp_man.man_switch != sp_man.man_switch)
+		|| (_last_sp_man.sail_switch != sp_man.sail_switch);
 
 	// only switch mode based on RC switch if necessary to also allow mode switching via MAVLink
 	const bool should_evaluate_rc_mode_switch = first_time_rc
@@ -2790,6 +2791,21 @@ Commander::set_main_state_rc(const vehicle_status_s &status_local, bool *changed
 	// reset the position and velocity validity calculation to give the best change of being able to select
 	// the desired mode
 	reset_posvel_validity(changed);
+
+	/* sail switch  */
+	if (sp_man.sail_switch == manual_control_setpoint_s::SWITCH_POS_ON) {
+		res = main_state_transition(status_local, commander_state_s::MAIN_STATE_SAIL, status_flags, &internal_state);
+
+		if (res == TRANSITION_DENIED) {
+			print_reject_mode("SAIL");
+			/* mode rejected, continue to evaluate the main system mode */
+
+		} else {
+			/* changed successfully or already in this state */
+			return res;
+		}
+	}
+
 
 	/* offboard switch overrides main switch */
 	if (sp_man.offboard_switch == manual_control_setpoint_s::SWITCH_POS_ON) {
