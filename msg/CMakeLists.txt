@@ -106,6 +106,7 @@ set(msg_files
 	sensor_mag.msg
 	sensor_preflight.msg
 	sensor_selection.msg
+	sensor_wind_angle.msg
 	servorail_status.msg
 	subsystem_info.msg
 	system_power.msg

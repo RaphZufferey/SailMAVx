@@ -1431,6 +1431,15 @@
 /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/CMakeFiles/install/strip.dir
 /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/CMakeFiles/list_install_components.dir
 /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/CMakeFiles/install.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/edit_cache.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/package_source.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/package.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/rebuild_cache.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/drivers__as5048b.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/install/local.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/install/strip.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/list_install_components.dir
+/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/as5048b/CMakeFiles/install.dir
 /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/modules/attitude_estimator_q/CMakeFiles/edit_cache.dir
 /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/modules/attitude_estimator_q/CMakeFiles/package_source.dir
 /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/modules/attitude_estimator_q/CMakeFiles/rebuild_cache.dir

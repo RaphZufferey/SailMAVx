@@ -26,16 +26,14 @@
     Constructor
 */
 /**************************************************************************/
-AMS_AS5048B::AMS_AS5048B(void) {
-	_initialized = false;
-	_chipAddress = AS5048_ADDRESS;
-	_debugFlag = false;
-}
 
-AMS_AS5048B::AMS_AS5048B(uint8_t chipAddress) {
+AMS_AS5048B::AMS_AS5048B(uint8_t bus, uint8_t chipAddress, const char *path) :
+	I2C("as5048", PATH_AS5048B, bus, chipAddress, 100000)
+{
 	_chipAddress = chipAddress;
 	_initialized = false;
 	_debugFlag = false;
+	memset(&_wind_angle_pub, 0, sizeof(_wind_angle_pub));
 }
 
 /*========================================================================*/
@@ -53,8 +51,7 @@ void	AMS_AS5048B::cycle(void) {
 	/* Collect results */
 	if (OK != collect()) {
 		PX4_DEBUG("collection error");
-		/* if error restart the measurement state machine */
-		start();
+
 		return;
 	}
 
@@ -67,7 +64,15 @@ void	AMS_AS5048B::cycle(void) {
 
 int	AMS_AS5048B::collect(void) { 
 	double angle = AMS_AS5048B::angleR();
+	PX4_INFO("Angle read: %f", angle);
+	
 	// orb publish
+	if (_wind_angle_pub != nullptr) {
+		/* publish it */
+		orb_publish(ORB_ID(sensor_wind_angle), _wind_angle_pub, &sensorwindangle);
+	}
+
+
 	return OK;
 
 }
@@ -96,6 +101,16 @@ int AMS_AS5048B::init_as5048b(void) {
 	_addressRegVal = AMS_AS5048B::addressRegR();
 
 	AMS_AS5048B::resetMovingAvgExp();
+
+
+
+	_wind_angle_pub = orb_advertise(ORB_ID(sensor_wind_angle), &sensorwindangle);
+
+	if (_wind_angle_pub == nullptr) {
+		PX4_ERR("failed to create distance_sensor object");
+	}
+
+
 	return true;
 }
 
@@ -120,12 +135,12 @@ void AMS_AS5048B::toggleDebug(void) {
     @brief  Set / unset clock wise counting - sensor counts CCW natively
 
     @params[in]
-				boolean cw - true: CW, false: CCW
+				bool cw - true: CW, false: CCW
     @returns
 				none
 */
 /**************************************************************************/
-void AMS_AS5048B::setClockWise(boolean cw) {
+void AMS_AS5048B::setClockWise(bool cw) {
 
 	_clockWise = cw;
 	_lastAngleRaw = 0.0;
@@ -163,15 +178,15 @@ void AMS_AS5048B::doProg(void) {
 
 	//enable special programming mode
 	AMS_AS5048B::progRegister(0xFD);
-	delay(10);
+	usleep(10000);
 
 	//set the burn bit: enables automatic programming procedure
 	AMS_AS5048B::progRegister(0x08);
-	delay(10);
+	usleep(10000);
 
 	//disable special programming mode
 	AMS_AS5048B::progRegister(0x00);
-	delay(10);
+	usleep(10000);
 
 	return;
 }
@@ -190,23 +205,23 @@ void AMS_AS5048B::doProgZero(void) {
 	//this will burn the zero position OTP register like described in the datasheet
 	//enable programming mode
 	AMS_AS5048B::progRegister(0x01);
-	delay(10);
+	usleep(10000);
 
 	//set the burn bit: enables automatic programming procedure
 	AMS_AS5048B::progRegister(0x08);
-	delay(10);
+	usleep(10000);
 
 	//read angle information (equals to 0)
 	AMS_AS5048B::readReg16(AS5048B_ANGLMSB_REG);
-	delay(10);
+	usleep(10000);
 
 	//enable verification
 	AMS_AS5048B::progRegister(0x40);
-	delay(10);
+	usleep(10000);
 
 	//read angle information (equals to 0)
 	AMS_AS5048B::readReg16(AS5048B_ANGLMSB_REG);
-	delay(10);
+	usleep(10000);
 
 	return;
 }
@@ -359,7 +374,7 @@ uint8_t AMS_AS5048B::getDiagReg(void) {
 				Double angle value converted into the desired unit
 */
 /**************************************************************************/
-double AMS_AS5048B::angleR(int unit, boolean newVal) {
+double AMS_AS5048B::angleR(int unit, bool newVal) {
 
 	double angleRaw;
 
@@ -449,8 +464,11 @@ uint8_t AMS_AS5048B::readReg8(uint8_t address) {
 	uint8_t cmd;
 	cmd = address;
 	int ok = transfer(&cmd, 2, nullptr, 0);
+	if(!ok) {
+		return 0;
+	}
 
-	int ret = transfer(nullptr, 0, &readValue[0], sizeof(readValue));
+	int ret = transfer(nullptr, 0, &readValue, sizeof(readValue));
 
 	if (ret != PX4_OK) {
 		perf_count(_comms_errors);
@@ -494,6 +512,7 @@ void AMS_AS5048B::writeReg(uint8_t address, uint8_t value) {
 
 	uint8_t cmd[2] = { (uint8_t)(address), value};
 	int ok = transfer(cmd, 2, nullptr, 0);
+	if (!ok) {}//error handling
 }
 
 double AMS_AS5048B::convertAngle(int unit, double angle) {

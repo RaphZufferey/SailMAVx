@@ -107,6 +107,7 @@
 #include <uORB/topics/sensor_mag.h>
 #include <uORB/topics/sensor_preflight.h>
 #include <uORB/topics/sensor_selection.h>
+#include <uORB/topics/sensor_wind_angle.h>
 #include <uORB/topics/servorail_status.h>
 #include <uORB/topics/subsystem_info.h>
 #include <uORB/topics/system_power.h>
@@ -145,7 +146,7 @@
 #include <uORB/topics/wind_estimate.h>
 
 
-const size_t _uorb_topics_count = 127;
+const size_t _uorb_topics_count = 128;
 const constexpr struct orb_metadata* const _uorb_topics_list[_uorb_topics_count] = {
     ORB_ID(vehicle_mocap_odometry),
     ORB_ID(vehicle_visual_odometry),
@@ -242,6 +243,7 @@ const constexpr struct orb_metadata* const _uorb_topics_list[_uorb_topics_count]
     ORB_ID(qshell_req),
     ORB_ID(vehicle_local_position),
     ORB_ID(manual_control_setpoint),
+    ORB_ID(sensor_wind_angle),
     ORB_ID(landing_gear),
     ORB_ID(vehicle_local_position_setpoint),
     ORB_ID(home_position),

@@ -105,6 +105,9 @@ then
 	teraranger start -a
 fi
 
+# auto start wind angle sensor
+sensor_wind_angle start
+
 ###############################################################################
 #                            End Optional drivers                             #
 ###############################################################################

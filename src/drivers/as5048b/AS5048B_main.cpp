@@ -43,7 +43,7 @@ extern "C" __EXPORT int as5048_main(int argc, char *argv[]);
 // Local functions in support of the shell command.
 namespace as5048
 {
-as5048 *g_dev = nullptr;
+AMS_AS5048B *g_dev = nullptr;
 
 int start();
 int start_bus(uint8_t i2c_bus);
@@ -61,6 +61,7 @@ int reset();
 int
 start()
 {
+	PX4_INFO("Starting driver wind");
 	for (unsigned i = 0; i < NUM_I2C_BUS_OPTIONS; i++) {
 		if (start_bus(i2c_bus_options[i]) == PX4_OK) {
 			return PX4_OK;
@@ -86,7 +87,7 @@ start_bus(uint8_t i2c_bus)
 		return PX4_ERROR;
 	}
 
-	g_dev = new as5048(i2c_bus, I2C_ADDRESS_1_AS5048B, PATH_AS5048);
+	g_dev = new AMS_AS5048B(i2c_bus, I2C_ADDRESS_1_AS5048B, PATH_AS5048B);
 
 	/* check if the as5048 was instantiated */
 	if (g_dev == nullptr) {
@@ -167,7 +168,7 @@ as5048_usage()
 {
 	PX4_INFO("usage: as5048 command [options]");
 	PX4_INFO("options:");
-	PX4_INFO("\t-b --bus i2cbus (%d)", PX4_I2C_BUS_DEFAULT);
+	PX4_INFO("\t-b --bus i2cbus (%d)", AS5048B_BUS_DEFAULT);
 	PX4_INFO("\t-a --all");
 	PX4_INFO("command:");
 	PX4_INFO("\tstart|stop|reset");
@@ -176,7 +177,7 @@ as5048_usage()
 int
 as5048_main(int argc, char *argv[])
 {
-	uint8_t i2c_bus = PX4_I2C_BUS_DEFAULT;
+	uint8_t i2c_bus = AS5048B_BUS_DEFAULT;
 
 	int myoptind = 1;
 	int ch;

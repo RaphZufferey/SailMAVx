@@ -2752,6 +2752,25 @@ rule CXX_STATIC_LIBRARY_LINKER__uavcan_stm32_driver
 #############################################
 # Rule for compiling CXX files.
 
+rule CXX_COMPILER__drivers__as5048b
+  depfile = $DEP_FILE
+  deps = gcc
+  command = /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-g++   $DEFINES $INCLUDES $FLAGS -MMD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building CXX object $out
+
+
+#############################################
+# Rule for linking CXX static library.
+
+rule CXX_STATIC_LIBRARY_LINKER__drivers__as5048b
+  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-ar qc $TARGET_FILE $LINK_FLAGS $in && /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-ranlib $TARGET_FILE && $POST_BUILD
+  description = Linking CXX static library $TARGET_FILE
+  restat = $RESTAT
+
+
+#############################################
+# Rule for compiling CXX files.
+
 rule CXX_COMPILER__modules__attitude_estimator_q
   depfile = $DEP_FILE
   deps = gcc

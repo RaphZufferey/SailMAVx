@@ -139,6 +139,7 @@
 #include <uORB/topics/mavlink_log.h>
 #include <uORB/topics/vehicle_local_position.h>
 #include <uORB/topics/manual_control_setpoint.h>
+#include <uORB/topics/sensor_wind_angle.h>
 #include <uORB/topics/landing_gear.h>
 #include <uORB/topics/vehicle_local_position_setpoint.h>
 #include <uORB/topics/home_position.h>
@@ -378,6 +379,8 @@ void listener_generated(char * topic_name, int topic_instance, int topic_rate, i
 		listener(listener_print_topic<vehicle_local_position_s>, ORB_ID(vehicle_local_position), num_msgs, topic_instance, topic_interval);
 	} else if (strcmp(topic_name,"vehicle_local_position_groundtruth") == 0) {
 		listener(listener_print_topic<vehicle_local_position_s>, ORB_ID(vehicle_local_position_groundtruth), num_msgs, topic_instance, topic_interval);
+	} else if (strcmp(topic_name,"sensor_wind_angle") == 0) {
+		listener(listener_print_topic<sensor_wind_angle_s>, ORB_ID(sensor_wind_angle), num_msgs, topic_instance, topic_interval);
 	} else if (strcmp(topic_name,"rate_ctrl_status") == 0) {
 		listener(listener_print_topic<rate_ctrl_status_s>, ORB_ID(rate_ctrl_status), num_msgs, topic_instance, topic_interval);
 	} else if (strcmp(topic_name,"mavlink_log") == 0) {

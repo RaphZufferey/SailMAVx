@@ -47,6 +47,7 @@ px4_add_board(
 		test_ppm
 		tone_alarm
 		uavcan
+		as5048b
 
 	MODULES
 		attitude_estimator_q
