@@ -36,12 +36,17 @@
 #include <px4_getopt.h>
 
 #include <stdlib.h>
+#include <fcntl.h>
+#include <poll.h>
+#include <stdio.h>
+#include <math.h>
+#include <unistd.h>
 
 // Driver 'main' command.
-extern "C" __EXPORT int as5048_main(int argc, char *argv[]);
+extern "C" __EXPORT int as5048b_main(int argc, char *argv[]);
 
 // Local functions in support of the shell command.
-namespace as5048
+namespace as5048b
 {
 AMS_AS5048B *g_dev = nullptr;
 
@@ -83,36 +88,43 @@ start_bus(uint8_t i2c_bus)
 	int fd = -1;
 
 	if (g_dev != nullptr) {
-		PX4_WARN("already started");
+		PX4_ERR("already started");
 		return PX4_ERROR;
 	}
 
 	g_dev = new AMS_AS5048B(i2c_bus, I2C_ADDRESS_1_AS5048B, PATH_AS5048B);
 
-	/* check if the as5048 was instantiated */
+	/* check if the as5048b was instantiated */
 	if (g_dev == nullptr) {
+		PX4_ERR("Failed to instantiate AS5048B object");
 		goto fail;
 	}
 
 	/* try to initialize */
 	if (g_dev->init() != PX4_OK) {
+		PX4_ERR("Failed to initialize AS5048B object");
 		goto fail;
 	}
 
 	/* set the poll rate to default, starts automatic data collection */
 	fd = px4_open(PATH_AS5048B, O_RDONLY);
+	PX4_INFO("px4_ioctl fd = %d", fd);
 
 	if (fd < 0) {
+		PX4_ERR("Failed to px4_open");
 		goto fail;
 	}
 
 	if (px4_ioctl(fd, SENSORIOCSPOLLRATE, SENSOR_POLLRATE_DEFAULT) < 0) {
-		goto fail;
+		PX4_ERR("Failed to set poll rate, ret");
+		//goto fail;
 	}
 
 	return PX4_OK;
 
 fail:
+
+	PX4_ERR("Failed to start bus");
 
 	if (g_dev != nullptr) {
 		delete g_dev;
@@ -160,13 +172,14 @@ int reset()
 	return PX4_OK;
 }
 
-} // namespace as5048
+} // namespace as5048b
+
 
 
 static void
-as5048_usage()
+as5048b_usage()
 {
-	PX4_INFO("usage: as5048 command [options]");
+	PX4_INFO("usage: as5048b command [options]");
 	PX4_INFO("options:");
 	PX4_INFO("\t-b --bus i2cbus (%d)", AS5048B_BUS_DEFAULT);
 	PX4_INFO("\t-a --all");
@@ -175,7 +188,7 @@ as5048_usage()
 }
 
 int
-as5048_main(int argc, char *argv[])
+as5048b_main(int argc, char *argv[])
 {
 	uint8_t i2c_bus = AS5048B_BUS_DEFAULT;
 
@@ -195,13 +208,13 @@ as5048_main(int argc, char *argv[])
 			break;
 
 		default:
-			as5048_usage();
+			as5048b_usage();
 			return 0;
 		}
 	}
 
 	if (myoptind >= argc) {
-		as5048_usage();
+		as5048b_usage();
 		return -1;
 	}
 
@@ -211,10 +224,10 @@ as5048_main(int argc, char *argv[])
 	 */
 	if (!strcmp(argv[myoptind], "start")) {
 		if (start_all) {
-			return as5048::start();
+			return as5048b::start();
 
 		} else {
-			return as5048::start_bus(i2c_bus);
+			return as5048b::start_bus(i2c_bus);
 		}
 	}
 
@@ -222,16 +235,16 @@ as5048_main(int argc, char *argv[])
 	 * Stop the driver
 	 */
 	if (!strcmp(argv[myoptind], "stop")) {
-		return as5048::stop();
+		return as5048b::stop();
 	}
 
 	/*
 	 * Reset the driver.
 	 */
 	if (!strcmp(argv[myoptind], "reset")) {
-		return as5048::reset();
+		return as5048b::reset();
 	}
 
-	as5048_usage();
+	as5048b_usage();
 	return 0;
 }

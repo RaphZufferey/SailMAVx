@@ -33,7 +33,7 @@
 
 px4_add_module(
 	MODULE drivers__as5048b
-	MAIN as5048
+	MAIN as5048b
 	STACK_MAIN 1200
 	COMPILE_FLAGS
 	SRCS

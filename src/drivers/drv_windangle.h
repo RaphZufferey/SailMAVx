@@ -47,8 +47,8 @@
 #include "drv_sensor.h"
 #include "drv_orb_dev.h"
 
-#define BARO_BASE_DEVICE_PATH	"/dev/windangle"
-#define BARO0_DEVICE_PATH	"/dev/windangle0"
+#define WINDANGLE_BASE_DEVICE_PATH	"/dev/windangle"
+#define WINDANGLE0_DEVICE_PATH	"/dev/windangle0"
 
 #include <uORB/topics/sensor_windangle.h>
 

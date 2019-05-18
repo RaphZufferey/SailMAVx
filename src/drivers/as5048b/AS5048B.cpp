@@ -107,7 +107,7 @@ int AMS_AS5048B::init_as5048b(void) {
 	_wind_angle_pub = orb_advertise(ORB_ID(sensor_wind_angle), &sensorwindangle);
 
 	if (_wind_angle_pub == nullptr) {
-		PX4_ERR("failed to create distance_sensor object");
+		PX4_ERR("failed to create wind angle object");
 	}
 
 
