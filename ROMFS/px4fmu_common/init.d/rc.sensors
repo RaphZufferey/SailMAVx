@@ -106,7 +106,7 @@ then
 fi
 
 # auto start wind angle sensor
-as5048b start
+# as5048b start
 
 ###############################################################################
 #                            End Optional drivers                             #

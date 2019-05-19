@@ -69,10 +69,10 @@ start()
 	PX4_INFO("Starting driver wind");
 	for (unsigned i = 0; i < NUM_I2C_BUS_OPTIONS; i++) {
 		if (start_bus(i2c_bus_options[i]) == PX4_OK) {
+			g_dev->start();
 			return PX4_OK;
 		}
 	}
-
 	return PX4_ERROR;
 }
 
@@ -115,10 +115,16 @@ start_bus(uint8_t i2c_bus)
 		goto fail;
 	}
 
-	if (px4_ioctl(fd, SENSORIOCSPOLLRATE, SENSOR_POLLRATE_DEFAULT) < 0) {
-		PX4_ERR("Failed to set poll rate, ret");
-		//goto fail;
+	// g_dev->collect();
+
+
+	if (px4_ioctl(fd, SENSORIOCSPOLLRATE, 2) < 0) {
+		PX4_ERR("ioctl failed and returned errno %s \n",strerror(errno));
+		PX4_ERR("Failed to set poll rate, ret %d",
+			px4_ioctl(fd, SENSORIOCSPOLLRATE, 2));
+		// goto fail;
 	}
+
 
 	return PX4_OK;
 

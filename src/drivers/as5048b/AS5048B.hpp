@@ -96,6 +96,9 @@ static constexpr uint8_t U_MILNATO = 8;
 static constexpr uint8_t U_MILSE = 9;
 static constexpr uint8_t U_MILRU = 10;
 
+#ifndef CONFIG_SCHED_WORKQUEUE
+# error This requires CONFIG_SCHED_WORKQUEUE.
+#endif
 
 #define AS5048B_BUS_DEFAULT		1 //=PX4_I2C_BUS_ONBOARD
 
@@ -107,6 +110,8 @@ public:
 	AMS_AS5048B(uint8_t bus, 
 				uint8_t address = I2C_ADDRESS_1_AS5048B, 
 				const char *path = PATH_AS5048B);
+	void		start();
+	int			collect();
 
 private:
 	int 		_initialized;
@@ -137,7 +142,6 @@ private:
 	 * and start a new one.
 	 */
 	void		cycle();
-	int			collect();
 	int 		init_as5048b();
 	static void cycle_trampoline(void *arg);
 

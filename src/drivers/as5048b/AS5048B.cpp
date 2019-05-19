@@ -30,10 +30,19 @@
 AMS_AS5048B::AMS_AS5048B(uint8_t bus, uint8_t chipAddress, const char *path) :
 	I2C("as5048", PATH_AS5048B, bus, chipAddress, 100000)
 {
+	PX4_INFO("Constructor of AMS_AS5048B %d %d %s", bus, chipAddress, path);
 	_chipAddress = chipAddress;
 	_initialized = false;
-	_debugFlag = false;
+	_debugFlag = true;
 	memset(&_wind_angle_pub, 0, sizeof(_wind_angle_pub));
+}
+
+void AMS_AS5048B::start(void) {
+		PX4_ERR("start");
+	this->init_as5048b();
+	int x = work_queue(HPWORK, &_work, (worker_t)&AMS_AS5048B::cycle_trampoline, 
+				this, 0);//USEC2TICK(CONVERSION_INTERVAL));
+	PX4_ERR("worker status %d", x);
 }
 
 /*========================================================================*/
@@ -43,7 +52,7 @@ AMS_AS5048B::AMS_AS5048B(uint8_t bus, uint8_t chipAddress, const char *path) :
 /**************************************************************************/
 
 void	AMS_AS5048B::cycle(void) {
-
+	PX4_ERR("cycle");
 	if(!_initialized) {
 		_initialized = init_as5048b();
 	}
@@ -78,6 +87,8 @@ int	AMS_AS5048B::collect(void) {
 }
 
 void AMS_AS5048B::cycle_trampoline(void *arg) {
+		PX4_ERR("cycle cycle_trampoline");
+
 	AMS_AS5048B *dev = (AMS_AS5048B *)arg;
 
 	dev->cycle();
@@ -95,13 +106,15 @@ void AMS_AS5048B::cycle_trampoline(void *arg) {
 
 int AMS_AS5048B::init_as5048b(void) {
 
+	int fdd = cdev::VFile::createFile("/tmp/file0", O_RDONLY);
+
 	_clockWise = false;
 	_lastAngleRaw = 0.0;
 	_zeroRegVal = AMS_AS5048B::zeroRegR();
 	_addressRegVal = AMS_AS5048B::addressRegR();
 
 	AMS_AS5048B::resetMovingAvgExp();
-
+	PX4_ERR("init");
 
 
 	_wind_angle_pub = orb_advertise(ORB_ID(sensor_wind_angle), &sensorwindangle);
