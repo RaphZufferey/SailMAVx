@@ -106,7 +106,7 @@ void AMS_AS5048B::cycle_trampoline(void *arg) {
 
 int AMS_AS5048B::init_as5048b(void) {
 
-	int fdd = cdev::VFile::createFile("/tmp/file0", O_RDONLY);
+	//int fdd = cdev::VFile::createFile("/tmp/file0", O_RDONLY);
 
 	_clockWise = false;
 	_lastAngleRaw = 0.0;
