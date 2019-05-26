@@ -16,6 +16,7 @@ px4_add_board(
 		TEL2:/dev/ttyS2
 
 	DRIVERS
+	as5048b
 		barometer # all available barometer drivers
 		batt_smbus
 		camera_capture

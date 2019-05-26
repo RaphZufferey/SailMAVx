@@ -321,7 +321,7 @@ AMS_AS5048B::collect()
 
 	struct sensor_wind_angle_s report;
 	report.timestamp           = hrt_absolute_time();
-	report.wind_magnetic_angle = read_angle();
+	report.wind_magnetic_angle = read_angle(U_DEG);
 
 	// Publish the report data if we have a valid topic.
 	if (_class_instance == CLASS_DEVICE_PRIMARY) {
