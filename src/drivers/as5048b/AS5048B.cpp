@@ -321,11 +321,11 @@ AMS_AS5048B::collect()
 
 	struct sensor_wind_angle_s report;
 	report.timestamp           = hrt_absolute_time();
-	report.wind_magnetic_angle = read_angle(U_DEG);
+	report.wind_magnetic_angle = read_angle();
 
 	// Publish the report data if we have a valid topic.
 	if (_class_instance == CLASS_DEVICE_PRIMARY) {
-		PX4_INFO("Angle read: %f", static_cast<double>(report.wind_magnetic_angle));
+		// PX4_INFO("Angle read: %f", static_cast<double>(report.wind_magnetic_angle));
 		orb_publish_auto(ORB_ID(sensor_wind_angle), &_wind_angle_topic, &report,
 				&_orb_class_instance, ORB_PRIO_DEFAULT);
 	}
