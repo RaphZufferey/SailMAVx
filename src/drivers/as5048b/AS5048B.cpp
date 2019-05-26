@@ -51,10 +51,11 @@
 #include <uORB/topics/sensor_wind_angle.h>
 
 
-#define AS5048B_BUS_DEFAULT     1  // PX4_I2C_BUS_ONBOARD
+#define AS5048B_BUS_DEFAULT          1  // PX4_I2C_BUS_ONBOARD
+#define AMS_AS5048B_BASE_DEVICE_PATH "/dev/as5048b"
+#define AMS_AS5048B_BUS_CLOCK        1000000 // 100 kHz
 
 static constexpr uint8_t AMS_AS5048B_BASEADDR    = 0x40;
-static constexpr const char PATH_AS5048B[]       = "/dev/as5048b";
 
 /* Measurement rate is 100Hz */
 static constexpr unsigned MEASUREMENT_RATE       = 100;
@@ -98,7 +99,7 @@ class AMS_AS5048B : public device::I2C, public px4::ScheduledWorkItem
 {
 public:
 	AMS_AS5048B(const uint8_t bus, const uint8_t address = AMS_AS5048B_BASEADDR, 
-		    const char *path = PATH_AS5048B);
+		    const char *path = AMS_AS5048B_BASE_DEVICE_PATH);
 
 	virtual ~AMS_AS5048B();
 
@@ -282,7 +283,7 @@ private:
 
 
 AMS_AS5048B::AMS_AS5048B(const uint8_t bus, const uint8_t address, const char *path) :
-	I2C("as5048", PATH_AS5048B, bus, address, 100000),
+	I2C("as5048", path, bus, address, AMS_AS5048B_BUS_CLOCK),
 	ScheduledWorkItem(px4::device_bus_to_wq(get_device_id()))
 {
 	PX4_INFO("Constructor of AMS_AS5048B %d %d %s", bus, address, path);
@@ -301,7 +302,7 @@ AMS_AS5048B::~AMS_AS5048B()
 
 	// Unregister the device class name.
 	if (_class_instance != -1) {
-		// unregister_class_devname(RANGE_FINDER_BASE_DEVICE_PATH, _class_instance);
+		unregister_class_devname(AMS_AS5048B_BASE_DEVICE_PATH, _class_instance);
 	}
 
 	// Unadvertise uORB topics.
@@ -320,10 +321,11 @@ AMS_AS5048B::collect()
 
 	struct sensor_wind_angle_s report;
 	report.timestamp           = hrt_absolute_time();
-	report.wind_magnetic_angle = AMS_AS5048B::read_angle();
+	report.wind_magnetic_angle = read_angle();
 
 	// Publish the report data if we have a valid topic.
 	if (_class_instance == CLASS_DEVICE_PRIMARY) {
+		PX4_INFO("Angle read: %f", static_cast<double>(report.wind_magnetic_angle));
 		orb_publish_auto(ORB_ID(sensor_wind_angle), &_wind_angle_topic, &report,
 				&_orb_class_instance, ORB_PRIO_DEFAULT);
 	}
@@ -396,15 +398,15 @@ void
 AMS_AS5048B::flash_prog()
 {
 	// Enable special programming mode.
-	AMS_AS5048B::prog_register(0xFD);
+	prog_register(0xFD);
 	usleep(10000);
 
 	// Set the burn bit: enables automatic programming procedure.
-	AMS_AS5048B::prog_register(0x08);
+	prog_register(0x08);
 	usleep(10000);
 
 	// Disable special programming mode.
-	AMS_AS5048B::prog_register(0x00);
+	prog_register(0x00);
 	usleep(10000);
 }
 
@@ -413,23 +415,23 @@ AMS_AS5048B::flash_prog_zero()
 {
 	// This will burn the zero position OTP register like described
 	// in the datasheet to enable programming mode.
-	AMS_AS5048B::prog_register(0x01);
+	prog_register(0x01);
 	usleep(10000);
 
 	// Set the burn bit: enables automatic programming procedure.
-	AMS_AS5048B::prog_register(0x08);
+	prog_register(0x08);
 	usleep(10000);
 
 	// Read angle information (equals to 0).
-	AMS_AS5048B::read_reg_16(AS5048B_ANGLMSB_REG);
+	read_reg_16(AS5048B_ANGLMSB_REG);
 	usleep(10000);
 
 	// Enable verification.
-	AMS_AS5048B::prog_register(0x40);
+	prog_register(0x40);
 	usleep(10000);
 
 	// Read angle information (equals to 0).
-	AMS_AS5048B::read_reg_16(AS5048B_ANGLMSB_REG);
+	read_reg_16(AS5048B_ANGLMSB_REG);
 	usleep(10000);
 }
 
@@ -450,6 +452,8 @@ AMS_AS5048B::init()
 		return PX4_ERROR;
 	}
 
+	_class_instance = register_class_devname(AMS_AS5048B_BASE_DEVICE_PATH);
+
 	_zero_reg_val    = read_zero_reg();
 	_address_reg_val = read_address_reg();
 
@@ -463,7 +467,7 @@ AMS_AS5048B::init()
 uint8_t
 AMS_AS5048B::get_auto_gain()
 {
-	return AMS_AS5048B::read_reg_8(AS5048B_GAIN_REG);
+	return read_reg_8(AS5048B_GAIN_REG);
 }
 
 float
@@ -486,13 +490,13 @@ AMS_AS5048B::get_exp_avg_raw_angle()
 float
 AMS_AS5048B::get_moving_avg_exp(const int unit)
 {
-	return AMS_AS5048B::convert_angle(unit, _moving_avg_exp_angle);
+	return convert_angle(unit, _moving_avg_exp_angle);
 }
 
 uint16_t
 AMS_AS5048B::magnitude_R()
 {
-	return AMS_AS5048B::read_reg_16(AS5048B_MAGNMSB_REG);
+	return read_reg_16(AS5048B_MAGNMSB_REG);
 }
 
 void
@@ -507,20 +511,20 @@ AMS_AS5048B::print_info()
 void
 AMS_AS5048B::prog_register(const uint8_t reg_val)
 {
-	AMS_AS5048B::write_reg(AS5048B_PROG_REG, reg_val);
+	write_reg(AS5048B_PROG_REG, reg_val);
 }
 
 uint8_t
 AMS_AS5048B::read_address_reg()
 {
-	return AMS_AS5048B::read_reg_8(AS5048B_ADDR_REG);
+	return read_reg_8(AS5048B_ADDR_REG);
 }
 
 void
 AMS_AS5048B::write_address_reg(const uint8_t reg_val)
 {
 	// Write the new chip address to the register
-	AMS_AS5048B::write_reg(AS5048B_ADDR_REG, reg_val);
+	write_reg(AS5048B_ADDR_REG, reg_val);
 
 	// Update our chip address with our 5 programmable bits
 	// the MSB is internally inverted, so we flip the leftmost bit
@@ -534,28 +538,28 @@ AMS_AS5048B::read_angle(const int unit, const bool new_measurement)
 
 	if (new_measurement) {
 		if(_clock_wise) {
-			angle_raw = static_cast<float>((0b11111111111111 - AMS_AS5048B::read_reg_16(AS5048B_ANGLMSB_REG)));
+			angle_raw = static_cast<float>((0b11111111111111 - read_reg_16(AS5048B_ANGLMSB_REG)));
 		} else {
-			angle_raw = static_cast<float>(AMS_AS5048B::read_reg_16(AS5048B_ANGLMSB_REG));
+			angle_raw = static_cast<float>(read_reg_16(AS5048B_ANGLMSB_REG));
 		}
 		_last_angle_raw = angle_raw;
 	} else {
 		angle_raw = _last_angle_raw;
 	}
 
-	return AMS_AS5048B::convert_angle(unit, angle_raw);
+	return convert_angle(unit, angle_raw);
 }
 
 uint16_t
 AMS_AS5048B::read_angle_reg()
 {
-	return AMS_AS5048B::read_reg_16(AS5048B_ANGLMSB_REG);
+	return read_reg_16(AS5048B_ANGLMSB_REG);
 }
 
 uint8_t
 AMS_AS5048B::read_diagnostic_reg()
 {
-	return AMS_AS5048B::read_reg_8(AS5048B_DIAGNOSTIC_REG);
+	return read_reg_8(AS5048B_DIAGNOSTIC_REG);
 }
 
 uint8_t
@@ -612,7 +616,7 @@ AMS_AS5048B::read_reg_16(const uint8_t address)
 uint16_t
 AMS_AS5048B::read_zero_reg()
 {
-	return AMS_AS5048B::read_reg_16(AS5048B_ZEROMSB_REG);
+	return read_reg_16(AS5048B_ZEROMSB_REG);
 }
 
 void
@@ -644,7 +648,7 @@ AMS_AS5048B::set_clock_wise(const bool cw)
 {
 	_clock_wise = cw;
 	_last_angle_raw = 0.f;
-	AMS_AS5048B::reset_moving_avg_exp();
+	reset_moving_avg_exp();
 }
 
 void
@@ -652,9 +656,9 @@ AMS_AS5048B::set_zero_reg()
 {
 	// Issue closed by @MechatronicsWorkman and @oilXander.
 	// The last sequence avoids any offset for the new Zero position
-        AMS_AS5048B::write_zero_reg((uint16_t) 0x00);
-	uint16_t new_zero = AMS_AS5048B::read_reg_16(AS5048B_ANGLMSB_REG);
-        AMS_AS5048B::write_zero_reg(new_zero);
+        write_zero_reg((uint16_t) 0x00);
+	uint16_t new_zero = read_reg_16(AS5048B_ANGLMSB_REG);
+        write_zero_reg(new_zero);
 }
 
 void
@@ -718,8 +722,8 @@ AMS_AS5048B::write_reg(const uint8_t address, const uint8_t reg_val)
 void
 AMS_AS5048B::write_zero_reg(const uint16_t reg_val)
 {
-	AMS_AS5048B::write_reg(AS5048B_ZEROMSB_REG, (uint8_t) (reg_val >> 6));
-	AMS_AS5048B::write_reg(AS5048B_ZEROLSB_REG, (uint8_t) (reg_val & 0x3F));
+	write_reg(AS5048B_ZEROMSB_REG, (uint8_t) (reg_val >> 6));
+	write_reg(AS5048B_ZEROLSB_REG, (uint8_t) (reg_val & 0x3F));
 }
 
 
@@ -794,7 +798,7 @@ start_bus(const uint8_t i2c_bus)
 	}
 
 	// Instantiate the driver.
-	g_dev = new AMS_AS5048B(i2c_bus, AMS_AS5048B_BASEADDR, PATH_AS5048B);
+	g_dev = new AMS_AS5048B(i2c_bus, AMS_AS5048B_BASEADDR, AMS_AS5048B_BASE_DEVICE_PATH);
 
 	if (g_dev == nullptr) {
 		delete g_dev;
