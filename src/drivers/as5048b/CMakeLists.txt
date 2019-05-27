@@ -35,8 +35,13 @@ px4_add_module(
 	MODULE drivers__as5048b
 	MAIN as5048b
 	STACK_MAIN 1200
+<<<<<<< HEAD
 	COMPILE_FLAGS -v
 	SRCS
 		AS5048B.cpp
 		AS5048B_main.cpp
+=======
+	SRCS
+		AS5048B.cpp
+>>>>>>> as5048b_refactor
 	)
