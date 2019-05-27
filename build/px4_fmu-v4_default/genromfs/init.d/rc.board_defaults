@@ -1,5 +1,0 @@
-if [ $AUTOCNF = yes ]
-then
-param set CBRK_IO_SAFETY 22027
-fi
-set MIXER_AUX none
