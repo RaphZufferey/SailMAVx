@@ -1,4 +1,4 @@
-# Install script for directory: /home/arlpx/Documents/SailMAVpx/SailMAV/src/systemcmds/tests
+# Install script for directory: /home/raph18/SailMAV/src/systemcmds/tests
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,9 +27,14 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/systemcmds/tests/hrt_test/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/systemcmds/tests/hrt_test/cmake_install.cmake")
 
 endif()
 

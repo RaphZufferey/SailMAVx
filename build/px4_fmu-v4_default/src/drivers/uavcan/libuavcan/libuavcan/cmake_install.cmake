@@ -1,4 +1,4 @@
-# Install script for directory: /home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/uavcan/libuavcan/libuavcan
+# Install script for directory: /home/raph18/SailMAV/src/drivers/uavcan/libuavcan/libuavcan
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,20 +27,25 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan/libuavcan.a")
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/uavcan/libuavcan/libuavcan/include/uavcan")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan/libuavcan.a")
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/uavcan/libuavcan/libuavcan/include/dsdlc_generated/uavcan")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/raph18/SailMAV/src/drivers/uavcan/libuavcan/libuavcan/include/uavcan")
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/raph18/SailMAV/src/drivers/uavcan/libuavcan/libuavcan/include/dsdlc_generated/uavcan")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   execute_process(COMMAND /usr/bin/python setup.py install --record installed_files.log
-                              WORKING_DIRECTORY /home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/uavcan/libuavcan/libuavcan/dsdl_compiler)
+                              WORKING_DIRECTORY /home/raph18/SailMAV/src/drivers/uavcan/libuavcan/libuavcan/dsdl_compiler)
 endif()
 

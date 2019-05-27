@@ -1,4 +1,4 @@
-# Install script for directory: /home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/distance_sensor
+# Install script for directory: /home/raph18/SailMAV/src/drivers/distance_sensor
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,20 +27,25 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/cm8jl65/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/leddar_one/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/ll40ls/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/mb12xx/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/pga460/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/sf0x/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/sf1xx/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/srf02/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/teraranger/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/tfmini/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/ulanding/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/vl53lxx/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/cm8jl65/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/leddar_one/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/ll40ls/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/mb12xx/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/pga460/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/sf0x/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/sf1xx/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/srf02/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/teraranger/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/tfmini/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/ulanding/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/distance_sensor/vl53lxx/cmake_install.cmake")
 
 endif()
 

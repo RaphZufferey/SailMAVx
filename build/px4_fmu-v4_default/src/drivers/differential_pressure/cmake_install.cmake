@@ -1,4 +1,4 @@
-# Install script for directory: /home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/differential_pressure
+# Install script for directory: /home/raph18/SailMAV/src/drivers/differential_pressure
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,12 +27,17 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/differential_pressure/ets/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/differential_pressure/ms4525/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/differential_pressure/ms5525/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/differential_pressure/sdp3x/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/differential_pressure/ets/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/differential_pressure/ms4525/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/differential_pressure/ms5525/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/differential_pressure/sdp3x/cmake_install.cmake")
 
 endif()
 

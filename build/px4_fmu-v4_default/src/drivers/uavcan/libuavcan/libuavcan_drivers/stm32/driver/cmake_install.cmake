@@ -1,4 +1,4 @@
-# Install script for directory: /home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver
+# Install script for directory: /home/raph18/SailMAV/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,11 +27,16 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/include/uavcan_stm32")
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/libuavcan_stm32_driver.a")
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/raph18/SailMAV/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/include/uavcan_stm32")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/libuavcan_stm32_driver.a")
 endif()
 

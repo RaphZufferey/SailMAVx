@@ -1,503 +1,599 @@
-/**************************************************************************/
-/*!
-    @file     ams_as5048b.cpp
-    @author   SOSAndroid (E. Ha.)
-    @license  BSD (see license.txt)
+/****************************************************************************
+ *
+ *   Copyright (c) 2019 PX4 Development Team. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ * 3. Neither the name PX4 nor the names of its contributors may be
+ *    used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************/
 
-    Library to interface the AS5048B magnetic rotary encoder from AMS over the I2C bus
+/**
+ * @file AS5048B.cpp
+ * Driver for AS5048B 
+ */
 
-    @section  HISTORY
+#include <math.h>
 
-    v1.0.0 - First release
-    v1.0.1 - Typo to allow compiling on Codebender.cc (Math.h vs math.h)
-    v1.0.2 - setZeroReg() issue raised by @MechatronicsWorkman
-	v1.0.3 - Small bug fix and improvement by @DavidHowlett
-*/
-/**************************************************************************/
+#include <drivers/device/i2c.h>
+#include <drivers/device/ringbuffer.h>
+#include <perf/perf_counter.h>
+#include <px4_config.h>
+#include <px4_defines.h>
+#include <px4_getopt.h>
+#include <px4_module.h>
+#include <px4_work_queue/ScheduledWorkItem.hpp>
+#include <sys/types.h>
+#include <uORB/uORB.h>
+#include <uORB/topics/sensor_wind_angle.h>
 
-#include "AS5048B.hpp"
 
-/*========================================================================*/
-/*                            CONSTRUCTORS                                */
-/*========================================================================*/
+#define AS5048B_BUS_DEFAULT          1  // PX4_I2C_BUS_ONBOARD
+#define AMS_AS5048B_BASE_DEVICE_PATH "/dev/as5048b"
+#define AMS_AS5048B_BUS_CLOCK        1000000 // 100 kHz
 
-/**************************************************************************/
-/*!
-    Constructor
-*/
-/**************************************************************************/
+static constexpr uint8_t AMS_AS5048B_BASEADDR    = 0x40;
 
-AMS_AS5048B::AMS_AS5048B(uint8_t bus, uint8_t chipAddress, const char *path) :
-	I2C("as5048", PATH_AS5048B, bus, chipAddress, 100000)
+/* Measurement rate is 100Hz */
+static constexpr unsigned MEASUREMENT_RATE       = 100;
+static constexpr int64_t CONVERSION_INTERVAL     = (1000000 / MEASUREMENT_RATE); // microseconds
+
+/* Sensor Related */
+static constexpr uint8_t  AS5048B_PROG_REG       = 0x03;
+static constexpr uint8_t  AS5048B_ADDR_REG       = 0x15;
+static constexpr uint8_t  AS5048B_ZEROMSB_REG    = 0x16;    // bits 0..7
+static constexpr uint8_t  AS5048B_ZEROLSB_REG    = 0x17;    // bits 0..5
+static constexpr uint8_t  AS5048B_GAIN_REG       = 0xFA;
+static constexpr uint8_t  AS5048B_DIAGNOSTIC_REG = 0xFB;
+static constexpr uint8_t  AS5048B_MAGNMSB_REG    = 0xFC;    // bits 0..7
+static constexpr uint8_t  AS5048B_MAGNLSB_REG    = 0xFD;    // bits 0..5
+static constexpr uint8_t  AS5048B_ANGLMSB_REG    = 0xFE;    // bits 0..7
+static constexpr uint8_t  AS5048B_ANGLLSB_REG    = 0xFF;    // bits 0..5
+static constexpr uint16_t AS5048B_RESOLUTION     = 16384;   // 14 bits
+
+/**
+ * Moving Exponential Average on angle - beware heavy calculation for some Arduino boards
+ * This is a 1st order low pass filter
+ * Moving average is calculated on Sine et Cosine values of the angle to provide an extrapolated accurate angle value.
+ */
+static constexpr uint8_t EXP_MOVAVG_N    = 5; // History length impact on moving average impact - keep in mind the moving average will be impacted by the measurement frequency too.
+static constexpr uint8_t EXP_MOVAVG_LOOP = 1; // Number of measurements before starting mobile Average - starting with a simple average - 1 allows a quick start. Value must be 1 minimum.
+
+/** Unit constants for readability. */
+static constexpr uint8_t U_RAW      = 1;
+static constexpr uint8_t U_TRN      = 2;
+static constexpr uint8_t U_DEG      = 3;
+static constexpr uint8_t U_RAD      = 4;
+static constexpr uint8_t U_GRAD     = 5;
+static constexpr uint8_t U_MOA      = 6;
+static constexpr uint8_t U_SOA      = 7;
+static constexpr uint8_t U_MILNATO  = 8;
+static constexpr uint8_t U_MILSE    = 9;
+static constexpr uint8_t U_MILRU    = 10;
+
+
+class AMS_AS5048B : public device::I2C, public px4::ScheduledWorkItem
 {
-	PX4_INFO("Constructor of AMS_AS5048B %d %d %s", bus, chipAddress, path);
-	_chipAddress = chipAddress;
-	_initialized = false;
-	_debugFlag = true;
-	memset(&_wind_angle_pub, 0, sizeof(_wind_angle_pub));
+public:
+	AMS_AS5048B(const uint8_t bus, const uint8_t address = AMS_AS5048B_BASEADDR, 
+		    const char *path = AMS_AS5048B_BASE_DEVICE_PATH);
+
+	virtual ~AMS_AS5048B();
+
+	virtual int init() override;
+
+	/**
+	 * Diagnostics - print some basic information about the driver.
+	 */
+	void print_info();
+
+	/**
+	 * Start the driver.
+	 */
+	void start();
+
+	/**
+	 * Stop the driver.
+	 */
+	void stop();
+
+private:
+
+	int collect();
+
+	/**
+	 * RAW, TRN, DEG, RAD, GRAD, MOA, SOA, MILNATO, MILSE, MILRU
+	 */
+	float convert_angle(int unit, float angle);
+
+	/**
+	 * Flash values to the slave address OTP register. 
+	 */
+	void flash_prog();
+
+	/**
+	 * Flash values to the zero position OTP register.
+	 */
+	void flash_prog_zero();
+
+	/**
+    	 * Reads the 1 bytes auto gain register value
+	 * @returns Returns the auto gain register value.
+	 */
+	uint8_t get_auto_gain();
+
+	/**
+	 * Reads the 1 bytes diagnostic register value
+	 * @returns Returns the diagnostic register value
+	 */
+	uint8_t read_diagnostic_reg();
+
+	float get_exp_avg_raw_angle();
+
+	/**
+	 * Gets the exponential moving averaged angle in the desired units.
+	 * @param unit The desired units applied to the angle value being retrieved.
+	 * @returns Returns the exponential moving averaged angle value.
+	 */
+	float get_moving_avg_exp(const int unit = U_RAW);
+
+	/**
+	 * Reads the 2 bytes magnitude register value.
+	 * @return Returns the magnitude register value trimmed on 14 bits.
+	 */
+	uint16_t magnitude_R();
+
+	/**
+	 * Writes OTP control register.
+	 * @param reg_val register value to be written.
+	 */
+	void prog_register(const uint8_t reg_val);
+
+	/**
+	 * Reads the I2C address register value.
+	 * @return Returns the address register value.
+	 */
+	uint8_t read_address_reg();
+
+	/**
+	 * Reads the current angle value and converts it into the desired unit or
+	 * gets last measurement with unit conversion :
+	 *    RAW, TRN, DEG, RAD, GRAD, MOA, SOA, MILNATO, MILSE, MILRU
+	 * @param unit The desired units applied to the angle value being retrieved.
+	 * @param new_measurement  Boolean to indicate if a new measurement should be taken or the previous value returned.
+	 * @return Returns the current angle value with units conversion.
+	 */
+	float read_angle(const int unit = U_RAW, const bool new_measurement = true);
+
+	/**
+	 * Read raw value of the angle register.
+	 */
+	uint16_t read_angle_reg();
+
+	uint8_t read_reg_8(const uint8_t address);
+
+	/**
+	 * 16 bit value got from 2x8bits registers (7..0 MSB + 5..0 LSB) => 14 bits value.
+	 */
+	uint16_t read_reg_16(const uint8_t address);
+
+	/**
+	 * Reads the 2 bytes Zero position register value.
+	 * @return Returns the Zero register value trimmed on 14 bits.
+	 */
+	uint16_t read_zero_reg();
+
+	/**
+	 * Reset Exponential Moving Average calculation values.
+	 */
+	void reset_moving_avg_exp();
+
+	/**
+	 * Perform a poll cycle; collect from the previous measurement
+	 * and start a new one.
+	 */
+	void Run() override;
+
+	/**
+	 * Set/unset clock wise counting - sensor counts CCW natively, default false (native sensor).
+	 * @param cw true: CW, false: CCW
+	 */
+	void set_clock_wise(const bool cw = false);
+
+	/**
+	 * Sets the current angle as the zero position.
+	 */
+	void set_zero_reg();
+
+	/**
+	 * Toggles the debug output start/stop to serial debug.
+	 */
+	void toggle_debug();
+
+	/**
+	 * Performs an exponential moving average on the angle.
+	 * Works on Sine and Cosine of the angle to avoid issues 0°/360° discontinuity
+	 */
+	void update_moving_avg_exp();
+
+	/**
+	 * Writes the I2C address value (5 bits) into the address register, changing the chip address.
+	 * @param reg_val The register value to be written.
+	 */
+	void write_address_reg(const uint8_t reg_val);
+
+	void write_reg(uint8_t address, uint8_t reg_val);
+
+	/**
+	 * Writes the 2 bytes Zero position register value.
+	 * @param reg_val The Zero register value to be written.
+	 */
+	void write_zero_reg(const uint16_t reg_val);
+
+	bool _clock_wise{false};
+	bool _debug_flag{false};
+	bool _initialized{false};
+
+	int _class_instance{-1};
+	int _moving_avg_count_loop{0};
+	int _measure_interval{CONVERSION_INTERVAL};
+	int _orb_class_instance{-1};
+
+	uint8_t _address_reg_val{0};
+	uint8_t	_chip_address{0};
+	uint16_t _scale{0};
+	uint16_t _zero_reg_val{0};
+
+	float _last_angle_raw{0.f};
+	float _moving_avg_exp_angle{0.f};
+	float _moving_avg_exp_alpha{0.f};
+	float _moving_avg_exp_cos{0.f};
+	float _moving_avg_exp_sin{0.f};
+
+	orb_advert_t _wind_angle_topic{nullptr};
+
+	perf_counter_t _comms_errors{perf_alloc(PC_COUNT, "cm8jl65_com_err")};
+	perf_counter_t _sample_perf{perf_alloc(PC_ELAPSED, "cm8jl65_read")};
+
+	ringbuffer::RingBuffer *_reports{nullptr};
+};
+
+
+AMS_AS5048B::AMS_AS5048B(const uint8_t bus, const uint8_t address, const char *path) :
+	I2C("as5048", path, bus, address, AMS_AS5048B_BUS_CLOCK),
+	ScheduledWorkItem(px4::device_bus_to_wq(get_device_id()))
+{
+	PX4_INFO("Constructor of AMS_AS5048B %d %d %s", bus, address, path);
+	_chip_address = address;
 }
 
-void AMS_AS5048B::start(void) {
-		PX4_ERR("start");
-	this->init_as5048b();
-	int x = work_queue(HPWORK, &_work, (worker_t)&AMS_AS5048B::cycle_trampoline, 
-				this, 0);//USEC2TICK(CONVERSION_INTERVAL));
-	PX4_ERR("worker status %d", x);
-}
+AMS_AS5048B::~AMS_AS5048B()
+{
+	// Ensure we are truly inactive.
+	stop();
 
-/*========================================================================*/
-/*                           PRIVATE FUNCTIONS                            */
-/*========================================================================*/
-
-/**************************************************************************/
-
-void	AMS_AS5048B::cycle(void) {
-	PX4_ERR("cycle");
-	if(!_initialized) {
-		_initialized = init_as5048b();
+	// Free any existing reports.
+	if (_reports != nullptr) {
+		delete _reports;
 	}
 
-	/* Collect results */
-	if (OK != collect()) {
-		PX4_DEBUG("collection error");
-
-		return;
+	// Unregister the device class name.
+	if (_class_instance != -1) {
+		unregister_class_devname(AMS_AS5048B_BASE_DEVICE_PATH, _class_instance);
 	}
 
-	// schedule a fresh cycle call when the measurement is done
-	work_queue(HPWORK, &_work, (worker_t)&AMS_AS5048B::cycle_trampoline, 
-					this, USEC2TICK(CONVERSION_INTERVAL));
+	// Unadvertise uORB topics.
+	if (_wind_angle_topic != nullptr) {
+		orb_unadvertise(_wind_angle_topic);
+	}
 
-
+	perf_free(_sample_perf);
+	perf_free(_comms_errors);
 }
 
-int	AMS_AS5048B::collect(void) { 
-	double angle = AMS_AS5048B::angleR();
-	PX4_INFO("Angle read: %f", angle);
+int
+AMS_AS5048B::collect()
+{
+	perf_begin(_sample_perf);
+
+	struct sensor_wind_angle_s report;
+	report.timestamp           = hrt_absolute_time();
+	report.wind_magnetic_angle = read_angle();
+
+	// Publish the report data if we have a valid topic.
+	if (_class_instance == CLASS_DEVICE_PRIMARY) {
+		// PX4_INFO("Angle read: %f", static_cast<double>(report.wind_magnetic_angle));
+		orb_publish_auto(ORB_ID(sensor_wind_angle), &_wind_angle_topic, &report,
+				&_orb_class_instance, ORB_PRIO_DEFAULT);
+	}
+
+	_reports->force(&report);
 	
-	// orb publish
-	if (_wind_angle_pub != nullptr) {
-		/* publish it */
-		orb_publish(ORB_ID(sensor_wind_angle), _wind_angle_pub, &sensorwindangle);
+	// Notify anyone waiting for data.
+	poll_notify(POLLIN);
+	perf_end(_sample_perf);
+
+	return PX4_OK;
+}
+
+float
+AMS_AS5048B::convert_angle(const int unit, const float angle)
+{
+	// Convert raw sensor reading into angle unit.
+	float angleConv = 0.f;
+
+	switch (unit) {
+		case U_RAW:
+			// Sensor raw measurement
+			angleConv = angle;
+			break;
+		case U_TRN:
+			// Full turn ratio
+			angleConv = (angle / AS5048B_RESOLUTION);
+			break;
+		case U_DEG:
+			// Degree
+			angleConv = (angle / AS5048B_RESOLUTION) * 360.0f;
+			break;
+		case U_RAD:
+			// Radian
+			angleConv = (angle / AS5048B_RESOLUTION) * static_cast<float>(2.0 * M_PI);
+			break;
+		case U_MOA:
+			// Minute of arc
+			angleConv = (angle / AS5048B_RESOLUTION) * 60.f * 360.f;
+			break;
+		case U_SOA:
+			// Second of arc
+			angleConv = (angle / AS5048B_RESOLUTION) * 60.f * 60.f * 360.f;
+			break;
+		case U_GRAD:
+			// Grade
+			angleConv = (angle / AS5048B_RESOLUTION) * 400.f;
+			break;
+		case U_MILNATO:
+			// NATO MIL
+			angleConv = (angle / AS5048B_RESOLUTION) * 6400.f;
+			break;
+		case U_MILSE:
+			// Swedish MIL
+			angleConv = (angle / AS5048B_RESOLUTION) * 6300.f;
+			break;
+		case U_MILRU:
+			// Russian MIL
+			angleConv = (angle / AS5048B_RESOLUTION) * 6000.f;
+			break;
+		default:
+			// No conversion => raw angle measurement
+			angleConv = angle;
+			break;
+	}
+	return angleConv;
+}
+
+void
+AMS_AS5048B::flash_prog()
+{
+	// Enable special programming mode.
+	prog_register(0xFD);
+	usleep(10000);
+
+	// Set the burn bit: enables automatic programming procedure.
+	prog_register(0x08);
+	usleep(10000);
+
+	// Disable special programming mode.
+	prog_register(0x00);
+	usleep(10000);
+}
+
+void
+AMS_AS5048B::flash_prog_zero()
+{
+	// This will burn the zero position OTP register like described
+	// in the datasheet to enable programming mode.
+	prog_register(0x01);
+	usleep(10000);
+
+	// Set the burn bit: enables automatic programming procedure.
+	prog_register(0x08);
+	usleep(10000);
+
+	// Read angle information (equals to 0).
+	read_reg_16(AS5048B_ANGLMSB_REG);
+	usleep(10000);
+
+	// Enable verification.
+	prog_register(0x40);
+	usleep(10000);
+
+	// Read angle information (equals to 0).
+	read_reg_16(AS5048B_ANGLMSB_REG);
+	usleep(10000);
+}
+
+int
+AMS_AS5048B::init()
+{
+	set_device_address(AMS_AS5048B_BASEADDR);
+
+	// Perform I2C init (and probe) first.
+	if (I2C::init() != OK) {
+		return PX4_ERROR;
 	}
 
+	// Allocate basic report buffers.
+	_reports = new ringbuffer::RingBuffer(2, sizeof(sensor_wind_angle_s));
 
-	return OK;
-
-}
-
-void AMS_AS5048B::cycle_trampoline(void *arg) {
-		PX4_ERR("cycle cycle_trampoline");
-
-	AMS_AS5048B *dev = (AMS_AS5048B *)arg;
-
-	dev->cycle();
-}
-
-/*!
-    @brief  init values and overall behaviors for AS5948B use
-
-    @params
-				none
-    @returns
-				none
-*/
-/**************************************************************************/
-
-int AMS_AS5048B::init_as5048b(void) {
-
-	int fdd = cdev::VFile::createFile("/tmp/file0", O_RDONLY);
-
-	_clockWise = false;
-	_lastAngleRaw = 0.0;
-	_zeroRegVal = AMS_AS5048B::zeroRegR();
-	_addressRegVal = AMS_AS5048B::addressRegR();
-
-	AMS_AS5048B::resetMovingAvgExp();
-	PX4_ERR("init");
-
-
-	_wind_angle_pub = orb_advertise(ORB_ID(sensor_wind_angle), &sensorwindangle);
-
-	if (_wind_angle_pub == nullptr) {
-		PX4_ERR("failed to create wind angle object");
+	if (_reports == nullptr) {
+		return PX4_ERROR;
 	}
 
+	_class_instance = register_class_devname(AMS_AS5048B_BASE_DEVICE_PATH);
 
-	return true;
+	_zero_reg_val    = read_zero_reg();
+	_address_reg_val = read_address_reg();
+
+	reset_moving_avg_exp();
+
+	_initialized = true;
+
+	return PX4_OK;
 }
 
-/**************************************************************************/
-/*!
-    @brief  Toggle debug output to serial
-
-    @params
-				none
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::toggleDebug(void) {
-
-	_debugFlag = !_debugFlag;
-	return;
+uint8_t
+AMS_AS5048B::get_auto_gain()
+{
+	return read_reg_8(AS5048B_GAIN_REG);
 }
 
-/**************************************************************************/
-/*!
-    @brief  Set / unset clock wise counting - sensor counts CCW natively
+float
+AMS_AS5048B::get_exp_avg_raw_angle()
+{
+	float angle = 0.f;
+	float two_PI = 2 * M_PI;
 
-    @params[in]
-				bool cw - true: CW, false: CCW
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::setClockWise(bool cw) {
+	if (_moving_avg_exp_sin < 0) {
+		// Ensure positive angle.
+		angle = two_PI - static_cast<float>(acos(_moving_avg_exp_cos));
+	} else {
+		angle = static_cast<float>(acos(_moving_avg_exp_cos));
+	}
 
-	_clockWise = cw;
-	_lastAngleRaw = 0.0;
-	AMS_AS5048B::resetMovingAvgExp();
-	return;
+	angle *= AS5048B_RESOLUTION / two_PI;
+	return angle;
 }
 
-/**************************************************************************/
-/*!
-    @brief  writes OTP control register
-
-    @params[in]
-				unit8_t register value
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::progRegister(uint8_t regVal) {
-
-	AMS_AS5048B::writeReg(AS5048B_PROG_REG, regVal);
-	return;
+float
+AMS_AS5048B::get_moving_avg_exp(const int unit)
+{
+	return convert_angle(unit, _moving_avg_exp_angle);
 }
 
-/**************************************************************************/
-/*!
-    @brief  Burn values to the slave address OTP register
-
-    @params[in]
-				none
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::doProg(void) {
-
-	//enable special programming mode
-	AMS_AS5048B::progRegister(0xFD);
-	usleep(10000);
-
-	//set the burn bit: enables automatic programming procedure
-	AMS_AS5048B::progRegister(0x08);
-	usleep(10000);
-
-	//disable special programming mode
-	AMS_AS5048B::progRegister(0x00);
-	usleep(10000);
-
-	return;
+uint16_t
+AMS_AS5048B::magnitude_R()
+{
+	return read_reg_16(AS5048B_MAGNMSB_REG);
 }
 
-/**************************************************************************/
-/*!
-    @brief  Burn values to the zero position OTP register
-
-    @params[in]
-				none
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::doProgZero(void) {
-	//this will burn the zero position OTP register like described in the datasheet
-	//enable programming mode
-	AMS_AS5048B::progRegister(0x01);
-	usleep(10000);
-
-	//set the burn bit: enables automatic programming procedure
-	AMS_AS5048B::progRegister(0x08);
-	usleep(10000);
-
-	//read angle information (equals to 0)
-	AMS_AS5048B::readReg16(AS5048B_ANGLMSB_REG);
-	usleep(10000);
-
-	//enable verification
-	AMS_AS5048B::progRegister(0x40);
-	usleep(10000);
-
-	//read angle information (equals to 0)
-	AMS_AS5048B::readReg16(AS5048B_ANGLMSB_REG);
-	usleep(10000);
-
-	return;
+void
+AMS_AS5048B::print_info()
+{
+	perf_print_counter(_sample_perf);
+	perf_print_counter(_comms_errors);
+	printf("poll interval:  %u\n", _measure_interval);
+	_reports->print_info("report queue");
 }
 
-/**************************************************************************/
-/*!
-    @brief  write I2C address value (5 bits) into the address register
+void
+AMS_AS5048B::prog_register(const uint8_t reg_val)
+{
+	write_reg(AS5048B_PROG_REG, reg_val);
+}
 
-    @params[in]
-				unit8_t register value
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::addressRegW(uint8_t regVal) {
+uint8_t
+AMS_AS5048B::read_address_reg()
+{
+	return read_reg_8(AS5048B_ADDR_REG);
+}
 
-	// write the new chip address to the register
-	AMS_AS5048B::writeReg(AS5048B_ADDR_REG, regVal);
+void
+AMS_AS5048B::write_address_reg(const uint8_t reg_val)
+{
+	// Write the new chip address to the register
+	write_reg(AS5048B_ADDR_REG, reg_val);
 
-	// update our chip address with our 5 programmable bits
+	// Update our chip address with our 5 programmable bits
 	// the MSB is internally inverted, so we flip the leftmost bit
-	_chipAddress = ((regVal << 2) | (_chipAddress & 0b11)) ^ (1 << 6);
-	return;
+	_chip_address = ((reg_val << 2) | (_chip_address & 0b11)) ^ (1 << 6);
 }
 
-/**************************************************************************/
-/*!
-    @brief  reads I2C address register value
+float
+AMS_AS5048B::read_angle(const int unit, const bool new_measurement)
+{
+	float angle_raw = 0.f;
 
-    @params[in]
-				none
-    @returns
-				uint8_t register value
-*/
-/**************************************************************************/
-uint8_t AMS_AS5048B::addressRegR(void) {
-
-	return AMS_AS5048B::readReg8(AS5048B_ADDR_REG);
-}
-
-/**************************************************************************/
-/*!
-    @brief  sets current angle as the zero position
-
-    @params[in]
-				none
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::setZeroReg(void) {
-
-        AMS_AS5048B::zeroRegW((uint16_t) 0x00); //Issue closed by @MechatronicsWorkman and @oilXander. The last sequence avoids any offset for the new Zero position
-	uint16_t newZero = AMS_AS5048B::readReg16(AS5048B_ANGLMSB_REG);
-        AMS_AS5048B::zeroRegW(newZero);
-	return;
-}
-
-/**************************************************************************/
-/*!
-    @brief  writes the 2 bytes Zero position register value
-
-    @params[in]
-				unit16_t register value
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::zeroRegW(uint16_t regVal) {
-
-	AMS_AS5048B::writeReg(AS5048B_ZEROMSB_REG, (uint8_t) (regVal >> 6));
-	AMS_AS5048B::writeReg(AS5048B_ZEROLSB_REG, (uint8_t) (regVal & 0x3F));
-	return;
-}
-
-/**************************************************************************/
-/*!
-    @brief  reads the 2 bytes Zero position register value
-
-    @params[in]
-				none
-    @returns
-				uint16_t register value trimmed on 14 bits
-*/
-/**************************************************************************/
-uint16_t AMS_AS5048B::zeroRegR(void) {
-
-	return AMS_AS5048B::readReg16(AS5048B_ZEROMSB_REG);
-}
-
-/**************************************************************************/
-/*!
-    @brief  reads the 2 bytes magnitude register value
-
-    @params[in]
-				none
-    @returns
-				uint16_t register value trimmed on 14 bits
-*/
-/**************************************************************************/
-uint16_t AMS_AS5048B::magnitudeR(void) {
-
-	return AMS_AS5048B::readReg16(AS5048B_MAGNMSB_REG);
-}
-
-uint16_t AMS_AS5048B::angleRegR(void) {
-
-	return AMS_AS5048B::readReg16(AS5048B_ANGLMSB_REG);
-}
-
-/**************************************************************************/
-/*!
-    @brief  reads the 1 bytes auto gain register value
-
-    @params[in]
-				none
-    @returns
-				uint8_t register value
-*/
-/**************************************************************************/
-uint8_t AMS_AS5048B::getAutoGain(void) {
-
-	return AMS_AS5048B::readReg8(AS5048B_GAIN_REG);
-}
-
-/**************************************************************************/
-/*!
-    @brief  reads the 1 bytes diagnostic register value
-
-    @params[in]
-				none
-    @returns
-				uint8_t register value
-*/
-/**************************************************************************/
-uint8_t AMS_AS5048B::getDiagReg(void) {
-
-	return AMS_AS5048B::readReg8(AS5048B_DIAG_REG);
-}
-
-/**************************************************************************/
-/*!
-    @brief  reads current angle value and converts it into the desired unit
-
-    @params[in]
-				String unit : string expressing the unit of the angle. Sensor raw value as default
-    @params[in]
-				Boolean newVal : have a new measurement or use the last read one. True as default
-    @returns
-				Double angle value converted into the desired unit
-*/
-/**************************************************************************/
-double AMS_AS5048B::angleR(int unit, bool newVal) {
-
-	double angleRaw;
-
-	if (newVal) {
-		if(_clockWise) {
-			angleRaw = (double) (0b11111111111111 - AMS_AS5048B::readReg16(AS5048B_ANGLMSB_REG));
+	if (new_measurement) {
+		if(_clock_wise) {
+			angle_raw = static_cast<float>((0b11111111111111 - read_reg_16(AS5048B_ANGLMSB_REG)));
+		} else {
+			angle_raw = static_cast<float>(read_reg_16(AS5048B_ANGLMSB_REG));
 		}
-		else {
-			angleRaw = (double) AMS_AS5048B::readReg16(AS5048B_ANGLMSB_REG);
-		}
-		_lastAngleRaw = angleRaw;
-	}
-	else {
-		angleRaw = _lastAngleRaw;
+		_last_angle_raw = angle_raw;
+	} else {
+		angle_raw = _last_angle_raw;
 	}
 
-	return AMS_AS5048B::convertAngle(unit, angleRaw);
+	return convert_angle(unit, angle_raw);
 }
 
-/**************************************************************************/
-/*!
-    @brief  Performs an exponential moving average on the angle.
-			Works on Sine and Cosine of the angle to avoid issues 0°/360° discontinuity
-
-    @params[in]
-				none
-    @returns
-				none
-*/
-/**************************************************************************/
-void AMS_AS5048B::updateMovingAvgExp(void) {
-
-	//sine and cosine calculation on angles in radian
-
-	double angle = AMS_AS5048B::angleR(U_RAD, true);
-
-	if (_movingAvgCountLoop < EXP_MOVAVG_LOOP) {
-		_movingAvgExpSin += sin(angle);
-		_movingAvgExpCos += cos(angle);
-		if (_movingAvgCountLoop == (EXP_MOVAVG_LOOP - 1)) {
-			_movingAvgExpSin = _movingAvgExpSin / EXP_MOVAVG_LOOP;
-			_movingAvgExpCos = _movingAvgExpCos / EXP_MOVAVG_LOOP;
-		}
-		_movingAvgCountLoop ++;
-	}
-	else {
-		double movavgexpsin = _movingAvgExpSin + _movingAvgExpAlpha * (sin(angle) - _movingAvgExpSin);
-		double movavgexpcos = _movingAvgExpCos + _movingAvgExpAlpha * (cos(angle) - _movingAvgExpCos);
-		_movingAvgExpSin = movavgexpsin;
-		_movingAvgExpCos = movavgexpcos;
-		_movingAvgExpAngle = getExpAvgRawAngle();
-	}
-
-	return;
+uint16_t
+AMS_AS5048B::read_angle_reg()
+{
+	return read_reg_16(AS5048B_ANGLMSB_REG);
 }
 
-/**************************************************************************/
-/*!
-    @brief  sent back the exponential moving averaged angle in the desired unit
-
-    @params[in]
-				String unit : string expressing the unit of the angle. Sensor raw value as default
-    @returns
-				Double exponential moving averaged angle value
-*/
-/**************************************************************************/
-double AMS_AS5048B::getMovingAvgExp(int unit) {
-
-	return AMS_AS5048B::convertAngle(unit, _movingAvgExpAngle);
+uint8_t
+AMS_AS5048B::read_diagnostic_reg()
+{
+	return read_reg_8(AS5048B_DIAGNOSTIC_REG);
 }
 
-void AMS_AS5048B::resetMovingAvgExp(void) {
-
-	_movingAvgExpAngle = 0.0;
-	_movingAvgCountLoop = 0;
-	_movingAvgExpAlpha = 2.0 / (EXP_MOVAVG_N + 1.0);
-	return;
-}
-
-
-
-uint8_t AMS_AS5048B::readReg8(uint8_t address) {
-
-	uint8_t readValue;
-
+uint8_t
+AMS_AS5048B::read_reg_8(const uint8_t address)
+{
 	// First send to sensor register that we want to read
-	uint8_t cmd;
-	cmd = address;
-	int ok = transfer(&cmd, 2, nullptr, 0);
-	if(!ok) {
-		return 0;
+	uint8_t cmd = address;
+	int ret = transfer(&cmd, 2, nullptr, 0);
+
+	if(ret != PX4_OK) {
+		return ret;
 	}
 
-	int ret = transfer(nullptr, 0, &readValue, sizeof(readValue));
+	uint8_t read_value = 0;
+	ret = transfer(nullptr, 0, &read_value, sizeof(read_value));
 
 	if (ret != PX4_OK) {
 		perf_count(_comms_errors);
 		return ret;
 	}
-	return readValue;
+
+	return read_value;
 }
 
-uint16_t AMS_AS5048B::readReg16(uint8_t address) {
+uint16_t
+AMS_AS5048B::read_reg_16(const uint8_t address)
+{
 	//16 bit value got from 2 8bits registers (7..0 MSB + 5..0 LSB) => 14 bits value
-	uint16_t readValue = 0;
+	uint16_t read_value = 0;
 
 	// First send to sensor register that we want to read
-	uint8_t cmd;
-	cmd = address;
+	uint8_t cmd = address;
 	int ret = transfer(&cmd, 2, nullptr, 0);
+
 	if (ret != PX4_OK) {
 		perf_count(_comms_errors);
 	}
@@ -511,92 +607,334 @@ uint16_t AMS_AS5048B::readReg16(uint8_t address) {
 		return ret;
 	}
 
-	readValue = (((uint16_t) val[0]) << 6);
-	readValue += (val[1] & 0x3F);
-	/*
-	Serial.println(readArray[0], BIN);
-	Serial.println(readArray[1], BIN);
-	Serial.println(readValue, BIN);
-	*/
-	return readValue;
+	read_value = (((uint16_t) val[0]) << 6);
+	read_value += (val[1] & 0x3F);
+
+	return read_value;
 }
 
-void AMS_AS5048B::writeReg(uint8_t address, uint8_t value) {
-
-	uint8_t cmd[2] = { (uint8_t)(address), value};
-	int ok = transfer(cmd, 2, nullptr, 0);
-	if (!ok) {}//error handling
+uint16_t
+AMS_AS5048B::read_zero_reg()
+{
+	return read_reg_16(AS5048B_ZEROMSB_REG);
 }
 
-double AMS_AS5048B::convertAngle(int unit, double angle) {
+void
+AMS_AS5048B::Run()
+{
+	if(!_initialized) {
+		_initialized = init();
+	}
 
-	// convert raw sensor reading into angle unit
+	// Collect results.
+	if (OK != collect()) {
+		PX4_DEBUG("collection error");
+		return;
+	}
 
-	double angleConv;
+	ScheduleDelayed(_measure_interval);
+}
 
-	switch (unit) {
-		case U_RAW:
-			//Sensor raw measurement
-			angleConv = angle;
+void
+AMS_AS5048B::reset_moving_avg_exp()
+{
+	_moving_avg_exp_angle  = 0.f;
+	_moving_avg_count_loop = 0;
+	_moving_avg_exp_alpha  = 2.f / (EXP_MOVAVG_N + 1.f);
+}
+
+void
+AMS_AS5048B::set_clock_wise(const bool cw)
+{
+	_clock_wise = cw;
+	_last_angle_raw = 0.f;
+	reset_moving_avg_exp();
+}
+
+void
+AMS_AS5048B::set_zero_reg()
+{
+	// Issue closed by @MechatronicsWorkman and @oilXander.
+	// The last sequence avoids any offset for the new Zero position
+        write_zero_reg((uint16_t) 0x00);
+	uint16_t new_zero = read_reg_16(AS5048B_ANGLMSB_REG);
+        write_zero_reg(new_zero);
+}
+
+void
+AMS_AS5048B::start()
+{
+	// Reset the report ring and state machine.
+	_reports->flush();
+
+	// Schedule a cycle to start the driver.
+	ScheduleNow();
+}
+
+void
+AMS_AS5048B::stop()
+{
+	ScheduleClear();
+}
+
+void
+AMS_AS5048B::toggle_debug()
+{
+	_debug_flag = !_debug_flag;
+}
+
+void
+AMS_AS5048B::update_moving_avg_exp()
+{
+	// Sine and cosine calculation on angles in radians.
+	float angle = read_angle(U_RAD, true);
+
+	if (_moving_avg_count_loop < EXP_MOVAVG_LOOP) {
+		_moving_avg_exp_sin += static_cast<float>(sin(angle));
+		_moving_avg_exp_cos += static_cast<float>(cos(angle));
+
+		if (_moving_avg_count_loop == (EXP_MOVAVG_LOOP - 1)) {
+			_moving_avg_exp_sin = _moving_avg_exp_sin / EXP_MOVAVG_LOOP;
+			_moving_avg_exp_cos = _moving_avg_exp_cos / EXP_MOVAVG_LOOP;
+		}
+
+		_moving_avg_count_loop ++;
+
+	} else {
+		_moving_avg_exp_sin += _moving_avg_exp_alpha * (static_cast<float>(sin(angle)) - _moving_avg_exp_sin);
+		_moving_avg_exp_cos += _moving_avg_exp_alpha * (static_cast<float>(cos(angle)) - _moving_avg_exp_cos);
+		_moving_avg_exp_angle  = get_exp_avg_raw_angle();
+	}
+}
+
+void
+AMS_AS5048B::write_reg(const uint8_t address, const uint8_t reg_val)
+{
+	uint8_t cmd[2] = {address, reg_val};
+
+	int ret = transfer(cmd, 2, nullptr, 0);
+
+	if (ret != PX4_OK) {
+		PX4_ERR("write_reg()");
+	}
+}
+
+void
+AMS_AS5048B::write_zero_reg(const uint16_t reg_val)
+{
+	write_reg(AS5048B_ZEROMSB_REG, (uint8_t) (reg_val >> 6));
+	write_reg(AS5048B_ZEROLSB_REG, (uint8_t) (reg_val & 0x3F));
+}
+
+
+/**
+ * Local functions in support of the shell command.
+ */
+namespace as5048b
+{
+AMS_AS5048B *g_dev = nullptr;
+
+int reset();
+int start();
+int start_bus(const uint8_t i2c_bus = AMS_AS5048B_BASEADDR);
+int status();
+int stop();
+int usage();
+
+/**
+ * Reset the driver.
+ */
+int
+reset()
+{
+	if (g_dev != nullptr) {
+		g_dev->stop();
+		g_dev->start();
+		return PX4_OK;
+	}
+
+	return PX4_ERROR;
+}
+
+/**
+ * Attempt to start driver on all available I2C busses.
+ *
+ * This function will return as soon as the first sensor
+ * is detected on one of the available busses or if no
+ * sensors are detected.
+ *
+ */
+int
+start()
+{
+	if (g_dev != nullptr) {
+		PX4_ERR("already started");
+		return PX4_ERROR;
+	}
+
+	PX4_INFO("Starting driver wind");
+
+	for (unsigned i = 0; i < NUM_I2C_BUS_OPTIONS; i++) {
+		if (start_bus(i2c_bus_options[i]) == PX4_OK) {
+			return PX4_OK;
+		}
+	}
+
+	return PX4_ERROR;
+}
+
+/**
+ * Start the driver on a specific bus.
+ *
+ * This function only returns if the sensor is up and running
+ * or could not be detected successfully.
+ */
+int
+start_bus(const uint8_t i2c_bus)
+{
+	if (g_dev != nullptr) {
+		PX4_ERR("already started");
+		return PX4_OK;
+	}
+
+	// Instantiate the driver.
+	g_dev = new AMS_AS5048B(i2c_bus, AMS_AS5048B_BASEADDR, AMS_AS5048B_BASE_DEVICE_PATH);
+
+	if (g_dev == nullptr) {
+		delete g_dev;
+		return PX4_ERROR;
+	}
+
+	// Initialize the sensor.
+	if (g_dev->init() != PX4_OK) {
+		delete g_dev;
+		g_dev = nullptr;
+		return PX4_ERROR;
+	}
+
+	// Start the driver.
+	g_dev->start();
+
+	return PX4_OK;
+}
+
+/**
+ * Print the driver status.
+ */
+int
+status()
+{
+	if (g_dev == nullptr) {
+		PX4_ERR("driver not running");
+		return PX4_ERROR;
+	}
+
+	printf("state @ %p\n", g_dev);
+	g_dev->print_info();
+
+	return PX4_OK;
+}
+
+/**
+ * Stop the driver
+ */
+int
+stop()
+{
+	if (g_dev != nullptr) {
+		delete g_dev;
+		g_dev = nullptr;
+
+	} else {
+		PX4_ERR("driver not running");
+		return PX4_ERROR;
+	}
+
+	return PX4_OK;
+}
+
+/**
+ * Print usage info about the driver.
+ */
+int
+usage()
+{
+	PX4_INFO("usage: as5048b command [options]");
+	PX4_INFO("options:");
+	PX4_INFO("\t-b --bus i2cbus (%d)", AS5048B_BUS_DEFAULT);
+	PX4_INFO("\t-a --all");
+	PX4_INFO("command:");
+	PX4_INFO("\tstart|stop|reset");
+	return PX4_OK;
+}
+
+} // namespace as5048b
+
+
+/**
+ * Driver 'main' command.
+ */
+extern "C" __EXPORT int as5048b_main(int argc, char *argv[])
+{
+	const char *myoptarg = nullptr;
+
+	bool start_all = false;
+
+	int myoptind = 1;
+	int ch;
+
+	uint8_t i2c_bus = AS5048B_BUS_DEFAULT;
+
+	while ((ch = px4_getopt(argc, argv, "ab:", &myoptind, &myoptarg)) != EOF) {
+		switch (ch) {
+		case 'b':
+			i2c_bus = atoi(myoptarg);
 			break;
-		case U_TRN:
-			//full turn ratio
-			angleConv = (angle / AS5048B_RESOLUTION);
+
+		case 'a':
+			start_all = true;
 			break;
-		case U_DEG:
-			//degree
-			angleConv = (angle / AS5048B_RESOLUTION) * 360.0;
-			break;
-		case U_RAD:
-			//Radian
-			angleConv = (angle / AS5048B_RESOLUTION) * 2 * M_PI;
-			break;
-		case U_MOA:
-			//minute of arc
-			angleConv = (angle / AS5048B_RESOLUTION) * 60.0 * 360.0;
-			break;
-		case U_SOA:
-			//second of arc
-			angleConv = (angle / AS5048B_RESOLUTION) * 60.0 * 60.0 * 360.0;
-			break;
-		case U_GRAD:
-			//grade
-			angleConv = (angle / AS5048B_RESOLUTION) * 400.0;
-			break;
-		case U_MILNATO:
-			//NATO MIL
-			angleConv = (angle / AS5048B_RESOLUTION) * 6400.0;
-			break;
-		case U_MILSE:
-			//Swedish MIL
-			angleConv = (angle / AS5048B_RESOLUTION) * 6300.0;
-			break;
-		case U_MILRU:
-			//Russian MIL
-			angleConv = (angle / AS5048B_RESOLUTION) * 6000.0;
-			break;
+
 		default:
-			//no conversion => raw angle
-			angleConv = angle;
-			break;
+			return as5048b::usage();
+		}
 	}
-	return angleConv;
+
+	if (myoptind >= argc) {
+		return as5048b::usage();
+	}
+
+	// Reset the driver.
+	if (!strcmp(argv[myoptind], "reset")) {
+		return as5048b::reset();
+	}
+
+	// Start/load the driver.
+	if (!strcmp(argv[myoptind], "start")) {
+		if (start_all) {
+			return as5048b::start();
+
+		} else {
+			return as5048b::start_bus(i2c_bus);
+		}
+	}
+
+	// Print the driver status.
+	if (!strcmp(argv[myoptind], "status")) {
+		return as5048b::status();
+	}
+	
+	// Stop the driver
+	if (!strcmp(argv[myoptind], "stop")) {
+		return as5048b::stop();
+	}
+
+	// Print driver usage information.
+	if (!strcmp(argv[myoptind], "help") ||
+	    !strcmp(argv[myoptind], "info") ||
+	    !strcmp(argv[myoptind], "usage")) {
+		return as5048b::usage();
+	}
+
+	return as5048b::usage();
 }
-
-double AMS_AS5048B::getExpAvgRawAngle(void) {
-
-	double angle;
-	double twopi = 2 * M_PI;
-
-	if (_movingAvgExpSin < 0.0) {
-		angle = twopi - acos(_movingAvgExpCos);
-	}
-	else {
-		angle = acos(_movingAvgExpCos);
-	}
-
-	angle = (angle / twopi) * AS5048B_RESOLUTION;
-
-	return angle;
-}
-

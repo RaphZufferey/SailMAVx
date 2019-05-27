@@ -1,9 +1,9 @@
 The target system is: Generic - 1 - cortex-m4
-The host system is: Linux - 4.15.0-47-generic - x86_64
+The host system is: Linux - 4.18.0-20-generic - x86_64
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
-Compiler: /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-g++ 
+Compiler: /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-g++ 
 Build flags: 
-Id flags: -c
+Id flags: -c 
 
 The output was:
 0
@@ -11,12 +11,12 @@ The output was:
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
 
-The CXX compiler identification is GNU, found in "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/3.5.2/CompilerIdCXX/CMakeCXXCompilerId.o"
+The CXX compiler identification is GNU, found in "/home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/3.10.2/CompilerIdCXX/CMakeCXXCompilerId.o"
 
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
-Compiler: /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc 
+Compiler: /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc 
 Build flags: 
-Id flags: -c
+Id flags: -c 
 
 The output was:
 0
@@ -24,7 +24,7 @@ The output was:
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
 
-The C compiler identification is GNU, found in "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/3.5.2/CompilerIdC/CMakeCCompilerId.o"
+The C compiler identification is GNU, found in "/home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/3.10.2/CompilerIdC/CMakeCCompilerId.o"
 
 Checking whether the ASM compiler is GNU using "--version" matched "(GNU assembler)|(GCC)|(Free Software Foundation)":
 arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2017-q4-major) 7.2.1 20170904 (release) [ARM/embedded-7-branch revision 255204]
@@ -33,77 +33,77 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 Determining if the CXX compiler works passed with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_43ea0"
-[1/2] Building CXX object CMakeFiles/cmTC_43ea0.dir/testCXXCompiler.cxx.obj
-[2/2] Linking CXX executable cmTC_43ea0
+Run Build Command:"/usr/bin/ninja" "cmTC_e8775"
+[1/2] Building CXX object CMakeFiles/cmTC_e8775.dir/testCXXCompiler.cxx.obj
+[2/2] Linking CXX executable cmTC_e8775
 
 
 Detecting CXX compiler ABI info compiled with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_be7e2"
-[1/2] Building CXX object CMakeFiles/cmTC_be7e2.dir/CMakeCXXCompilerABI.cpp.obj
-[2/2] Linking CXX executable cmTC_be7e2
+Run Build Command:"/usr/bin/ninja" "cmTC_3ef44"
+[1/2] Building CXX object CMakeFiles/cmTC_3ef44.dir/CMakeCXXCompilerABI.cpp.obj
+[2/2] Linking CXX executable cmTC_3ef44
 Using built-in specs.
-Reading specs from /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/nosys.specs
+Reading specs from /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/nosys.specs
 rename spec link_gcc_c_sequence to nosys_link_gcc_c_sequence
-COLLECT_GCC=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-g++
-COLLECT_LTO_WRAPPER=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper
+COLLECT_GCC=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-g++
+COLLECT_LTO_WRAPPER=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper
 Target: arm-none-eabi
 Configured with: /tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/src/gcc/configure --target=arm-none-eabi --prefix=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native --libexecdir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/lib --infodir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/info --mandir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/man --htmldir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/html --pdfdir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/pdf --enable-languages=c,c++ --enable-plugins --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-none-eabi --with-sysroot=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/arm-none-eabi --build=x86_64-linux-gnu --host=x86_64-linux-gnu --with-gmp=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-mpfr=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-mpc=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-isl=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-libelf=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --with-pkgversion='GNU Tools for Arm Embedded Processors 7-2017-q4-major' --with-multilib-list=rmprofile
 Thread model: single
 gcc version 7.2.1 20170904 (release) [ARM/embedded-7-branch revision 255204] (GNU Tools for Arm Embedded Processors 7-2017-q4-major) 
-COMPILER_PATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/bin/
-LIBRARY_PATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib/
-COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_be7e2'
- /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2 -plugin /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so -plugin-opt=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccCtrJNI.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lnosys --sysroot=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi -X -o cmTC_be7e2 /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1 -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib CMakeFiles/cmTC_be7e2.dir/CMakeCXXCompilerABI.cpp.obj -lstdc++ -lm --start-group -lgcc -lc --end-group --start-group -lgcc -lc -lnosys --end-group /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o
-COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_be7e2'
+COMPILER_PATH=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/bin/
+LIBRARY_PATH=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib/
+COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_3ef44'
+ /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2 -plugin /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so -plugin-opt=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccN23Sow.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lnosys --sysroot=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi -X -o cmTC_3ef44 /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1 -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib CMakeFiles/cmTC_3ef44.dir/CMakeCXXCompilerABI.cpp.obj -lstdc++ -lm --start-group -lgcc -lc --end-group --start-group -lgcc -lc -lnosys --end-group /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o
+COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_3ef44'
 
 
 Parsed CXX implicit link information from above output:
-  link line regex: [^( *|.*[/\])(arm-none-eabi-ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
-  ignore line: [Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp]
+  link line regex: [^( *|.*[/\])(arm-none-eabi-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_be7e2"]
-  ignore line: [[1/2] Building CXX object CMakeFiles/cmTC_be7e2.dir/CMakeCXXCompilerABI.cpp.obj]
-  ignore line: [[2/2] Linking CXX executable cmTC_be7e2]
+  ignore line: [Run Build Command:"/usr/bin/ninja" "cmTC_3ef44"]
+  ignore line: [[1/2] Building CXX object CMakeFiles/cmTC_3ef44.dir/CMakeCXXCompilerABI.cpp.obj]
+  ignore line: [[2/2] Linking CXX executable cmTC_3ef44]
   ignore line: [Using built-in specs.]
-  ignore line: [Reading specs from /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/nosys.specs]
+  ignore line: [Reading specs from /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/nosys.specs]
   ignore line: [rename spec link_gcc_c_sequence to nosys_link_gcc_c_sequence]
-  ignore line: [COLLECT_GCC=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-g++]
-  ignore line: [COLLECT_LTO_WRAPPER=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper]
+  ignore line: [COLLECT_GCC=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-g++]
+  ignore line: [COLLECT_LTO_WRAPPER=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper]
   ignore line: [Target: arm-none-eabi]
   ignore line: [Configured with: /tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/src/gcc/configure --target=arm-none-eabi --prefix=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native --libexecdir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/lib --infodir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/info --mandir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/man --htmldir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/html --pdfdir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/pdf --enable-languages=c,c++ --enable-plugins --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-none-eabi --with-sysroot=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/arm-none-eabi --build=x86_64-linux-gnu --host=x86_64-linux-gnu --with-gmp=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-mpfr=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-mpc=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-isl=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-libelf=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --with-pkgversion='GNU Tools for Arm Embedded Processors 7-2017-q4-major' --with-multilib-list=rmprofile]
   ignore line: [Thread model: single]
   ignore line: [gcc version 7.2.1 20170904 (release) [ARM/embedded-7-branch revision 255204] (GNU Tools for Arm Embedded Processors 7-2017-q4-major) ]
-  ignore line: [COMPILER_PATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/bin/]
-  ignore line: [LIBRARY_PATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib/]
-  ignore line: [COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_be7e2']
-  link line: [ /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2 -plugin /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so -plugin-opt=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccCtrJNI.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lnosys --sysroot=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi -X -o cmTC_be7e2 /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1 -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib CMakeFiles/cmTC_be7e2.dir/CMakeCXXCompilerABI.cpp.obj -lstdc++ -lm --start-group -lgcc -lc --end-group --start-group -lgcc -lc -lnosys --end-group /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o]
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2] ==> ignore
+  ignore line: [COMPILER_PATH=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/bin/]
+  ignore line: [LIBRARY_PATH=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_3ef44']
+  link line: [ /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2 -plugin /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so -plugin-opt=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccN23Sow.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lnosys --sysroot=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi -X -o cmTC_3ef44 /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1 -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib CMakeFiles/cmTC_3ef44.dir/CMakeCXXCompilerABI.cpp.obj -lstdc++ -lm --start-group -lgcc -lc --end-group --start-group -lgcc -lc -lnosys --end-group /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o]
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2] ==> ignore
     arg [-plugin] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so] ==> ignore
-    arg [-plugin-opt=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper] ==> ignore
-    arg [-plugin-opt=-fresolution=/tmp/ccCtrJNI.res] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccN23Sow.res] ==> ignore
     arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
     arg [-plugin-opt=-pass-through=-lc] ==> ignore
     arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
     arg [-plugin-opt=-pass-through=-lc] ==> ignore
     arg [-plugin-opt=-pass-through=-lnosys] ==> ignore
-    arg [--sysroot=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi] ==> ignore
+    arg [--sysroot=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi] ==> ignore
     arg [-X] ==> ignore
     arg [-o] ==> ignore
-    arg [cmTC_be7e2] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o] ==> ignore
-    arg [-L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1] ==> dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1]
-    arg [-L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc] ==> dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc]
-    arg [-L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib] ==> dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib]
-    arg [-L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib] ==> dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib]
-    arg [CMakeFiles/cmTC_be7e2.dir/CMakeCXXCompilerABI.cpp.obj] ==> ignore
+    arg [cmTC_3ef44] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o] ==> ignore
+    arg [-L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1] ==> dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1]
+    arg [-L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc] ==> dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc]
+    arg [-L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib] ==> dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib]
+    arg [-L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib] ==> dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib]
+    arg [CMakeFiles/cmTC_3ef44.dir/CMakeCXXCompilerABI.cpp.obj] ==> ignore
     arg [-lstdc++] ==> lib [stdc++]
     arg [-lm] ==> lib [m]
     arg [--start-group] ==> ignore
@@ -115,27 +115,92 @@ Parsed CXX implicit link information from above output:
     arg [-lc] ==> lib [c]
     arg [-lnosys] ==> lib [nosys]
     arg [--end-group] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o] ==> ignore
-  remove lib [gcc]
-  remove lib [gcc]
-  collapse library dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1] ==> [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc/arm-none-eabi/7.2.1]
-  collapse library dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc] ==> [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc]
-  collapse library dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib] ==> [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
-  collapse library dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib] ==> [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
-  implicit libs: [stdc++;m;c;c;nosys]
-  implicit dirs: [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc/arm-none-eabi/7.2.1;/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc;/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o] ==> ignore
+  collapse library dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1] ==> [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc/arm-none-eabi/7.2.1]
+  collapse library dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc] ==> [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc]
+  collapse library dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib] ==> [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
+  collapse library dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib] ==> [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
+  implicit libs: [stdc++;m;gcc;c;gcc;c;nosys]
+  implicit dirs: [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc/arm-none-eabi/7.2.1;/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc;/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
   implicit fwks: []
 
 
 
 
-Detecting CXX [-std=c++14] compiler features compiled with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Detecting CXX [-std=c++1z] compiler features compiled with the following output:
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_5e7be"
-[1/2] Building CXX object CMakeFiles/cmTC_5e7be.dir/feature_tests.cxx.obj
-[2/2] Linking CXX executable cmTC_5e7be
+Run Build Command:"/usr/bin/ninja" "cmTC_8fdbc"
+[1/2] Building CXX object CMakeFiles/cmTC_8fdbc.dir/feature_tests.cxx.obj
+[2/2] Linking CXX executable cmTC_8fdbc
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++14] compiler features compiled with the following output:
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/ninja" "cmTC_0ef42"
+[1/2] Building CXX object CMakeFiles/cmTC_0ef42.dir/feature_tests.cxx.obj
+[2/2] Linking CXX executable cmTC_0ef42
 
 
     Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
@@ -198,11 +263,11 @@ Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_5e7be"
 
 
 Detecting CXX [-std=c++11] compiler features compiled with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_26039"
-[1/2] Building CXX object CMakeFiles/cmTC_26039.dir/feature_tests.cxx.obj
-[2/2] Linking CXX executable cmTC_26039
+Run Build Command:"/usr/bin/ninja" "cmTC_2e229"
+[1/2] Building CXX object CMakeFiles/cmTC_2e229.dir/feature_tests.cxx.obj
+[2/2] Linking CXX executable cmTC_2e229
 
 
     Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
@@ -265,11 +330,11 @@ Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_26039"
 
 
 Detecting CXX [-std=c++98] compiler features compiled with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_85d59"
-[1/2] Building CXX object CMakeFiles/cmTC_85d59.dir/feature_tests.cxx.obj
-[2/2] Linking CXX executable cmTC_85d59
+Run Build Command:"/usr/bin/ninja" "cmTC_3b3ae"
+[1/2] Building CXX object CMakeFiles/cmTC_3b3ae.dir/feature_tests.cxx.obj
+[2/2] Linking CXX executable cmTC_3b3ae
 
 
     Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
@@ -330,77 +395,77 @@ Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_85d59"
     Feature record: CXX_FEATURE:0cxx_variadic_macros
     Feature record: CXX_FEATURE:0cxx_variadic_templates
 Determining if the C compiler works passed with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_7756f"
-[1/2] Building C object CMakeFiles/cmTC_7756f.dir/testCCompiler.c.obj
-[2/2] Linking C executable cmTC_7756f
+Run Build Command:"/usr/bin/ninja" "cmTC_ce71c"
+[1/2] Building C object CMakeFiles/cmTC_ce71c.dir/testCCompiler.c.obj
+[2/2] Linking C executable cmTC_ce71c
 
 
 Detecting C compiler ABI info compiled with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_b314a"
-[1/2] Building C object CMakeFiles/cmTC_b314a.dir/CMakeCCompilerABI.c.obj
-[2/2] Linking C executable cmTC_b314a
+Run Build Command:"/usr/bin/ninja" "cmTC_b7fe4"
+[1/2] Building C object CMakeFiles/cmTC_b7fe4.dir/CMakeCCompilerABI.c.obj
+[2/2] Linking C executable cmTC_b7fe4
 Using built-in specs.
-Reading specs from /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/nosys.specs
+Reading specs from /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/nosys.specs
 rename spec link_gcc_c_sequence to nosys_link_gcc_c_sequence
-COLLECT_GCC=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc
-COLLECT_LTO_WRAPPER=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper
+COLLECT_GCC=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc
+COLLECT_LTO_WRAPPER=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper
 Target: arm-none-eabi
 Configured with: /tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/src/gcc/configure --target=arm-none-eabi --prefix=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native --libexecdir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/lib --infodir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/info --mandir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/man --htmldir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/html --pdfdir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/pdf --enable-languages=c,c++ --enable-plugins --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-none-eabi --with-sysroot=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/arm-none-eabi --build=x86_64-linux-gnu --host=x86_64-linux-gnu --with-gmp=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-mpfr=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-mpc=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-isl=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-libelf=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --with-pkgversion='GNU Tools for Arm Embedded Processors 7-2017-q4-major' --with-multilib-list=rmprofile
 Thread model: single
 gcc version 7.2.1 20170904 (release) [ARM/embedded-7-branch revision 255204] (GNU Tools for Arm Embedded Processors 7-2017-q4-major) 
-COMPILER_PATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/bin/
-LIBRARY_PATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib/
-COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_b314a'
- /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2 -plugin /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so -plugin-opt=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccWdtPHR.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lnosys --sysroot=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi -X -o cmTC_b314a /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1 -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib CMakeFiles/cmTC_b314a.dir/CMakeCCompilerABI.c.obj --start-group -lgcc -lc --end-group --start-group -lgcc -lc -lnosys --end-group /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o
-COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_b314a'
+COMPILER_PATH=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/bin/
+LIBRARY_PATH=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib/
+COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_b7fe4'
+ /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2 -plugin /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so -plugin-opt=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccRVqs2I.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lnosys --sysroot=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi -X -o cmTC_b7fe4 /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1 -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib CMakeFiles/cmTC_b7fe4.dir/CMakeCCompilerABI.c.obj --start-group -lgcc -lc --end-group --start-group -lgcc -lc -lnosys --end-group /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o
+COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_b7fe4'
 
 
 Parsed C implicit link information from above output:
-  link line regex: [^( *|.*[/\])(arm-none-eabi-ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
-  ignore line: [Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp]
+  link line regex: [^( *|.*[/\])(arm-none-eabi-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_b314a"]
-  ignore line: [[1/2] Building C object CMakeFiles/cmTC_b314a.dir/CMakeCCompilerABI.c.obj]
-  ignore line: [[2/2] Linking C executable cmTC_b314a]
+  ignore line: [Run Build Command:"/usr/bin/ninja" "cmTC_b7fe4"]
+  ignore line: [[1/2] Building C object CMakeFiles/cmTC_b7fe4.dir/CMakeCCompilerABI.c.obj]
+  ignore line: [[2/2] Linking C executable cmTC_b7fe4]
   ignore line: [Using built-in specs.]
-  ignore line: [Reading specs from /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/nosys.specs]
+  ignore line: [Reading specs from /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/nosys.specs]
   ignore line: [rename spec link_gcc_c_sequence to nosys_link_gcc_c_sequence]
-  ignore line: [COLLECT_GCC=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc]
-  ignore line: [COLLECT_LTO_WRAPPER=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper]
+  ignore line: [COLLECT_GCC=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc]
+  ignore line: [COLLECT_LTO_WRAPPER=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper]
   ignore line: [Target: arm-none-eabi]
   ignore line: [Configured with: /tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/src/gcc/configure --target=arm-none-eabi --prefix=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native --libexecdir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/lib --infodir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/info --mandir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/man --htmldir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/html --pdfdir=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/share/doc/gcc-arm-none-eabi/pdf --enable-languages=c,c++ --enable-plugins --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-none-eabi --with-sysroot=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/install-native/arm-none-eabi --build=x86_64-linux-gnu --host=x86_64-linux-gnu --with-gmp=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-mpfr=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-mpc=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-isl=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-libelf=/tmp/jenkins/jenkins-GCC-7-build_toolchain_docker-633_20171130_1512067137/build-native/host-libs/usr --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --with-pkgversion='GNU Tools for Arm Embedded Processors 7-2017-q4-major' --with-multilib-list=rmprofile]
   ignore line: [Thread model: single]
   ignore line: [gcc version 7.2.1 20170904 (release) [ARM/embedded-7-branch revision 255204] (GNU Tools for Arm Embedded Processors 7-2017-q4-major) ]
-  ignore line: [COMPILER_PATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/bin/]
-  ignore line: [LIBRARY_PATH=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/:/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib/]
-  ignore line: [COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_b314a']
-  link line: [ /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2 -plugin /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so -plugin-opt=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccWdtPHR.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lnosys --sysroot=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi -X -o cmTC_b314a /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1 -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib -L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib CMakeFiles/cmTC_b314a.dir/CMakeCCompilerABI.c.obj --start-group -lgcc -lc --end-group --start-group -lgcc -lc -lnosys --end-group /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o /home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o]
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2] ==> ignore
+  ignore line: [COMPILER_PATH=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/bin/]
+  ignore line: [LIBRARY_PATH=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/:/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-specs=nosys.specs' '-v' '-o' 'cmTC_b7fe4']
+  link line: [ /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2 -plugin /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so -plugin-opt=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccRVqs2I.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lnosys --sysroot=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi -X -o cmTC_b7fe4 /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1 -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib -L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib CMakeFiles/cmTC_b7fe4.dir/CMakeCCompilerABI.c.obj --start-group -lgcc -lc --end-group --start-group -lgcc -lc -lnosys --end-group /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o /home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o]
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/collect2] ==> ignore
     arg [-plugin] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so] ==> ignore
-    arg [-plugin-opt=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper] ==> ignore
-    arg [-plugin-opt=-fresolution=/tmp/ccWdtPHR.res] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccRVqs2I.res] ==> ignore
     arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
     arg [-plugin-opt=-pass-through=-lc] ==> ignore
     arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
     arg [-plugin-opt=-pass-through=-lc] ==> ignore
     arg [-plugin-opt=-pass-through=-lnosys] ==> ignore
-    arg [--sysroot=/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi] ==> ignore
+    arg [--sysroot=/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi] ==> ignore
     arg [-X] ==> ignore
     arg [-o] ==> ignore
-    arg [cmTC_b314a] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o] ==> ignore
-    arg [-L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1] ==> dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1]
-    arg [-L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc] ==> dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc]
-    arg [-L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib] ==> dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib]
-    arg [-L/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib] ==> dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib]
-    arg [CMakeFiles/cmTC_b314a.dir/CMakeCCompilerABI.c.obj] ==> ignore
+    arg [cmTC_b7fe4] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crti.o] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtbegin.o] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/crt0.o] ==> ignore
+    arg [-L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1] ==> dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1]
+    arg [-L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc] ==> dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc]
+    arg [-L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib] ==> dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib]
+    arg [-L/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib] ==> dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib]
+    arg [CMakeFiles/cmTC_b7fe4.dir/CMakeCCompilerABI.c.obj] ==> ignore
     arg [--start-group] ==> ignore
     arg [-lgcc] ==> lib [gcc]
     arg [-lc] ==> lib [c]
@@ -410,27 +475,25 @@ Parsed C implicit link information from above output:
     arg [-lc] ==> lib [c]
     arg [-lnosys] ==> lib [nosys]
     arg [--end-group] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o] ==> ignore
-    arg [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o] ==> ignore
-  remove lib [gcc]
-  remove lib [gcc]
-  collapse library dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1] ==> [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc/arm-none-eabi/7.2.1]
-  collapse library dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc] ==> [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc]
-  collapse library dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib] ==> [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
-  collapse library dir [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib] ==> [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
-  implicit libs: [c;c;nosys]
-  implicit dirs: [/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc/arm-none-eabi/7.2.1;/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc;/home/arlpx/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtend.o] ==> ignore
+    arg [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/crtn.o] ==> ignore
+  collapse library dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1] ==> [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc/arm-none-eabi/7.2.1]
+  collapse library dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc] ==> [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc]
+  collapse library dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib] ==> [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
+  collapse library dir [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/bin/../arm-none-eabi/lib] ==> [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
+  implicit libs: [gcc;c;gcc;c;nosys]
+  implicit dirs: [/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc/arm-none-eabi/7.2.1;/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/lib/gcc;/home/raph18/gcc-arm-none-eabi-7-2017-q4-major/arm-none-eabi/lib]
   implicit fwks: []
 
 
 
 
 Detecting C [-std=c11] compiler features compiled with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_8c85a"
-[1/2] Building C object CMakeFiles/cmTC_8c85a.dir/feature_tests.c.obj
-[2/2] Linking C executable cmTC_8c85a
+Run Build Command:"/usr/bin/ninja" "cmTC_75482"
+[1/2] Building C object CMakeFiles/cmTC_75482.dir/feature_tests.c.obj
+[2/2] Linking C executable cmTC_75482
 
 
     Feature record: C_FEATURE:1c_function_prototypes
@@ -440,11 +503,11 @@ Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_8c85a"
 
 
 Detecting C [-std=c99] compiler features compiled with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_8f8a4"
-[1/2] Building C object CMakeFiles/cmTC_8f8a4.dir/feature_tests.c.obj
-[2/2] Linking C executable cmTC_8f8a4
+Run Build Command:"/usr/bin/ninja" "cmTC_6704b"
+[1/2] Building C object CMakeFiles/cmTC_6704b.dir/feature_tests.c.obj
+[2/2] Linking C executable cmTC_6704b
 
 
     Feature record: C_FEATURE:1c_function_prototypes
@@ -454,11 +517,11 @@ Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_8f8a4"
 
 
 Detecting C [-std=c90] compiler features compiled with the following output:
-Change Dir: /home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
+Change Dir: /home/raph18/SailMAV/build/px4_fmu-v4_default/CMakeFiles/CMakeTmp
 
-Run Build Command:"/home/arlpx/ninja/ninja" "cmTC_deb19"
-[1/2] Building C object CMakeFiles/cmTC_deb19.dir/feature_tests.c.obj
-[2/2] Linking C executable cmTC_deb19
+Run Build Command:"/usr/bin/ninja" "cmTC_4eb7c"
+[1/2] Building C object CMakeFiles/cmTC_4eb7c.dir/feature_tests.c.obj
+[2/2] Linking C executable cmTC_4eb7c
 
 
     Feature record: C_FEATURE:1c_function_prototypes

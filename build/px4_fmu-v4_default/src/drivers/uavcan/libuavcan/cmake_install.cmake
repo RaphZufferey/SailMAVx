@@ -1,4 +1,4 @@
-# Install script for directory: /home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/uavcan/libuavcan
+# Install script for directory: /home/raph18/SailMAV/src/drivers/uavcan/libuavcan
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,15 +27,20 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/uavcan" TYPE DIRECTORY FILES "/home/arlpx/Documents/SailMAVpx/SailMAV/src/drivers/uavcan/libuavcan/dsdl")
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/uavcan" TYPE DIRECTORY FILES "/home/raph18/SailMAV/src/drivers/uavcan/libuavcan/dsdl")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/posix/cmake_install.cmake")
-  include("/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/posix/cmake_install.cmake")
+  include("/home/raph18/SailMAV/build/px4_fmu-v4_default/src/drivers/uavcan/libuavcan/libuavcan_drivers/stm32/driver/cmake_install.cmake")
 
 endif()
 

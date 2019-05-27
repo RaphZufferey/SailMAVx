@@ -3,10 +3,10 @@
 /* Do not edit! */
 #pragma once
 
-#define PX4_GIT_VERSION_STR  "20a59f3961ca710bc1c0596f26e0890d96ea27c9"
-#define PX4_GIT_VERSION_BINARY 0x20a59f3961ca710b
-#define PX4_GIT_TAG_STR  "v1.9.0-rc1-34-g20a59f3-dirty"
-#define PX4_GIT_BRANCH_NAME  "master"
+#define PX4_GIT_VERSION_STR  "c51080f243f338f87df8daf83c4cc2ce218dc5fe"
+#define PX4_GIT_VERSION_BINARY 0xc51080f243f338f8
+#define PX4_GIT_TAG_STR  "v1.9.0-beta1-670-gc51080f243-dirty"
+#define PX4_GIT_BRANCH_NAME  "as5048b_sensor"
 
 #define ECL_LIB_GIT_VERSION_STR  "a27a43eafa8f4dd514e89984f5394260a36ea4f6"
 #define ECL_LIB_GIT_VERSION_BINARY 0xa27a43eafa8f4dd5

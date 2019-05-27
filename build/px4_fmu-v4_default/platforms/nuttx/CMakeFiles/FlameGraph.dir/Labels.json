@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/platforms/nuttx/CMakeFiles/FlameGraph"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/platforms/nuttx/CMakeFiles/FlameGraph"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/platforms/nuttx/CMakeFiles/FlameGraph.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/platforms/nuttx/CMakeFiles/FlameGraph.rule"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/platforms/nuttx/CMakeFiles/FlameGraph-complete.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/platforms/nuttx/CMakeFiles/FlameGraph-complete.rule"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-install.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-install.rule"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-mkdir.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-mkdir.rule"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-download.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-download.rule"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-update.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-update.rule"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-patch.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-patch.rule"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-configure.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-configure.rule"
 		},
 		{
-			"file" : "/home/arlpx/Documents/SailMAVpx/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-build.rule"
+			"file" : "/home/raph18/SailMAV/build/px4_fmu-v4_default/external/Stamp/FlameGraph/FlameGraph-build.rule"
 		}
 	],
 	"target" : 
