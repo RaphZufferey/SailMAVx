@@ -426,13 +426,9 @@ AMS_AS5048B::flash_prog_zero()
 	read_reg_16(AS5048B_ANGLMSB_REG);
 	usleep(10000);
 
-<<<<<<< HEAD
 	// Enable verification.
 	prog_register(0x40);
 	usleep(10000);
-=======
-	//int fdd = cdev::VFile::createFile("/tmp/file0", O_RDONLY);
->>>>>>> master
 
 	// Read angle information (equals to 0).
 	read_reg_16(AS5048B_ANGLMSB_REG);
