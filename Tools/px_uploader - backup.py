@@ -550,7 +550,7 @@ class uploader(object):
     def identify(self):
         self.__determineInterface()
         # make sure we are in sync before starting
-        #self.__sync()
+        self.__sync()
 
         # get the bootloader protocol ID first
         self.bl_rev = self.__getInfo(uploader.INFO_BL_REV)
