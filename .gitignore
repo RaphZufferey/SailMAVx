@@ -68,4 +68,4 @@ posix-configs/SITL/init/test/*_generated
 .kdev4/*
 *.kdev4
 
-.github/
+.github/*
