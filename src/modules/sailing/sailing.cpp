@@ -33,7 +33,7 @@
 
 
 #include "sailing.h"
-//pushpush
+//push
 
 //px4_module_params.h to get the DEFINE_PARAMETERS macro
 #include <px4_module_params.h>
