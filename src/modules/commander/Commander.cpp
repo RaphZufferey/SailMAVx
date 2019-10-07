@@ -3263,11 +3263,9 @@ Commander::update_control_mode()
 	case vehicle_status_s::NAVIGATION_STATE_AUTO_MISSION:
 	case vehicle_status_s::NAVIGATION_STATE_AUTO_LOITER:
 	case vehicle_status_s::NAVIGATION_STATE_AUTO_TAKEOFF:
-<<<<<<< HEAD
 		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
-=======
->>>>>>> px4upstream/master
+
 		control_mode.flag_control_auto_enabled = true;
 		control_mode.flag_control_rates_enabled = true;
 		control_mode.flag_control_attitude_enabled = true;
@@ -3278,12 +3276,11 @@ Commander::update_control_mode()
 		break;
 
 	case vehicle_status_s::NAVIGATION_STATE_AUTO_LANDGPSFAIL:
-<<<<<<< HEAD
+
 		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
-=======
->>>>>>> px4upstream/master
+
 		control_mode.flag_control_rates_enabled = true;
 		control_mode.flag_control_attitude_enabled = true;
 		control_mode.flag_control_climb_rate_enabled = true;
@@ -3297,11 +3294,10 @@ Commander::update_control_mode()
 
 	case vehicle_status_s::NAVIGATION_STATE_DESCEND:
 		/* TODO: check if this makes sense */
-<<<<<<< HEAD
+
 		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
-=======
->>>>>>> px4upstream/master
+
 		control_mode.flag_control_auto_enabled = true;
 		control_mode.flag_control_rates_enabled = true;
 		control_mode.flag_control_attitude_enabled = true;
@@ -3310,7 +3306,7 @@ Commander::update_control_mode()
 
 	case vehicle_status_s::NAVIGATION_STATE_TERMINATION:
 		/* disable all controllers on termination */
-<<<<<<< HEAD
+
 		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
@@ -3325,17 +3321,12 @@ Commander::update_control_mode()
 		control_mode.flag_control_termination_enabled = true;
 		break;
 
-	case vehicle_status_s::NAVIGATION_STATE_OFFBOARD:
+	case vehicle_status_s::NAVIGATION_STATE_OFFBOARD: {
 		control_mode.flag_control_sail_enabled = false;
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_offboard_enabled = true;
-=======
-		control_mode.flag_control_termination_enabled = true;
-		break;
 
-	case vehicle_status_s::NAVIGATION_STATE_OFFBOARD: {
->>>>>>> px4upstream/master
 
 			const offboard_control_mode_s &offboard_control_mode = _offboard_control_mode_sub.get();
 
