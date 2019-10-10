@@ -189,10 +189,12 @@ void Sailing::parameters_update(bool force)
 
 void Sailing::fold_sails(int direction){
 	if (direction == UPWARDS) {
-		/* code */
+		//act.control[?] = UP;
+				//orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 	}
 	else if (direction == DOWNWARDS) {
-
+		//act.control[?] = UP;
+				//orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 	}
 }
 
@@ -251,7 +253,7 @@ void Sailing::run()
 				fold_sails(UPWARDS);
 				//act.control[?] = UP;
 				//orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
-				px4_usleep(1000000);
+				px4_usleep(10000);
 				sails_are_down = false;
 			}
 
@@ -288,7 +290,7 @@ void Sailing::run()
 				act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
 				// act.control[actuator_controls_s::INDEX_THROTTLE] = manual_sp.z;	 // thrust
 				//act.timestamp = hrt_absolute_time();
-				//PX4_INFO("Rudder: %d", (int)(act.control[2]*100.0f));
+				//PX4_INFO("Rudder: %d", (int)(act.control[actuator_controls_s::INDEX_YAW]*100.0f));
 				// Write to actuators
 				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 			}
@@ -296,6 +298,7 @@ void Sailing::run()
 
 		if(!sails_are_down){
 			//bring sails down
+			PX4_INFO("Folding sails down");
 			fold_sails(DOWNWARDS);
 			sails_are_down = true;
 

@@ -17,6 +17,7 @@ px4_add_board(
 
 	DRIVERS
 		adc
+		angle_sensor
 		barometer # all available barometer drivers
 		batt_smbus
 		camera_capture
@@ -44,7 +45,7 @@ px4_add_board(
 		test_ppm
 		tone_alarm
 		uavcan
-		as5048b
+		#as5048b
 
 	MODULES
 		attitude_estimator_q
