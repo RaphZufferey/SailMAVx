@@ -56,7 +56,7 @@ factors (to reverse the servo movement) and adjust the offset, scaling and
 endpoints to suit.
 
 M: 1
-S: 0 2  10000  10000      0 -10000  10000
+S: 0 2  10000  10000      0 -7000  7000
 
 
 CH5: Elevator mixer
@@ -69,7 +69,7 @@ factors (to reverse the servo movement) and adjust the offset, scaling and
 endpoints to suit.
 
 M: 1
-S: 0 1  -10000  -10000      0 -10000  10000
+S: 0 1  -10000  -10000      0 -7000  7000
 
 
 
