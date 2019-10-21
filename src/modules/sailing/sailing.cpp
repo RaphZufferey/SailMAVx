@@ -155,6 +155,7 @@ Sailing::Sailing(int example_param, bool example_flag)
 	memset(&act, 0, sizeof(act));
 	memset(&param_upd, 0, sizeof(param_upd));
 	memset(&raw_att, 0, sizeof(raw_att));
+	memset(&wind_ang, 0, sizeof(wind_ang));
 }
 
 void Sailing::vehicle_poll()
@@ -209,14 +210,15 @@ void Sailing::run()
 	manual_sp_sub = 			orb_subscribe(ORB_ID(manual_control_setpoint));// subscribe to manual control setpoint
  	vehicle_control_mode_sub = 	orb_subscribe(ORB_ID(vehicle_control_mode));// subscribe and advertise to vehicle control mode
 	vehicle_status_sub = 		orb_subscribe(ORB_ID(vehicle_status));
-
+	sensor_wind_angle_sub = 	orb_subscribe(ORB_ID(sensor_wind_angle));
 
 	vehicle_control_mode_pub = 	orb_advertise(ORB_ID(vehicle_control_mode), &vehicle_control_mode);
 	act_pub = 					orb_advertise(ORB_ID(actuator_controls_0), &act);/* advertise to actuator_control topic */
 
 	// Options
 	orb_set_interval(vehicle_attitude_sub, 100); //200 /* limit the update rate to X ms */
-	
+	orb_set_interval(sensor_wind_angle_sub, 100);  // higher would also be enough
+
 	vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
 
 
@@ -227,8 +229,8 @@ void Sailing::run()
 
 	
 	bool updated = false;
-	param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
-	param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
+	//param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
+	//param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
 		
 	// Get parameter updates
 	parameters_update(true);
@@ -277,9 +279,15 @@ void Sailing::run()
 					orb_copy(ORB_ID(vehicle_attitude), vehicle_attitude_sub, &raw_att);
 				}
 
+				orb_check(sensor_wind_angle_sub, &updated);
+				if(updated){
+					orb_copy(ORB_ID(sensor_wind_angle), sensor_wind_angle_sub, &wind_ang);
+				}
+
 				float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi();
-				float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180;
-				float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
+				//float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180;
+				//float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
+				float wnd_to_boat = wind_ang; // angle should be in DEG
 				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
 				float cmd_sail_angle = sail_angle/sail_angle_max;
 				// PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
@@ -311,6 +319,7 @@ void Sailing::run()
 	orb_unsubscribe(manual_sp_sub);
 	orb_unsubscribe(vehicle_control_mode_sub);
 	orb_unsubscribe(vehicle_status_sub);
+	orb_unsubscribe(sensor_wind_angle_sub);
 }
 
 int sailing_main(int argc, char *argv[])
