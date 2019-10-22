@@ -282,15 +282,21 @@ void Sailing::run()
 				orb_check(sensor_wind_angle_sub, &updated);
 				if(updated){
 					orb_copy(ORB_ID(sensor_wind_angle), sensor_wind_angle_sub, &wind_ang);
+					//PX4_INFO("wind: \t%d", (int)((wind_ang.)));
+					//read_angle
 				}
-
+				
 				float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi();
 				//float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180;
 				//float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
 				float wnd_to_boat = wind_ang; // angle should be in DEG
 				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
 				float cmd_sail_angle = sail_angle/sail_angle_max;
+				PX4_INFO("Yaw  \t%d, wind: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((wnd_to_boat)));
 				// PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
+
+				// Test: position control
+				float yaw_err = current_yaw; // or vel?
 
 		 		//Control 
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
@@ -303,6 +309,7 @@ void Sailing::run()
 				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 			}
 		}
+		// as5048b
 
 		if(!sails_are_down){
 			//bring sails down
