@@ -63,6 +63,7 @@
 #include <uORB/topics/sensor_combined.h>                // this topics hold the acceleration data
 #include <uORB/topics/actuator_controls.h>              // this topic gives the actuators control input
 #include <uORB/topics/vehicle_attitude.h>                  // this topic holds the orientation of the hippocampus
+#include <uORB/topics/vehicle_odometry.h>                // this msg structure holds for odometry
 #include <uORB/topics/parameter_update.h>
 #include <uORB/topics/manual_control_setpoint.h> 
 // additions for navigation modes
@@ -117,6 +118,7 @@ private:
 	// Subscription
 	int vehicle_control_mode_sub;
 	int vehicle_attitude_sub;
+	int vehicle_odometry_sub;
 	int parameter_update_sub;
 	int manual_sp_sub;
 	int param_update_sub;
@@ -125,6 +127,7 @@ private:
 	struct manual_control_setpoint_s manual_sp; 		// RC input
 	struct actuator_controls_s act;						// actuator outputs manual
 	struct vehicle_attitude_s raw_att;					// attitude
+	struct vehicle_odometry_s raw_odom;
 	struct parameter_update_s param_upd;				// parameter handling (with QGC)
 	struct vehicle_control_mode_s vehicle_control_mode;	// flags
 	struct vehicle_status_s vehicle_status;				// navigation state
