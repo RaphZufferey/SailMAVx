@@ -215,7 +215,7 @@ void Sailing::run()
 	vehicle_status_sub = 		orb_subscribe(ORB_ID(vehicle_status));
 
     //vehicle odometry subscription
-        vehicle_odometry_sub = 		orb_subscribe(ORB_ID(vehicle_odometry));
+    vehicle_odometry_sub = 		orb_subscribe(ORB_ID(vehicle_odometry));
 
 	vehicle_control_mode_pub = 	orb_advertise(ORB_ID(vehicle_control_mode), &vehicle_control_mode);
 	act_pub = 			orb_advertise(ORB_ID(actuator_controls_0), &act);/* advertise to actuator_control topic */
@@ -232,7 +232,12 @@ void Sailing::run()
 	fds[0].fd = vehicle_attitude_sub;
 	fds[0].events = POLLIN; //CHECK, WHAT IF I AM WAITING FOR MULTIPLE?
 
-	
+	float min_wnd = 40; // This is the tolerance angle between boat and wind. It should represent the minumum orientation in which the boat can not be push by the wind anymore
+	double max_rudder_angle = M_PI/4; // hypothesis: 45 degree max rudder angle 
+
+	//float Kp = 1; // PI parameters
+	//float Ki = 1; // PI parameters
+
 	bool updated = false;
 	bool updatedOdom = false;
 	param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
@@ -308,8 +313,8 @@ void Sailing::run()
 				float velocity_x = raw_odom.vx;
 				float velocity_y = raw_odom.vy;
 				float heading_setpoint = 0; //setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
-				float course_angle = atan(velocity_x/velocity_y); //actual angle of the boat trajectory
-				double max_rudder_angle = M_PI/4; // hypothesis: 45 degree max rudder angle (put on top of the file?)
+				float course_angle = atan2(velocity_y/velocity_x) * 180 / PI; //actual angle of the boat trajectory  check
+				
 				float Theta = 0; //This is the (upper)Theta angle in the reference  
 				double error_heading = Theta - heading_setpoint; // /epsilon_{theta}
 
@@ -331,9 +336,8 @@ void Sailing::run()
 				}
 
 				// check if the robot can make the operation (in the case of strong downwind)
-				float min_wnd = 40; //put on top of the file? This is tolerance angle between boat and wind. It should represent the minumum orientation in which the boat can not be push by the wind anymore
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
-					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface (maybe it is better to put a PI?)
+					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface 
 				    cmd_sail_angle = sail_angle/sail_angle_max; //I presume it goes from 0 to 1
 				    // give power to the throttle
 				}
@@ -342,8 +346,7 @@ void Sailing::run()
 				/*
 				float P_error = Kp*error_heading;
 				float I_error+= Ki*error_heading;
-				string result = (time < 18) ? "Good day." : "Good evening."
-				rudder = (P_error + I_error < max_rudder_angle || - (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : max_rudder_angle; //rudder is computed by PI controller until it reaches the max threshold
+				rudder = (P_error + I_error < max_rudder_angle && - (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading)*max_rudder_angle; //rudder is computed by PI controller until it reaches the max threshold
 				*/
 				
 				float cmd_rudder_angle = rudder/max_rudder_angle; // I presume it goes from 0 to 1
