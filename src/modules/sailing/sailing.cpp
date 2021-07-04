@@ -315,15 +315,10 @@ void Sailing::run()
 				float velocity_x = raw_odom.vx;
 				float velocity_y = raw_odom.vy;
 				float heading_setpoint = 0; //setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
-<<<<<<< HEAD
+
 				float course_angle = atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
-				
-				float Theta = 0; //This is the (upper)Theta angle in the reference  
-=======
-				float course_angle = atan2(velocity_y/velocity_x) * 180 / PI; //actual angle of the boat trajectory  check
 
 				float Theta = 0; //This is the (upper)Theta angle in the reference
->>>>>>> 8f6bd1426b8822cd3f43fe2db1e4500b2990f9ca
 				double error_heading = Theta - heading_setpoint; // /epsilon_{theta}
 
 				// construct to decide the value of (upper)Theta to decide
