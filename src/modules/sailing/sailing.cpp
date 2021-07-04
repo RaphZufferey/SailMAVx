@@ -45,7 +45,7 @@
 
 float myPi = (float)M_PI;
 
-template <typename T> int sgn(T val) { 
+template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
@@ -152,7 +152,7 @@ Sailing *Sailing::instantiate(int argc, char *argv[])
 Sailing::Sailing(int example_param, bool example_flag)
 	: ModuleParams(nullptr)
 {
-	memset(&manual_sp, 0, sizeof(manual_sp));	
+	memset(&manual_sp, 0, sizeof(manual_sp));
 	memset(&act, 0, sizeof(act));
 	memset(&param_upd, 0, sizeof(param_upd));
 	memset(&raw_att, 0, sizeof(raw_att));
@@ -209,7 +209,7 @@ void Sailing::run()
 
 	// Subscriptions and publications
 	parameter_update_sub = 		orb_subscribe(ORB_ID(parameter_update));
-	vehicle_attitude_sub = 		orb_subscribe(ORB_ID(vehicle_attitude));// 	/* subscribe to control_state topic */ 
+	vehicle_attitude_sub = 		orb_subscribe(ORB_ID(vehicle_attitude));// 	/* subscribe to control_state topic */
 	manual_sp_sub = 			orb_subscribe(ORB_ID(manual_control_setpoint));// subscribe to manual control setpoint
  	vehicle_control_mode_sub = 	orb_subscribe(ORB_ID(vehicle_control_mode));// subscribe and advertise to vehicle control mode
 	vehicle_status_sub = 		orb_subscribe(ORB_ID(vehicle_status));
@@ -223,7 +223,7 @@ void Sailing::run()
 	// Options
 	orb_set_interval(vehicle_attitude_sub, 100); //200 /* limit the update rate to X ms */
 	orb_set_interval(vehicle_odometry_sub, 100); //200 /* limit the update rate to X ms */
-	
+
 	vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
 
 
@@ -233,7 +233,7 @@ void Sailing::run()
 	fds[0].events = POLLIN; //CHECK, WHAT IF I AM WAITING FOR MULTIPLE?
 
 	float min_wnd = 40; // This is the tolerance angle between boat and wind. It should represent the minumum orientation in which the boat can not be push by the wind anymore
-	double max_rudder_angle = M_PI/4; // hypothesis: 45 degree max rudder angle 
+	double max_rudder_angle = M_PI/4; // hypothesis: 45 degree max rudder angle
 
 	//float Kp = 1; // PI parameters
 	//float Ki = 1; // PI parameters
@@ -242,7 +242,7 @@ void Sailing::run()
 	bool updatedOdom = false;
 	param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
 	param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
-		
+
 	// Get parameter updates
 	parameters_update(true);
 
@@ -250,14 +250,15 @@ void Sailing::run()
 	PX4_INFO("sail controller loop starting");
 
 	while (!should_exit()) {
- 
+
 		vehicle_poll();
+		PX4_INFO("sail controller: vehicle_status.nav_state %d", vehicle_status.nav_state);
 
 		// Not checking for flags at this point, doesnt seem to be required
 		while((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL))
 		//while((vehicle_status.nav_state == 0))
 				// && (vehicle_control_mode.flag_control_sail_enabled))
-			{
+		{
 
 			vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
 
@@ -268,9 +269,11 @@ void Sailing::run()
 				fold_sails(UPWARDS);
 				//act.control[?] = UP;
 				//orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
-				px4_usleep(10000);
+				px4_sleep(3);
 				sails_are_down = false;
 			}
+
+			PX4_INFO("sail controller: polling vehicle_attitude_sub");
 
 			// wait for up to 1000ms for data
 			int pret = px4_poll(fds, (sizeof(fds) / sizeof(fds[0])), 1000);
@@ -283,7 +286,6 @@ void Sailing::run()
 				continue;
 
 			} else if (fds[0].revents & POLLIN) { // SLOW RUNNING LOOP
-			
 				orb_copy(ORB_ID(manual_control_setpoint), manual_sp_sub, &manual_sp);
 				PX4_INFO("manual sp: %f ", (double)(manual_sp.r)*100); //,(int)(manual_sp.x*100.0f),(int)(manual_sp.y*100.0f));
 
@@ -292,7 +294,7 @@ void Sailing::run()
 					orb_copy(ORB_ID(vehicle_attitude), vehicle_attitude_sub, &raw_att);
 				}
 
-				//same for odometry 
+				//same for odometry
 				orb_check(vehicle_odometry_sub, &updatedOdom); // instead of odometry_sub we can use vehicle_gps_position
 				if(updatedOdom){/* copy sensors raw data into local buffer */
 					orb_copy(ORB_ID(vehicle_odometry), vehicle_odometry_sub, &raw_odom);
@@ -306,19 +308,25 @@ void Sailing::run()
 				PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
 
 				// trajectory planning??
-				
+
 				// rudder
 				// reference rudder control: Position keeping control of an autonomous sailboat Par 3.1
 				double rudder;
 				float velocity_x = raw_odom.vx;
 				float velocity_y = raw_odom.vy;
 				float heading_setpoint = 0; //setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
+<<<<<<< HEAD
 				float course_angle = atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
 				
 				float Theta = 0; //This is the (upper)Theta angle in the reference  
+=======
+				float course_angle = atan2(velocity_y/velocity_x) * 180 / PI; //actual angle of the boat trajectory  check
+
+				float Theta = 0; //This is the (upper)Theta angle in the reference
+>>>>>>> 8f6bd1426b8822cd3f43fe2db1e4500b2990f9ca
 				double error_heading = Theta - heading_setpoint; // /epsilon_{theta}
 
-				// construct to decide the value of (upper)Theta to decide 
+				// construct to decide the value of (upper)Theta to decide
 				if (cos(current_yaw - course_angle) - cos(error_heading) >= 0){
 					Theta = course_angle;
 				}
@@ -337,7 +345,7 @@ void Sailing::run()
 
 				// check if the robot can make the operation (in the case of strong downwind)
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
-					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface 
+					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
 				    cmd_sail_angle = sail_angle/sail_angle_max; //I presume it goes from 0 to 1
 				    // give power to the throttle
 				}
@@ -348,13 +356,14 @@ void Sailing::run()
 				float I_error+= Ki*error_heading;
 				rudder = (P_error + I_error < max_rudder_angle && - (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading)*max_rudder_angle; //rudder is computed by PI controller until it reaches the max threshold
 				*/
-				
+
 				float cmd_rudder_angle = rudder/max_rudder_angle; // I presume it goes from 0 to 1
 
+				PX4_INFO("sail controller: getting ready to publish");
 
-		 		//Control 
+		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
-				//act.control[actuator_controls_s::INDEX_PITCH] DEACTIVATED 
+				//act.control[actuator_controls_s::INDEX_PITCH] DEACTIVATED
 				//act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
 				act.control[actuator_controls_s::INDEX_YAW] = cmd_rudder_angle;  // yaw = RUDDER
 				// act.control[actuator_controls_s::INDEX_THROTTLE] = manual_sp.z;	 // thrust
@@ -373,7 +382,7 @@ void Sailing::run()
 
 		}
 		// if we are not in the right mode, go to sleep
-		px4_usleep(50000);		
+		px4_usleep(50000);
 	}
 	orb_unsubscribe(vehicle_attitude_sub);
 	orb_unsubscribe(parameter_update_sub);
