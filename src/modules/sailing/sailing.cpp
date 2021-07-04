@@ -175,6 +175,11 @@ void Sailing::vehicle_poll()
 	if (updated) {
 	    orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
 	}
+
+    orb_check(act_pub, &updated);
+	if (updated) {
+	    orb_copy(ORB_ID(actuator_controls_0), act_pub, &act);
+	}
 }
 
 void Sailing::parameters_update(bool force)
