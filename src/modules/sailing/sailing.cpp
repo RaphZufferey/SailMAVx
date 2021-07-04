@@ -232,7 +232,7 @@ void Sailing::run()
 	fds[0].fd = vehicle_attitude_sub;
 	fds[0].events = POLLIN; //CHECK, WHAT IF I AM WAITING FOR MULTIPLE?
 
-	float min_wnd = 40; // This is the tolerance angle between boat and wind. It should represent the minumum orientation in which the boat can not be push by the wind anymore
+	float min_wnd = 40* M_PI/180; // This is the tolerance angle between boat and wind. It should represent the minumum orientation in which the boat can not be push by the wind anymore
 	double max_rudder_angle = M_PI/4; // hypothesis: 45 degree max rudder angle
 
 	//float Kp = 1; // PI parameters
@@ -255,8 +255,8 @@ void Sailing::run()
 		PX4_INFO("sail controller: vehicle_status.nav_state %d", vehicle_status.nav_state);
 
 		// Not checking for flags at this point, doesnt seem to be required
-		while((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL))
-		//while((vehicle_status.nav_state == 0))
+		//if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL))
+		if((vehicle_status.nav_state == 0))
 				// && (vehicle_control_mode.flag_control_sail_enabled))
 		{
 
@@ -341,7 +341,7 @@ void Sailing::run()
 				// check if the robot can make the operation (in the case of strong downwind)
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
 					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
-				    cmd_sail_angle = sail_angle/sail_angle_max; //I presume it goes from 0 to 1
+				    	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from 0 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
 				    // give power to the throttle
 				}
 
@@ -352,9 +352,10 @@ void Sailing::run()
 				rudder = (P_error + I_error < max_rudder_angle && - (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading)*max_rudder_angle; //rudder is computed by PI controller until it reaches the max threshold
 				*/
 
-				float cmd_rudder_angle = rudder/max_rudder_angle; // I presume it goes from 0 to 1
+				float cmd_rudder_angle = rudder; // I presume it goes from 0 to 1 ??
 
-				PX4_INFO("sail controller: getting ready to publish");
+				//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
+				PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_n %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle, (double)wnd_angle_to_n_rad);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
@@ -369,15 +370,21 @@ void Sailing::run()
 			}
 		}
 
-		if(!sails_are_down){
+		else{
+			if(!sails_are_down){
 			//bring sails down
 			PX4_INFO("Folding sails down");
 			fold_sails(DOWNWARDS);
 			sails_are_down = true;
+			px4_sleep(3);
 
 		}
-		// if we are not in the right mode, go to sleep
+
 		px4_usleep(50000);
+
+		}
+
+
 	}
 	orb_unsubscribe(vehicle_attitude_sub);
 	orb_unsubscribe(parameter_update_sub);
