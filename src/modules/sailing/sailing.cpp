@@ -299,7 +299,7 @@ void Sailing::run()
 				}
 
 				float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi(); //psi corresponds to Yaw (heading)
-				float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180;
+				float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180.0f;
 				float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
 				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
 				float cmd_sail_angle = sail_angle/sail_angle_max; //I presume it goes from 0 to 1
@@ -313,7 +313,7 @@ void Sailing::run()
 				float velocity_x = raw_odom.vx;
 				float velocity_y = raw_odom.vy;
 				float heading_setpoint = 0; //setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
-				float course_angle = atan2(velocity_y/velocity_x) * 180 / PI; //actual angle of the boat trajectory  check
+				float course_angle = atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
 				
 				float Theta = 0; //This is the (upper)Theta angle in the reference  
 				double error_heading = Theta - heading_setpoint; // /epsilon_{theta}
