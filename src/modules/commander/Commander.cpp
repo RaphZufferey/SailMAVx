@@ -533,9 +533,9 @@ int commander_main(int argc, char *argv[])
 		} else if(internal_state.main_state == 14) {
 			PX4_INFO("Current flight mode is orbit");
 		} else if(internal_state.main_state == 15) {
-			PX4_INFO("Current flight mode is max");
-		} else if(internal_state.main_state == 16) {
 			PX4_INFO("Current flight mode is sail");
+		} else if(internal_state.main_state == 16) {
+			PX4_INFO("Current flight mode is max");
 		}
 		return 0;
 	}
