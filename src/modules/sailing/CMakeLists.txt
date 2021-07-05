@@ -38,4 +38,5 @@ px4_add_module(
 	SRCS
 		sailing.cpp
 	DEPENDS
+		platforms_common
 	)
