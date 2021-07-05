@@ -259,9 +259,9 @@ void Sailing::run()
 		PX4_INFO("sail controller: vehicle_status.nav_state %d", vehicle_status.nav_state);
 
 		// Not checking for flags at this point, doesnt seem to be required
-		if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL))
+		if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL)
+				&& (vehicle_control_mode.flag_control_sail_enabled))
 		//if((vehicle_status.nav_state == 0))
-				// && (vehicle_control_mode.flag_control_sail_enabled))
 		{
 
 			vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
