@@ -66,6 +66,7 @@
 #include <uORB/topics/vehicle_odometry.h>                // this msg structure holds for odometry
 #include <uORB/topics/parameter_update.h>
 #include <uORB/topics/manual_control_setpoint.h> 
+#include <drivers/drv_hrt.h>
 // additions for navigation modes
 #include <uORB/topics/vehicle_control_mode.h>
 #include <uORB/topics/vehicle_status.h>

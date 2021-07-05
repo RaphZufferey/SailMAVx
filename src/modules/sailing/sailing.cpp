@@ -176,10 +176,6 @@ void Sailing::vehicle_poll()
 	    orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
 	}
 
-    orb_check(act_pub, &updated);
-	if (updated) {
-	    orb_copy(ORB_ID(actuator_controls_0), act_pub, &act);
-	}
 }
 
 void Sailing::parameters_update(bool force)
@@ -239,6 +235,9 @@ void Sailing::run()
 
 	float min_wnd = 40* M_PI/180; // This is the tolerance angle between boat and wind. It should represent the minumum orientation in which the boat can not be push by the wind anymore
 	double max_rudder_angle = M_PI/4; // hypothesis: 45 degree max rudder angle
+	float Theta; //This is the (upper)Theta angle in the reference
+	double rudder;
+
 
 	//float Kp = 1; // PI parameters
 	//float Ki = 1; // PI parameters
@@ -260,8 +259,8 @@ void Sailing::run()
 		PX4_INFO("sail controller: vehicle_status.nav_state %d", vehicle_status.nav_state);
 
 		// Not checking for flags at this point, doesnt seem to be required
-		//if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL))
-		if((vehicle_status.nav_state == 0))
+		if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL))
+		//if((vehicle_status.nav_state == 0))
 				// && (vehicle_control_mode.flag_control_sail_enabled))
 		{
 
@@ -316,15 +315,13 @@ void Sailing::run()
 
 				// rudder
 				// reference rudder control: Position keeping control of an autonomous sailboat Par 3.1
-				double rudder;
 				float velocity_x = raw_odom.vx;
 				float velocity_y = raw_odom.vy;
 				float heading_setpoint = 0; //setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
 
 				float course_angle = atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
 
-				float Theta = 0; //This is the (upper)Theta angle in the reference
-				double error_heading = Theta - heading_setpoint; // /epsilon_{theta}
+				float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
 
 				// construct to decide the value of (upper)Theta to decide
 				if (cos(current_yaw - course_angle) - cos(error_heading) >= 0){
@@ -346,7 +343,7 @@ void Sailing::run()
 				// check if the robot can make the operation (in the case of strong downwind)
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
 					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
-				    	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from 0 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
+				    cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from 0 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
 				    // give power to the throttle
 				}
 
@@ -357,10 +354,10 @@ void Sailing::run()
 				rudder = (P_error + I_error < max_rudder_angle && - (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading)*max_rudder_angle; //rudder is computed by PI controller until it reaches the max threshold
 				*/
 
-				float cmd_rudder_angle = rudder; // I presume it goes from 0 to 1 ??
+				float cmd_rudder_angle = rudder/max_rudder_angle; // I presume it goes from 0 to 1 ??
 
 				//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
-				PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_n %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle, (double)wnd_angle_to_n_rad);
+				PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_n %f Theta %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_angle_to_n_rad, (double)Theta);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
@@ -368,7 +365,7 @@ void Sailing::run()
 				//act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
 				act.control[actuator_controls_s::INDEX_YAW] = cmd_rudder_angle;  // yaw = RUDDER
 				// act.control[actuator_controls_s::INDEX_THROTTLE] = manual_sp.z;	 // thrust
-				//act.timestamp = hrt_absolute_time();
+				act.timestamp = hrt_absolute_time();
 				//PX4_INFO("Rudder: %d", (int)(act.control[actuator_controls_s::INDEX_YAW]*100.0f));
 				// Write to actuators
 				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
