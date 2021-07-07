@@ -22,3 +22,14 @@ PARAM_DEFINE_INT32(NEW, 2);
  * @group Custom Parameters
  */
 PARAM_DEFINE_INT32(WND_ANGLE_TO_N, 180);
+
+/**
+ * Sailmav water temperature
+ *
+ * Test of to add a new parameter.
+ *
+ * @min -20
+ * @max 50
+ * @group Custom Parameters
+ */
+PARAM_DEFINE_FLOAT(SMV_H2O_T, 0);
