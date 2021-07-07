@@ -244,7 +244,7 @@ void Sailing::run()
 
 	float min_wnd = 40* M_PI/180; // This is the tolerance angle between boat and wind. It should represent the minumum orientation in which the boat can not be push by the wind anymore
 	double max_rudder_angle = M_PI/4; // hypothesis: 45 degree max rudder angle
-	float Theta; //This is the (upper)Theta angle in the reference
+	//float Theta; //This is the (upper)Theta angle in the reference
 	double rudder;
 
 	float cmd_sail_throttle = 0; // from 0 to 1
@@ -323,15 +323,17 @@ void Sailing::run()
 
 				float course_angle = atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
 
-				float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
+				// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
+				float error_heading = current_yaw - heading_setpoint; // /epsilon_{theta}
+
 
 				// construct to decide the value of (upper)Theta to decide
-				if (cos(current_yaw - course_angle) - cos(error_heading) >= 0){
+				/*if (cos(current_yaw - course_angle) - cos(error_heading) >= 0){
 					Theta = course_angle;
 				}
 				else{
 					Theta = current_yaw;
-				}
+				}*/
 
 				// construct to apply the control
 				if(cos(error_heading) >= 0){
