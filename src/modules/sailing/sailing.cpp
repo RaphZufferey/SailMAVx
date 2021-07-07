@@ -228,6 +228,11 @@ void Sailing::run()
 	vehicle_control_mode_pub = 	orb_advertise(ORB_ID(vehicle_control_mode), &vehicle_control_mode);
 	act_pub = 			orb_advertise(ORB_ID(actuator_controls_0), &act);/* advertise to actuator_control topic */
 
+
+	if(act_pub != nullptr){
+		PX4_WARN("act_pub is null");
+	}
+
 	// Options
 	orb_set_interval(vehicle_attitude_sub, 100); //200 /* limit the update rate to X ms */
 	orb_set_interval(vehicle_odometry_sub, 100); //200 /* limit the update rate to X ms */
@@ -368,7 +373,7 @@ void Sailing::run()
 				act.control[actuator_controls_s::INDEX_YAW] = cmd_rudder_angle;  // yaw = RUDDER
 				act.control[actuator_controls_s::INDEX_THROTTLE] = cmd_sail_throttle;	 // thrust
 				act.timestamp = hrt_absolute_time();
-				//PX4_INFO("Rudder: %d", (int)(act.control[actuator_controls_s::INDEX_YAW]*100.0f));
+				PX4_INFO("Rudder: %d", (int)(act.control[actuator_controls_s::INDEX_YAW]*100.0f));
 				// Write to actuators
 				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 			}
