@@ -1,27 +1,22 @@
 #include "src/Mavlink/PixhawkArduinoMAVLink.h"
 
-#include "src/ELVH/ELVH.h"
-#include "src/SSC/SSC.h"
-
-#include "src/Sampling/Sampling.h"
-#include "src/Sampling/Sample.h"
-#include "src/Jets/Jets.h"
-#include "src/Attitude/Attitude.h"
-
 #include <Wire.h>
 #include <Scheduler.h>
 #include <HardwareSerial.h>
 
 #include "src/Helper/Helper.h"
 
+#include "src/Tsys01/Tsys01.h"
+
+#define powerPin A0
+#define TEMPERATURE_MIN 1.0
+#define TEMPERATURE_MAX 30.0
 
 HardwareSerial &hs = Serial1;
 PixhawkArduinoMAVLink mav(hs);
-ELVH dp_sensor;
-SSC p_sensor;
-Sampling sampling;
-Jets jets;
-Attitude attitude;
+
+Tsys01 sensor;
+float temperature = 0.0;
 
 void setup() {
 
@@ -32,12 +27,41 @@ void setup() {
   #endif
   delay(2000);
 
-  Wire.begin();
-  dp_sensor.init();
-  p_sensor.init();
-  sampling.init();
-  jets.init();
-  attitude.init();
+//////////////////   Sensor setup /////////////////
+uint8_t pass = HIGH;
+
+do {
+
+    Serial.println("Testing I2C...");
+    //Pass if test is successful
+    pass = HIGH;
+
+    //Re-init sensor.
+    sensor = Tsys01(TSYS01_I2C, powerPin);
+
+    sensor.startAdc();
+
+    //ADC needs 10 ms
+    delay(10);
+    temperature = sensor.readTemperature();
+
+    Serial.print("Temperature is ");
+    Serial.println(temperature);
+
+    if(temperature > TEMPERATURE_MIN && temperature < TEMPERATURE_MAX)
+    {
+      Serial.println("I2C Communication OK, temperature is in valid range");
+    }
+    else
+    {
+      Serial.println("I2C Communication OK, Temperature is not in valid range");
+      pass = LOW;
+    }
+
+  //LED stays low if I2C does not pass
+
+  }while(pass==LOW);
+
 
   while(!mav.begin()){
     Serial.println("Not Connected!");
@@ -47,38 +71,21 @@ void setup() {
   delay(1000);
 
   Scheduler.startLoop(mavlink_listen_loop);
-  Scheduler.startLoop(external_input);
+
+
 }
 
 //**************************************************************************
 // main loops, reading sensors and running control
 void loop() {
-  // put your main code here, to run repeatedly:
-  // Update pressure and temperature readings
-  dp_sensor.read();
-  //dp_sensor.print();
-  //dp_sensor.test_calculate();
 
-  p_sensor.read();
-  //p_sensor.print();
-  //p_sensor.test_calculate();
+    sensor.startAdc();
+    delay(10);
+    temperature = sensor.readTemperature();
 
-  sampling.loop();
-
-  if (sampling.get_status() == 4){
-    mav.send_debug(MD_STATUS, millis(), 1, sampling.get_current_sample_nb(), sampling.get_status());
-    mav.send_debug(MD_STREAM, millis(), p_sensor.get_pressure(), dp_sensor.get_pressure(), sampling.get_current_sample_volume());
-  }
-
-
-
-  jets.loop();
-  //jets.print();
-
-  attitude.set_current_depth(p_sensor.get_pressure()/100);
-  attitude.loop();
-  
-  delay(50);
+  mav.set_param("SMV_H20_T",temperature, 9);
+  mav.send_debug("SMV_H20_T",millis(),temperature,mav.longitude,mav.latitude);
+  delay(200);
 }
 
 //**************************************************************************
@@ -86,64 +93,4 @@ void loop() {
 void mavlink_listen_loop() {
   mav.Readdata();
   //yield called in the function
-  if(mav.cha8 > 0.6){
-    sampling.start_sampling();
-  } else if (mav.cha8 < 0.4) {
-    sampling.stop_sampling(Sampling::stop_reason_t::SR_SERIAL_KILL);
-  }
-}
-
-//**************************************************************************
-// external input loops = user inputs
-void external_input(){
-
-  if(Serial.available()>0){
-    byte data = Serial.read();
-    Serial.print("received ");
-    Serial.println(data);
-    if('0' <= data && data <='9'){
-      switch(data){
-        case '0':
-        {
-          sampling.start_sampling();
-        } break;
-
-        case '1':
-        {
-          sampling.stop_sampling(Sampling::stop_reason_t::SR_SERIAL_KILL);
-        } break;
-
-        case '2':
-        {
-          sampling.start_purging();
-        } break;
-
-        case '3':
-        {
-          sampling.stop_purging(Sampling::stop_reason_t::SR_SERIAL_KILL);
-        } break;
-
-        case '4':
-        {
-          Serial.print(sampling.get_status_str());
-          Sample sample0 = sampling.get_sample(0);
-          sample0.print();
-          Sample sample1 = sampling.get_sample(1);
-          sample1.print();
-        } break;
-
-        case '5':
-        {
-          Serial.print("starting attitude control");
-          attitude.start_stabilize();
-        } break;
-
-        case '6':
-        {
-          Serial.print("stopping attitude control");
-          attitude.stop_stabilize();
-        } break;
-      }
-    }
-  }
 }

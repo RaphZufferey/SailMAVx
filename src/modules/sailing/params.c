@@ -21,7 +21,8 @@ PARAM_DEFINE_INT32(NEW, 2);
  * @max 180
  * @group Custom Parameters
  */
-PARAM_DEFINE_INT32(WND_ANGLE_TO_N, 180);
+
+PARAM_DEFINE_INT32(WND_ANGLE_TO_N, 0);
 
 /**
  * Sailmav water temperature
@@ -33,3 +34,4 @@ PARAM_DEFINE_INT32(WND_ANGLE_TO_N, 180);
  * @group Custom Parameters
  */
 PARAM_DEFINE_FLOAT(SMV_H2O_T, 0);
+

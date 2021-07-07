@@ -69,3 +69,5 @@ posix-configs/SITL/init/test/*_generated
 *.kdev4
 
 .github/*
+
+.vscode/*

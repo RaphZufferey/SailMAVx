@@ -140,8 +140,16 @@ void PixhawkArduinoMAVLink::Readdata(){
           cha6 = scaledRC(data.chan6_raw);
           cha7 = scaledRC(data.chan7_raw);
           cha8 = scaledRC(data.chan8_raw);
-
-
+          delay(10);
+          break;
+        }
+        case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:{
+          Serial.println();
+          Serial.print("Reading GPS");
+          mavlink_global_position_int_t data;
+          mavlink_msg_global_position_int_decode(&msg, &data);
+          latitude = (data.lat);
+          longitude = (data.lon);
           delay(10);
           break;
         }
