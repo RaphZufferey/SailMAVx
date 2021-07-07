@@ -366,7 +366,7 @@ void Sailing::run()
 				float cmd_rudder_angle = rudder/max_rudder_angle; // It goes from -1 to 1
 
 				//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
-				PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_n %f Theta %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_angle_to_n_rad, (double)Theta);
+				PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_n %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_angle_to_n_rad);//, (double)Theta);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
