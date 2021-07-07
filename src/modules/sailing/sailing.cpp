@@ -40,8 +40,12 @@
 #include "params.c"
 
 
-#define DOWNWARDS 0
-#define UPWARDS 1
+#define DOWNWARDS (0)
+#define UPWARDS (1)
+#define ACT_CTRL_SAIL_UP (1)
+#define ACT_CTRL_SAIL_DOWN (-1)
+
+#define ACT_CTRL_PITCH_TRIM (0)
 
 float myPi = (float)M_PI;
 
@@ -153,7 +157,7 @@ Sailing::Sailing(int example_param, bool example_flag)
 	: ModuleParams(nullptr)
 {
 	memset(&manual_sp, 0, sizeof(manual_sp));
-	memset(&act, 0, sizeof(act));
+	memset(&act, 100, sizeof(act));
 	memset(&param_upd, 0, sizeof(param_upd));
 	memset(&raw_att, 0, sizeof(raw_att));
 	memset(&raw_odom, 0, sizeof(raw_odom));
@@ -161,19 +165,18 @@ Sailing::Sailing(int example_param, bool example_flag)
 
 void Sailing::vehicle_poll()
 {
-    bool updated;
+	bool updated;
 
-    /* check if vehicle control mode has changed */
-    orb_check(vehicle_control_mode_sub, &updated);
-
-    if (updated) {
-        orb_copy(ORB_ID(vehicle_control_mode), vehicle_control_mode_sub, &vehicle_control_mode);
-    }
-
-    /* check if vehicle status has changed */
-    orb_check(vehicle_status_sub, &updated);
+	/* check if vehicle control mode has changed */
+	orb_check(vehicle_control_mode_sub, &updated);
 	if (updated) {
-	    orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
+		orb_copy(ORB_ID(vehicle_control_mode), vehicle_control_mode_sub, &vehicle_control_mode);
+	}
+
+	/* check if vehicle status has changed */
+	orb_check(vehicle_status_sub, &updated);
+	if (updated) {
+		orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
 	}
 
 }
@@ -194,12 +197,16 @@ void Sailing::parameters_update(bool force)
 
 void Sailing::fold_sails(int direction){
 	if (direction == UPWARDS) {
-		//act.control[?] = UP;
-				//orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
+		PX4_INFO("Folding sails up, 3 sec");
+		act.control[actuator_controls_s::INDEX_LANDING_GEAR] = ACT_CTRL_SAIL_UP;
+		orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
+		px4_sleep(3);
 	}
 	else if (direction == DOWNWARDS) {
-		//act.control[?] = UP;
-				//orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
+		PX4_INFO("Folding sails down, 3 sec");
+		act.control[actuator_controls_s::INDEX_LANDING_GEAR] = ACT_CTRL_SAIL_DOWN;
+		orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
+		px4_sleep(3);
 	}
 }
 
@@ -211,25 +218,19 @@ void Sailing::run()
 	// Subscriptions and publications
 	parameter_update_sub = 		orb_subscribe(ORB_ID(parameter_update));
 	vehicle_attitude_sub = 		orb_subscribe(ORB_ID(vehicle_attitude));// 	/* subscribe to control_state topic */
-	manual_sp_sub = 			orb_subscribe(ORB_ID(manual_control_setpoint));// subscribe to manual control setpoint
+	manual_sp_sub = 		orb_subscribe(ORB_ID(manual_control_setpoint));// subscribe to manual control setpoint
  	vehicle_control_mode_sub = 	orb_subscribe(ORB_ID(vehicle_control_mode));// subscribe and advertise to vehicle control mode
 	vehicle_status_sub = 		orb_subscribe(ORB_ID(vehicle_status));
 
-    //vehicle odometry subscription
-    vehicle_odometry_sub = 		orb_subscribe(ORB_ID(vehicle_odometry));
+	//vehicle odometry subscription
+	vehicle_odometry_sub = 		orb_subscribe(ORB_ID(vehicle_odometry));
 
 	vehicle_control_mode_pub = 	orb_advertise(ORB_ID(vehicle_control_mode), &vehicle_control_mode);
 	act_pub = 			orb_advertise(ORB_ID(actuator_controls_0), &act);/* advertise to actuator_control topic */
 
-	if(act_pub != nullptr){
-		PX4_WARN("act_pub is null");
-	}
 	// Options
 	orb_set_interval(vehicle_attitude_sub, 100); //200 /* limit the update rate to X ms */
 	orb_set_interval(vehicle_odometry_sub, 100); //200 /* limit the update rate to X ms */
-
-	vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
-
 
 	/* one could wait for multiple topics with this technique, just using one here */
 	px4_pollfd_struct_t fds[1] = {};
@@ -241,6 +242,7 @@ void Sailing::run()
 	float Theta; //This is the (upper)Theta angle in the reference
 	double rudder;
 
+	float cmd_sail_throttle = 0; // from 0 to 1
 
 	//float Kp = 1; // PI parameters
 	//float Ki = 1; // PI parameters
@@ -258,7 +260,7 @@ void Sailing::run()
 
 	while (!should_exit()) {
 
-		vehicle_poll();
+		vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
 		PX4_INFO("sail controller: vehicle_status.nav_state %d", vehicle_status.nav_state);
 
 		// Not checking for flags at this point, doesnt seem to be required
@@ -266,17 +268,10 @@ void Sailing::run()
 				&& (vehicle_control_mode.flag_control_sail_enabled))
 		//if((vehicle_status.nav_state == 0))
 		{
-
-			vehicle_poll(); // checks for navigation state changes and flags changes to exit this loop
-
 			/* CODE THAT RUNS ONCE WHEN WE ENTER THIS LOOP. SHOULD FOLD THE SAIL UP */
 			/* This piece just fold the sails up without checking*/
 			if (sails_are_down){
-				PX4_INFO("Folding sails up");
-				fold_sails(UPWARDS);
-				//act.control[?] = UP;
-				//orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
-				px4_sleep(3);
+				fold_sails(UPWARDS); // 3 sec blocking
 				sails_are_down = false;
 			}
 
@@ -291,7 +286,6 @@ void Sailing::run()
 				PX4_ERR("poll error %d, %d", pret, errno);
 				px4_usleep(50000);
 				continue;
-
 			} else if (fds[0].revents & POLLIN) { // SLOW RUNNING LOOP
 				orb_copy(ORB_ID(manual_control_setpoint), manual_sp_sub, &manual_sp);
 				PX4_INFO("manual sp: %f ", (double)(manual_sp.r)*100); //,(int)(manual_sp.x*100.0f),(int)(manual_sp.y*100.0f));
@@ -311,7 +305,7 @@ void Sailing::run()
 				float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180.0f;
 				float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
 				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
-				float cmd_sail_angle = sail_angle/sail_angle_max; //I presume it goes from 0 to 1
+				float cmd_sail_angle = sail_angle/sail_angle_max; // from -1 to 1
 				PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
 
 				// trajectory planning??
@@ -338,7 +332,6 @@ void Sailing::run()
 				if(cos(error_heading) >= 0){
 					rudder = max_rudder_angle*sin(error_heading);
 				}
-
 				else{
 					rudder = max_rudder_angle*sgn(error_heading);
 				}
@@ -347,7 +340,13 @@ void Sailing::run()
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
 					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
 				    cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from 0 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
-				    // give power to the throttle
+				}
+
+				// give power to the throttle
+				if (manual_sp.z < 0.1f){ // manual_sp.z is thrust setpoint
+					cmd_sail_throttle = 0;
+				} else {
+					cmd_sail_throttle = min(manual_sp.z, 1);
 				}
 
 				//PI for comparison (?)
@@ -357,36 +356,29 @@ void Sailing::run()
 				rudder = (P_error + I_error < max_rudder_angle && - (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading)*max_rudder_angle; //rudder is computed by PI controller until it reaches the max threshold
 				*/
 
-				float cmd_rudder_angle = rudder/max_rudder_angle; // I presume it goes from 0 to 1 ??
+				float cmd_rudder_angle = rudder/max_rudder_angle; // It goes from -1 to 1
 
 				//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
 				PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_n %f Theta %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_angle_to_n_rad, (double)Theta);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
-				//act.control[actuator_controls_s::INDEX_PITCH] DEACTIVATED
+				act.control[actuator_controls_s::INDEX_PITCH] = ACT_CTRL_PITCH_TRIM; // not control
 				//act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
 				act.control[actuator_controls_s::INDEX_YAW] = cmd_rudder_angle;  // yaw = RUDDER
-				// act.control[actuator_controls_s::INDEX_THROTTLE] = manual_sp.z;	 // thrust
+				act.control[actuator_controls_s::INDEX_THROTTLE] = cmd_sail_throttle;	 // thrust
 				act.timestamp = hrt_absolute_time();
 				//PX4_INFO("Rudder: %d", (int)(act.control[actuator_controls_s::INDEX_YAW]*100.0f));
 				// Write to actuators
 				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 			}
 		}
-
-		else{
+		else { // not in sailing
 			if(!sails_are_down){
-			//bring sails down
-			PX4_INFO("Folding sails down");
-			fold_sails(DOWNWARDS);
-			sails_are_down = true;
-			px4_sleep(3);
-
-		}
-
-		px4_usleep(50000);
-
+				fold_sails(DOWNWARDS); // 3 sec blocking
+				sails_are_down = true;
+			}
+			px4_usleep(50000);
 		}
 
 

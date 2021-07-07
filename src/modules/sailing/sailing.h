@@ -65,7 +65,7 @@
 #include <uORB/topics/vehicle_attitude.h>                  // this topic holds the orientation of the hippocampus
 #include <uORB/topics/vehicle_odometry.h>                // this msg structure holds for odometry
 #include <uORB/topics/parameter_update.h>
-#include <uORB/topics/manual_control_setpoint.h> 
+#include <uORB/topics/manual_control_setpoint.h>
 #include <drivers/drv_hrt.h>
 // additions for navigation modes
 #include <uORB/topics/vehicle_control_mode.h>
@@ -74,6 +74,9 @@
 
 extern "C" __EXPORT int sailing_main(int argc, char *argv[]);
 
+#ifndef min
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
 
 class Sailing : public ModuleBase<Sailing>, public ModuleParams
 {
