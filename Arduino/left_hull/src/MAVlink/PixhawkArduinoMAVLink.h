@@ -23,7 +23,7 @@ class PixhawkArduinoMAVLink
 {
   public:
   float cha1, cha2, cha3, cha4, cha5, cha6, cha7, cha8;
-  float param_v, d_v1, d_v2, d_v3, d_0;
+  float param_v, d_v1, d_v2, d_v3, d_0, latitude, longitude;
 
     PixhawkArduinoMAVLink(HardwareSerial &hs);
     bool begin();
