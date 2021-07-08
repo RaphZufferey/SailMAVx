@@ -33,7 +33,7 @@ bool PixhawkArduinoMAVLink::begin(){
 void PixhawkArduinoMAVLink::Stream(){
   delay(2000);
   int flag=1;
-  Serial.println("Sending Heartbeats...");
+  SerialUSB.println("Sending Heartbeats...");
   mavlink_message_t msghb;
   mavlink_heartbeat_t heartbeat;
   uint8_t bufhb[MAVLINK_MAX_PACKET_LEN];
@@ -41,7 +41,7 @@ void PixhawkArduinoMAVLink::Stream(){
   uint16_t lenhb = mavlink_msg_to_send_buffer(bufhb, &msghb);
   delay(1000);
   _MAVSerial->write(bufhb,lenhb);
-  Serial.println("Heartbeats sent! Now will check for recieved heartbeats to record sysid and compid...");
+  SerialUSB.println("Heartbeats sent! Now will check for recieved heartbeats to record sysid and compid...");
 
   // Looping untill we get the required data.
   while(flag==1){
@@ -51,7 +51,7 @@ void PixhawkArduinoMAVLink::Stream(){
       mavlink_status_t statuspx;
       uint8_t ch = _MAVSerial->read();
       if(mavlink_parse_char(MAVLINK_COMM_0, ch, &msgpx, &statuspx)){
-        //Serial.println("Message Parsing Done!");
+        //SerialUSB.println("Message Parsing Done!");
         switch(msgpx.msgid){
           case MAVLINK_MSG_ID_HEARTBEAT:
           {
@@ -59,7 +59,7 @@ void PixhawkArduinoMAVLink::Stream(){
             mavlink_msg_heartbeat_decode(&msgpx, &packet);
             received_sysid = msgpx.sysid; // Pixhawk sysid
             received_compid = msgpx.compid; // Pixhawk compid
-            //Serial.println("sysid and compid successfully recorded");
+            //SerialUSB.println("sysid and compid successfully recorded");
             flag = 0;
             break;
           }
@@ -69,7 +69,7 @@ void PixhawkArduinoMAVLink::Stream(){
   }
 
   // Sending request for data stream...
-  //Serial.println("Now sending request for data stream...");
+  //SerialUSB.println("Now sending request for data stream...");
   delay(2000);
   mavlink_message_t msgds;
   uint8_t bufds[MAVLINK_MAX_PACKET_LEN];
@@ -77,7 +77,7 @@ void PixhawkArduinoMAVLink::Stream(){
   uint16_t lends = mavlink_msg_to_send_buffer(bufds, &msgds);
   delay(1000);
   _MAVSerial->write(bufds,lends);
-  //Serial.println("Request sent! Now you are ready to recieve datas...");
+  //SerialUSB.println("Request sent! Now you are ready to recieve datas...");
 
 }
 
@@ -86,20 +86,20 @@ void PixhawkArduinoMAVLink::Readdata(){
     mavlink_message_t msg;
     mavlink_status_t status1;
     uint8_t ch = _MAVSerial->read();
-    // Serial.println(ch);
+    // SerialUSB.println(ch);
     if(mavlink_parse_char(MAVLINK_COMM_0, ch, &msg, &status1)){
-      //Serial.println("Message Parsing Done!");
-      Serial.println();
-      Serial.print("message ID: ");
-      Serial.print(msg.msgid);
+      //SerialUSB.println("Message Parsing Done!");
+      SerialUSB.println();
+      SerialUSB.print("message ID: ");
+      SerialUSB.print(msg.msgid);
       //time_now = millis();
-      //Serial.print(" Time: ");
-      //Serial.print(time_now);
+      //SerialUSB.print(" Time: ");
+      //SerialUSB.print(time_now);
 
       switch(msg.msgid){
         case MAVLINK_MSG_ID_PARAM_VALUE:{
-          Serial.println();
-          Serial.print("Reading parameter");
+          SerialUSB.println();
+          SerialUSB.print("Reading parameter");
           mavlink_param_value_t data;
           mavlink_msg_param_value_decode(&msg, &data);
           char* param_id = (data.param_id);
@@ -108,8 +108,8 @@ void PixhawkArduinoMAVLink::Readdata(){
           break;
         }
         case MAVLINK_MSG_ID_DEBUG_VECT:{
-          Serial.println();
-          Serial.print("Reading debug_vect");
+          SerialUSB.println();
+          SerialUSB.print("Reading debug_vect");
           mavlink_debug_vect_t data;
           mavlink_msg_debug_vect_decode(&msg, &data);
           d_v1 = (data.x);
@@ -119,8 +119,8 @@ void PixhawkArduinoMAVLink::Readdata(){
           break;
         }
         case MAVLINK_MSG_ID_DEBUG:{
-          Serial.println();
-          Serial.print("Reading debug");
+          SerialUSB.println();
+          SerialUSB.print("Reading debug");
           mavlink_debug_t data;
           mavlink_msg_debug_decode(&msg, &data);
           d_0 = (data.value);
@@ -128,7 +128,7 @@ void PixhawkArduinoMAVLink::Readdata(){
           break;
         }
         case MAVLINK_MSG_ID_RC_CHANNELS:{
-          //Serial.println("Reading RC");
+          //SerialUSB.println("Reading RC");
           mavlink_rc_channels_t data;
           mavlink_msg_rc_channels_decode(&msg, &data);
 
@@ -144,8 +144,8 @@ void PixhawkArduinoMAVLink::Readdata(){
           break;
         }
         case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:{
-          Serial.println();
-          Serial.print("Reading GPS");
+          SerialUSB.println();
+          SerialUSB.print("Reading GPS");
           mavlink_global_position_int_t data;
           mavlink_msg_global_position_int_decode(&msg, &data);
           latitude = (data.lat);
@@ -177,8 +177,8 @@ float PixhawkArduinoMAVLink::scaledRC(uint16_t raw_value){
 
 void PixhawkArduinoMAVLink::req_param(const char *param_id){
   // Sending request for parameter...
-  //Serial.println();
-  //Serial.print("Sending parameter read request...");
+  //SerialUSB.println();
+  //SerialUSB.print("Sending parameter read request...");
   delay(20);
   mavlink_message_t msg_s;
   uint8_t bufds[MAVLINK_MAX_PACKET_LEN];
@@ -186,15 +186,15 @@ void PixhawkArduinoMAVLink::req_param(const char *param_id){
   uint16_t lends = mavlink_msg_to_send_buffer(bufds, &msg_s);
   delay(100);
   _MAVSerial->write(bufds,lends);
-  //Serial.println();
-  //Serial.print("Parameter request sent!");
+  //SerialUSB.println();
+  //SerialUSB.print("Parameter request sent!");
   return;
 }
 
 void PixhawkArduinoMAVLink::set_param(const char *param_id, float param_value, uint8_t param_type){
   // Sending request for parameter...
-  Serial.println();
-  Serial.print("Setting param value...");
+  SerialUSB.println();
+  SerialUSB.print("Setting param value...");
   delay(20);
   mavlink_message_t msg_s;
   uint8_t bufds[MAVLINK_MAX_PACKET_LEN];
@@ -202,8 +202,8 @@ void PixhawkArduinoMAVLink::set_param(const char *param_id, float param_value, u
   uint16_t lends = mavlink_msg_to_send_buffer(bufds, &msg_s);
   delay(100);
   _MAVSerial->write(bufds,lends);
-  Serial.println();
-  Serial.print("Param value set!");
+  SerialUSB.println();
+  SerialUSB.print("Param value set!");
   return;
   //1	MAV_PARAM_TYPE_UINT8
   //2	MAV_PARAM_TYPE_INT8
@@ -219,12 +219,13 @@ void PixhawkArduinoMAVLink::set_param(const char *param_id, float param_value, u
 
 void PixhawkArduinoMAVLink::send_debug(const char *name, float time, float x, float y, float z){
   // Sending request for parameter...
-  //Serial.println();
-  //Serial.print("Sending parameter read request...");
+  //SerialUSB.println();
+  //SerialUSB.print("Sending parameter read request...");
   delay(20);
   mavlink_message_t msg;
   uint8_t bufds[MAVLINK_MAX_PACKET_LEN];
-  mavlink_msg_debug_vect_pack(system_id, component_id, &msg, received_sysid, received_compid, const char *name, float time, float x, float y, float z);
+  mavlink_msg_debug_vect_pack(system_id, component_id, &msg, name, time, x, y, z);
+
   uint16_t lends = mavlink_msg_to_send_buffer(bufds, &msg);
   delay(10);
   _MAVSerial->write(bufds,lends);
