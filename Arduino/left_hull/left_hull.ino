@@ -12,7 +12,7 @@
 //#define powerPin A0
 //#define TEMPERATURE_MIN 1.0
 //#define TEMPERATURE_MAX 30.0
-#define DEBUG
+//#define DEBUG
 
 BME280I2C bme;
 
