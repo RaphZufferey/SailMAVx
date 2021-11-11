@@ -70,6 +70,7 @@
 // additions for navigation modes
 #include <uORB/topics/vehicle_control_mode.h>
 #include <uORB/topics/vehicle_status.h>
+#include <uORB/topics/sensor_wind_angle.h>
 
 
 extern "C" __EXPORT int sailing_main(int argc, char *argv[]);
@@ -127,14 +128,17 @@ private:
 	int manual_sp_sub;
 	int param_update_sub;
 	int vehicle_status_sub;
+	int sensor_wind_angle_sub;
 
 	struct manual_control_setpoint_s manual_sp; 		// RC input
 	struct actuator_controls_s act;						// actuator outputs manual
 	struct vehicle_attitude_s raw_att;					// attitude
-	struct vehicle_odometry_s raw_odom;
+
 	struct parameter_update_s param_upd;				// parameter handling (with QGC)
 	struct vehicle_control_mode_s vehicle_control_mode;	// flags
-	struct vehicle_status_s vehicle_status;				// navigation state
+	struct vehicle_status_s vehicle_status;			// navigation state
+	struct vehicle_odometry_s vehicle_odometry;		// vehicle odometry
+	struct sensor_wind_angle_s sensor_wind_angle;				// wind sensor
 
 	/**
 	 * Check for parameter changes and update them if needed.
