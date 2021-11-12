@@ -288,7 +288,7 @@ void Sailing::run()
 		PX4_INFO("sail controller: vehicle_status.nav_state %d, wind_angle %f", vehicle_status.nav_state, sensor_wind_angle.wind_magnetic_angle);
 
 		// Not checking for flags at this point, doesnt seem to be required
-		if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL)
+		if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_STAB)
 				&& (!vehicle_control_mode.flag_control_sail_enabled)) //REMEMBER CHANGE
 		//if((vehicle_status.nav_state == 0))
 		{
@@ -367,7 +367,7 @@ void Sailing::run()
 				// check if the robot can make the operation (in the case of strong downwind)
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
 					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
-				  	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from 0 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
+				  	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from -1 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
 				}
 
 				// give power to the throttle
