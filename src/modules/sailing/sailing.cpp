@@ -320,85 +320,88 @@ void Sailing::run()
 				}
 			}
 
-				float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi(); //psi corresponds to Yaw (heading)
-				//float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180.0f;
-				//float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
-				float wnd_to_boat = sensor_wind_angle.wind_magnetic_angle - scale_wind_angle; // from sensor_wind_angle.msg
-				if (wnd_to_boat > 180){
-					wnd_to_boat = wnd_to_boat -360;
-				}
-				else if (wnd_to_boat < -180){
-					wnd_to_boat = wnd_to_boat +360;
-				}
-				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
-				float cmd_sail_angle = sail_angle/sail_angle_max; // from -1 to 1
-				//PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
+			float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi(); //psi corresponds to Yaw (heading)
+			//float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180.0f;
+			//float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
+			float wnd_to_boat = sensor_wind_angle.wind_magnetic_angle - scale_wind_angle; // from sensor_wind_angle.msg
+			if (wnd_to_boat > 180){
+				wnd_to_boat = wnd_to_boat - 360;
+			}
+			else if (wnd_to_boat < -180){
+				wnd_to_boat = wnd_to_boat + 360;
+			}
+			float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1); // Not M_PI/6?
+			float cmd_sail_angle = sail_angle/sail_angle_max; // from -1 to 1
+			//PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
 
-				// trajectory planning??
+			// trajectory planning??
 
-				// rudder
-				// reference rudder control: Position keeping control of an autonomous sailboat Par 3.1
-				float velocity_x = vehicle_odometry.vx;
-				float velocity_y = vehicle_odometry.vy;
-				float heading_setpoint = 0; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
-				//PX4_INFO("Vx %f, Vy: %f",velocity_x, velocity_y);
-				float course_angle = atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
+			// rudder
+			// reference rudder control: Position keeping control of an autonomous sailboat Par 3.1
+			float velocity_x = vehicle_odometry.vx;
+			float velocity_y = vehicle_odometry.vy;
+			float heading_setpoint = 0; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
+			//PX4_INFO("Vx %f, Vy: %f",velocity_x, velocity_y);
+			float course_angle = current_yaw + atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check if it + or -
 
-				// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
-				float error_heading = current_yaw - heading_setpoint; // /epsilon_{theta}
+			float error_heading = current_yaw - heading_setpoint; // use course_angle(?) /epsilon_{theta}
 
 
-				// construct to decide the value of (upper)Theta to decide
-				/*if (cos(current_yaw - course_angle) - cos(error_heading) >= 0){
-					Theta = course_angle;
-				}
-				else{
-					Theta = current_yaw;
-				}*/
+			// construct to decide the value of (upper)Theta
+			/*if (cos(current_yaw - course_angle) - cos(error_heading) >= 0){
+				Theta = course_angle;
+			}
+			else{
+				Theta = current_yaw;
+			}*/
 
-				// construct to apply the control
-				if(cos(error_heading) >= 0){
-					rudder = max_rudder_angle*sin(error_heading);
-				}
-				else{
-					rudder = max_rudder_angle*sgn(error_heading);
-				}
+			// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
 
-				// check if the robot can make the operation (in the case of strong downwind)
-				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
-					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
-				  	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from 0 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
-				}
 
-				// give power to the throttle
-				if (manual_sp.z < 0.1f){ // manual_sp.z is thrust setpoint
-					cmd_sail_throttle = 0;
-				} else {
-					cmd_sail_throttle = min(manual_sp.z, 1);
-				}
+			// construct to apply the control
+			if(cos(error_heading) >= 0){
+				rudder = max_rudder_angle*sin(error_heading);
+			}
+			else{
+				rudder = max_rudder_angle*sgn(error_heading);
+			}
 
-				//PI for comparison (?)
-				/*
-				float P_error = Kp*error_heading;
-				float I_error+= Ki*error_heading;
-				rudder = (P_error + I_error < max_rudder_angle && - (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading)*max_rudder_angle; //rudder is computed by PI controller until it reaches the max threshold
-				*/
+			// check if the robot can make the operation (in the case of strong downwind)
+			if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
+				sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
+			  	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from 0 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
+			}
 
-				float cmd_rudder_angle = rudder/max_rudder_angle; // It goes from -1 to 1
+			// give power to the throttle
+			if (manual_sp.z < 0.1f){ // manual_sp.z is thrust setpoint
+				cmd_sail_throttle = 0;
+			} else {
+				cmd_sail_throttle = min(manual_sp.z, 1);
+			}
 
-				//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
-				PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_boat %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_to_boat);//, (double)Theta);
+			//PI for comparison (?)
+			/*
+			float P_error = Kp*error_heading;
+			float I_error+= Ki*error_heading;
+			rudder = (P_error + I_error < max_rudder_angle && - (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading)*max_rudder_angle; //rudder is computed by PI controller until it reaches the max threshold
+			*/
 
-		 		//Control
-				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
-				act.control[actuator_controls_s::INDEX_PITCH] = ACT_CTRL_PITCH_TRIM; // not control
-				//act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
-				act.control[actuator_controls_s::INDEX_YAW] = cmd_rudder_angle;  // yaw = RUDDER
-				act.control[actuator_controls_s::INDEX_THROTTLE] = cmd_sail_throttle;	 // thrust
-				act.timestamp = hrt_absolute_time();
-				//PX4_INFO("Rudder: %d", (int)(act.control[actuator_controls_s::INDEX_YAW]*100.0f));
-				// Write to actuators
-				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
+			float cmd_rudder_angle = rudder/max_rudder_angle; // It goes from -1 to 1
+
+			//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
+			//PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_boat %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_to_boat);//, (double)Theta);
+			PX4_INFO("cmd_sail_angle: %f and cmd_rudder_angle %f ", (double)cmd_sail_angle, (double)cmd_rudder_angle);//, (double)Theta);
+
+		 	//Control
+			act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
+			act.control[actuator_controls_s::INDEX_PITCH] = ACT_CTRL_PITCH_TRIM; // not control
+			//act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
+			act.control[actuator_controls_s::INDEX_YAW] = cmd_rudder_angle;  // yaw = RUDDER
+			act.control[actuator_controls_s::INDEX_THROTTLE] = cmd_sail_throttle;	 // thrust
+			act.timestamp = hrt_absolute_time();
+			//PX4_INFO("Rudder: %d", (int)(act.control[actuator_controls_s::INDEX_YAW]*100.0f));
+			// Write to actuators
+			orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 			}
 
 		else { // not in sailing
@@ -408,7 +411,6 @@ void Sailing::run()
 			}
 			px4_usleep(50000);
 		}
-
 
 	}
 	orb_unsubscribe(vehicle_attitude_sub);
