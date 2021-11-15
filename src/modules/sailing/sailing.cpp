@@ -323,12 +323,12 @@ void Sailing::run()
 				float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi(); //psi corresponds to Yaw (heading)
 				//float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180.0f;
 				//float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
-				float wnd_to_boat = sensor_wind_angle.wind_magnetic_angle - scale_wind_angle; // from sensor_wind_angle.msg
-				if (wnd_to_boat > 180){
-					wnd_to_boat = wnd_to_boat -360;
+				float wnd_to_boat = (sensor_wind_angle.wind_magnetic_angle - scale_wind_angle)*M_PI/180; // from sensor_wind_angle.msg
+				if (wnd_to_boat > M_PI){
+					wnd_to_boat = wnd_to_boat -2*M_PI;
 				}
 				else if (wnd_to_boat < -180){
-					wnd_to_boat = wnd_to_boat +360;
+					wnd_to_boat = wnd_to_boat +2*M_PI;
 				}
 				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
 				float cmd_sail_angle = sail_angle/sail_angle_max; // from -1 to 1
@@ -364,7 +364,7 @@ void Sailing::run()
 					rudder = max_rudder_angle*sgn(error_heading);
 				}
 
-				// check if the robot can make the operation (in the case of strong downwind)
+				// check if the robot can make the operation (in the case of strong upwind)
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
 					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
 				  	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from -1 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
@@ -387,7 +387,8 @@ void Sailing::run()
 				float cmd_rudder_angle = rudder/max_rudder_angle; // It goes from -1 to 1
 
 				//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
-				PX4_INFO("sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_boat %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_to_boat);//, (double)Theta);
+				//PX4_INFO("sail_angle: %f and cmd_rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_boat %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_to_boat);//, (double)Theta);
+				PX4_INFO("sail_angle: %f and cmd_rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_boat %f", (double)sail_angle*180/M_PI, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_to_boat*180/M_PI);//, (double)Theta);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
