@@ -288,8 +288,8 @@ void Sailing::run()
 		PX4_INFO("sail controller: vehicle_status.nav_state %d, wind_angle %f", vehicle_status.nav_state, sensor_wind_angle.wind_magnetic_angle);
 
 		// Not checking for flags at this point, doesnt seem to be required
-		if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_STAB)
-				&& (!vehicle_control_mode.flag_control_sail_enabled)) //REMEMBER CHANGE
+		if((vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_SAIL)
+				&& (vehicle_control_mode.flag_control_sail_enabled)) //REMEMBER CHANGE
 		//if((vehicle_status.nav_state == 0))
 		{
 			/* CODE THAT RUNS ONCE WHEN WE ENTER THIS LOOP. SHOULD FOLD THE SAIL UP */
@@ -327,7 +327,7 @@ void Sailing::run()
 				if (wnd_to_boat > M_PI){
 					wnd_to_boat = wnd_to_boat -2*M_PI;
 				}
-				else if (wnd_to_boat < -180){
+				else if (wnd_to_boat < -M_PI){
 					wnd_to_boat = wnd_to_boat +2*M_PI;
 				}
 				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
@@ -342,7 +342,7 @@ void Sailing::run()
 				float velocity_y = vehicle_odometry.vy;
 				float heading_setpoint = 0; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
 				//PX4_INFO("Vx %f, Vy: %f",velocity_x, velocity_y);
-				float course_angle = atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
+				float course_angle = current_yaw + atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
 
 				// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
 				float error_heading = current_yaw - heading_setpoint; // /epsilon_{theta}
@@ -366,7 +366,8 @@ void Sailing::run()
 
 				// check if the robot can make the operation (in the case of strong upwind)
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
-					sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
+					sail_angle = 0;
+					//sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
 				  	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from -1 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
 				}
 
