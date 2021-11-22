@@ -112,7 +112,7 @@ public:
 private:
 
 	bool sails_are_down = true;
-	float sail_angle_max = 60*(float)M_PI/180;
+	float sail_angle_max = 60*(float)M_PI/180; 
 	int wnd_angle_to_n = 179;
 
 

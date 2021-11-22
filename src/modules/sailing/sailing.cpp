@@ -330,8 +330,8 @@ void Sailing::run()
 				else if (wnd_to_boat < -M_PI){
 					wnd_to_boat = wnd_to_boat +2*M_PI;
 				}
-				float sail_angle = -sgn(wnd_to_boat)*M_PI/4*(cos(wnd_to_boat)+1);
-				float cmd_sail_angle = sail_angle/sail_angle_max; // from -1 to 1
+				float sail_angle = -sgn(wnd_to_boat)*M_PI/6*(cos(wnd_to_boat)+1);
+				float cmd_sail_angle = sail_angle/sail_angle_max;// + 0.25; // from -1 to 1
 				//PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
 
 				// trajectory planning??
@@ -358,19 +358,19 @@ void Sailing::run()
 
 				// construct to apply the control
 				if(cos(error_heading) >= 0){
-					rudder = max_rudder_angle*sin(error_heading);
+					rudder = -max_rudder_angle*sin(error_heading);
 				}
 				else{
-					rudder = max_rudder_angle*sgn(error_heading);
+					rudder = -max_rudder_angle*sgn(error_heading);
 				}
-
+				/*
 				// check if the robot can make the operation (in the case of strong upwind)
 				if (wnd_to_boat < min_wnd && wnd_to_boat > -min_wnd){
 					sail_angle = 0;
 					//sail_angle = wnd_to_boat; // put the sails in the direction of the wind so there is no active surface
-				  	cmd_sail_angle = sail_angle/wnd_to_boat; //I presume it goes from -1 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
+				  	cmd_sail_angle = sail_angle/wnd_to_boat -0.5; //I presume it goes from -1 to 1, what if wnd_boat > max_sail_angle? It can be more than 1
 				}
-
+				*/
 				// give power to the throttle
 				if (manual_sp.z < 0.1f){ // manual_sp.z is thrust setpoint
 					cmd_sail_throttle = 0;
@@ -389,7 +389,7 @@ void Sailing::run()
 
 				//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
 				//PX4_INFO("sail_angle: %f and cmd_rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_boat %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_to_boat);//, (double)Theta);
-				PX4_INFO("sail_angle: %f and cmd_rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_boat %f", (double)sail_angle*180/M_PI, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_to_boat*180/M_PI);//, (double)Theta);
+				PX4_INFO("cmd_sail_angle: %f wnd_angle_to_boat %f current_yaw %f course_angle %f  cmd_rudder_angle %f ", (double)cmd_sail_angle, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle); // (double)Theta);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
