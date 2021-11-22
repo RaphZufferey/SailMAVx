@@ -267,6 +267,8 @@ void Sailing::run()
 	bool updated = false;
 	param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
 	param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
+	param_t param_heading_set = param_find("HEADING_SET");
+	param_get(param_heading_set, &heading_set);
 
 	// Get parameter updates
 	parameters_update(true);
@@ -340,7 +342,7 @@ void Sailing::run()
 				// reference rudder control: Position keeping control of an autonomous sailboat Par 3.1
 				float velocity_x = vehicle_odometry.vx;
 				float velocity_y = vehicle_odometry.vy;
-				float heading_setpoint = 0; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
+				float heading_setpoint = (float)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
 				//PX4_INFO("Vx %f, Vy: %f",velocity_x, velocity_y);
 				float course_angle = current_yaw + atan2(velocity_y , velocity_x)*M_PI/180; //actual angle of the boat trajectory  check
 
@@ -389,7 +391,7 @@ void Sailing::run()
 
 				//PX4_INFO("sail controller: getting ready to publish sail_angle: %f and rudder_angle %f current_yaw %f course_angle %f", (double)cmd_sail_angle, (double)cmd_rudder_angle, (double)current_yaw, (double)course_angle);
 				//PX4_INFO("sail_angle: %f and cmd_rudder_angle %f current_yaw %f course_angle %f wnd_angle_to_boat %f", (double)cmd_sail_angle, (double)rudder, (double)current_yaw, (double)course_angle, (double)wnd_to_boat);//, (double)Theta);
-				PX4_INFO("cmd_sail_angle: %f wnd_angle_to_boat %f current_yaw %f course_angle %f  cmd_rudder_angle %f ", (double)cmd_sail_angle, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle); // (double)Theta);
+				PX4_INFO("cmd_sail_angle: %f wnd_angle_to_boat %f current_yaw %f course_angle %f  cmd_rudder_angle %f heading_set %f", (double)cmd_sail_angle, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle, (double)heading_set); // (double)Theta);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS

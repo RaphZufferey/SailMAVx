@@ -112,8 +112,9 @@ public:
 private:
 
 	bool sails_are_down = true;
-	float sail_angle_max = 60*(float)M_PI/180; 
+	float sail_angle_max = 60*(float)M_PI/180;
 	int wnd_angle_to_n = 179;
+	int heading_set = 0;
 
 
 	// Publications
@@ -149,7 +150,7 @@ private:
 
 
 	DEFINE_PARAMETERS(
-		(ParamInt<px4::params::NEW>) _new,   /**< example parameter */
+		(ParamInt<px4::params::HEADING_SET>) _heading_set,   /**< example parameter */
 		(ParamInt<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
 		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig  /**< another parameter */
 	)

@@ -1,15 +1,15 @@
 
 
 /**
- * New Parameter
+ * Sailing heading
  *
  * Test of to add a new parameter.
  *
- * @min 0.0
- * @max 10
+ * @min 0
+ * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_INT32(NEW, 2);
+PARAM_DEFINE_INT32(HEADING_SET, 0);
 
 
 /**
