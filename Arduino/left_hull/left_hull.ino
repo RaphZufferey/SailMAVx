@@ -11,7 +11,7 @@
 #define powerPin A0
 #define TEMPERATURE_MIN 1.0
 #define TEMPERATURE_MAX 30.0
-//#define DEBUG
+#define DEBUG
 
 BME280I2C bme;
 HardwareSerial &hs = Serial1;
@@ -20,7 +20,7 @@ PixhawkArduinoMAVLink mav(hs);
 //Tsys01 sensor;
 Tsys01 sensor; 
 float temperature_a = 0.0;
-float temperature_w = 0.0;
+float temperature_w = 1.11;
 float time_a = 0.0;
 float time_w = 0.0;
 void setup() {
@@ -47,6 +47,11 @@ do {
     //ADC needs 10 ms
     delay(10);
     temperature_w = sensor.readTemperature();
+    #ifdef DEBUG
+      SerialUSB.print("Temperature is ");
+      SerialUSB.println(temperature_w);
+    #endif
+
     if(temperature_w > TEMPERATURE_MIN && temperature_w < TEMPERATURE_MAX){
       SerialUSB.println("I2C Communication OK, temperature is in valid range");
     }else{
