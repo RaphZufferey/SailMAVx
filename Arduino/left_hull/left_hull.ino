@@ -34,17 +34,14 @@ void setup() {
   SerialUSB.println("Started");
 
 //////////////////   Sensor setup /////////////////
- uint8_t pass = HIGH;
+  uint8_t pass = HIGH;
+  sensor = Tsys01(TSYS01_I2C, powerPin);
 do {
-
     SerialUSB.println("Testing I2C...");
     //Pass if test is successful
     pass = HIGH;
-
     //Re-init sensor.
-    sensor = Tsys01(TSYS01_I2C, powerPin);
     sensor.startAdc();
-    //ADC needs 10 ms
     delay(10);
     temperature_w = sensor.readTemperature();
     #ifdef DEBUG

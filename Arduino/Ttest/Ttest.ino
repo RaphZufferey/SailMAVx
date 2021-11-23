@@ -46,8 +46,8 @@
    cold or hot region where room temperatures are different
 */
 
-#define TEMPERATURE_MIN 18.0
-#define TEMPERATURE_MAX 26.0
+#define TEMPERATURE_MIN 2.0
+#define TEMPERATURE_MAX 30.0
 
 //debug led, becomes high after test has passed.
 #define LED 13
@@ -73,17 +73,15 @@ void setup(void)
   delay(2000);
   SerialUSB.println("Started");
 
+  //Re-init sensor.
+  sensor = Tsys01(TSYS01_I2C, powerPin);
+
   //I2C test
   do {
-
     SerialUSB.println("Testing I2C...");
     //Pass if test is successful
     pass = HIGH;
-
-    //Re-init sensor.
-    sensor = Tsys01(TSYS01_I2C, powerPin);
-
-
+    
     sensor.startAdc();
 
     //ADC needs 10 ms
@@ -106,50 +104,14 @@ void setup(void)
   //LED stays low if I2C does not pass
   digitalWrite(LED, pass);
   }while(pass==LOW);
-
-  pinMode(LED, OUTPUT);
-  do {
-
-    //Pass if test is successful
-    pass = HIGH;
-
-    //Re-init sensor.
-    sensor = Tsys01(TSYS01_SPI, powerPin, slaveSelectPin, protocolPin);
-    digitalWrite(LED, pass);
-    delay(SPI_TEST_BLINK_RATE);
-    SerialUSB.println("Testing SPI...");
-
-    sensor.startAdc();
-
-    //ADC takes 9.22 ms.
-    delay(10);
-    temperature = sensor.readTemperature();
-
-    SerialUSB.print("Temperature is ");
-    SerialUSB.println(temperature);
-
-    if(temperature > TEMPERATURE_MIN && temperature < TEMPERATURE_MAX)
-    {
-    SerialUSB.println("SPI Communication OK, temperature is in valid range");
-    }
-
-    else
-    {
-      SerialUSB.println("Temperature is not in valid range");
-      pass = LOW;
-      digitalWrite(LED, pass);
-      delay(SPI_TEST_BLINK_RATE);
-    }
-  }while(pass == LOW);
-
-
-
-
-  digitalWrite(LED, pass);
-
 }
 
 void loop(void)
 {
-
+  sensor.startAdc();
+  delay(10);
+  float temperature = sensor.readTemperature();
+  SerialUSB.print("Temperature is ");
+  SerialUSB.println(temperature);
+  delay(2000);
 }
