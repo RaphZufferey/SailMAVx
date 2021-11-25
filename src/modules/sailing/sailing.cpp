@@ -259,6 +259,10 @@ void Sailing::run()
 	//float Theta; //This is the (upper)Theta angle in the reference
 	double rudder;
 
+	float tmp_max = 1;
+	float tmp = tmp_max;
+	float wind_angle_actual = 0;
+	float last_wind_angle = 0;
 	float cmd_sail_throttle = 0; // from 0 to 1
 
 	//float Kp = 1; // PI parameters
@@ -325,15 +329,24 @@ void Sailing::run()
 				float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi(); //psi corresponds to Yaw (heading)
 				//float wnd_angle_to_n_rad = wnd_angle_to_n*myPi/180.0f;
 				//float wnd_to_boat = wrapToPi(wnd_angle_to_n_rad - current_yaw);
-				float wnd_to_boat = (sensor_wind_angle.wind_magnetic_angle - scale_wind_angle)*M_PI/180; // from sensor_wind_angle.msg
+				if (tmp == tmp_max){
+					tmp = 0;
+					last_wind_angle = wind_angle_actual;
+					wind_angle_actual = sensor_wind_angle.wind_magnetic_angle;
+				}
+				tmp++;
+
+				float wnd_to_boat = ((last_wind_angle + (wind_angle_actual - last_wind_angle)*tmp/tmp_max) - scale_wind_angle)*M_PI/180; // from sensor_wind_angle.msg
 				if (wnd_to_boat > M_PI){
 					wnd_to_boat = wnd_to_boat -2*M_PI;
 				}
 				else if (wnd_to_boat < -M_PI){
 					wnd_to_boat = wnd_to_boat +2*M_PI;
 				}
-				float sail_angle = -sgn(wnd_to_boat)*M_PI/6*(cos(wnd_to_boat)+1);
-				float cmd_sail_angle = sail_angle/sail_angle_max;// + 0.25; // from -1 to 1
+				float sail_angle = sgn(wnd_to_boat)*M_PI/6*(-cos(wnd_to_boat)+1);
+				float sail_angle_sqrt = sqrt(sgn(sail_angle)*sail_angle);
+				float cmd_sail_angle = sgn(sail_angle)*sail_angle_sqrt/sail_angle_max;
+				//float cmd_sail_angle = sail_angle/sail_angle_max;// + 0.25; // from -1 to 1
 				//PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
 
 				// trajectory planning??

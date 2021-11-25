@@ -1,11 +1,32 @@
-#include "src/Mavlink/PixhawkArduinoMAVLink.h"
+#include <BME280.h>
+#include <BME280I2C.h>
+#include <EnvironmentCalculations.h>
+#include <BME280SpiSw.h>
+#include <BME280Spi.h>
+#include <BME280I2C_BRZO.h>
+
+#include <HID.h>
+
+#include <Adafruit_BusIO_Register.h>
+#include <Adafruit_SPIDevice.h>
+#include <Adafruit_I2CRegister.h>
+#include <Adafruit_I2CDevice.h>
+
+#include <BME280.h>
+#include <BME280I2C.h>
+#include <EnvironmentCalculations.h>
+#include <BME280SpiSw.h>
+#include <BME280Spi.h>
+#include <BME280I2C_BRZO.h>
+
+#include "/home/luca/Developer/SailMAVx/Arduino/left_hull/src/MAVlink/PixhawkArduinoMAVLink.h"
 
 #include <Wire.h>
 #include <Scheduler.h>
 #include <HardwareSerial.h>
-#include "src/Helper/Helper.h"
+#include "/home/luca/Developer/SailMAVx/Arduino/left_hull/src/Helper/Helper.h"
 
-#include "src/Tsys01/Tsys01.h"
+#include "/home/luca/Developer/SailMAVx/Arduino/left_hull/src/TSYS01/Tsys01.h"
 #include <BME280I2C.h>
 
 #define powerPin A0
@@ -18,7 +39,7 @@ HardwareSerial &hs = Serial1;
 PixhawkArduinoMAVLink mav(hs);
 
 //Tsys01 sensor;
-Tsys01 sensor; 
+Tsys01 sensor;
 float temperature_a = 0.0;
 float temperature_w = 1.11;
 float time_a = 0.0;
@@ -56,8 +77,8 @@ do {
       pass = LOW;
     }
   //LED stays low if I2C does not pass
-  }while(pass==LOW);
-
+  //}while(pass==LOW);
+}while(pass==HIGH);
 ////////// Start Atm sensor ///////////
   Wire.begin();
   while(!bme.begin())
