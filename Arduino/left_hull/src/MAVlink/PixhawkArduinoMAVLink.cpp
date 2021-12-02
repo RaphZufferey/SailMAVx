@@ -155,7 +155,7 @@ void PixhawkArduinoMAVLink::Readdata(){
         }
       }
     }
-    //yield();
+    yield();
   }
 return;
 }

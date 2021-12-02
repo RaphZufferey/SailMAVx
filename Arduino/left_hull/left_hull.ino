@@ -1,23 +1,4 @@
-#include <BME280.h>
-#include <BME280I2C.h>
 #include <EnvironmentCalculations.h>
-#include <BME280SpiSw.h>
-#include <BME280Spi.h>
-#include <BME280I2C_BRZO.h>
-
-#include <HID.h>
-
-#include <Adafruit_BusIO_Register.h>
-#include <Adafruit_SPIDevice.h>
-#include <Adafruit_I2CRegister.h>
-#include <Adafruit_I2CDevice.h>
-
-#include <BME280.h>
-#include <BME280I2C.h>
-#include <EnvironmentCalculations.h>
-#include <BME280SpiSw.h>
-#include <BME280Spi.h>
-#include <BME280I2C_BRZO.h>
 
 #include "/home/luca/Developer/SailMAVx/Arduino/left_hull/src/MAVlink/PixhawkArduinoMAVLink.h"
 
@@ -32,22 +13,22 @@
 #define powerPin A0
 #define TEMPERATURE_MIN 1.0
 #define TEMPERATURE_MAX 30.0
-#define DEBUG
+//#define DEBUG
 
 BME280I2C bme;
 HardwareSerial &hs = Serial1;
 PixhawkArduinoMAVLink mav(hs);
 
-//Tsys01 sensor;
 Tsys01 sensor;
 float temperature_a = 0.0;
 float temperature_w = 1.11;
 float time_a = 0.0;
 float time_w = 0.0;
+
 void setup() {
 
   #ifdef DEBUG
-    SerialUSB.begin(57600);
+    SerialUSB.begin(9600);
     while (!SerialUSB) {;}
     SerialUSB.println("Starting in 1s");
   #endif
@@ -55,6 +36,7 @@ void setup() {
   SerialUSB.println("Started");
 
 //////////////////   Sensor setup /////////////////
+/*
   uint8_t pass = HIGH;
   sensor = Tsys01(TSYS01_I2C, powerPin);
 do {
@@ -78,9 +60,13 @@ do {
     }
   //LED stays low if I2C does not pass
   //}while(pass==LOW);
-}while(pass==HIGH);
+  }while(pass==HIGH);
+
+*/
 ////////// Start Atm sensor ///////////
+
   Wire.begin();
+
   while(!bme.begin())
   {
     SerialUSB.println("Could not find BME280 sensor!");
@@ -99,6 +85,7 @@ do {
   }
 
 ////////// Start MAVlink ///////////
+
   while(!mav.begin()){
     SerialUSB.println("Not Connected!");
     delay(1000);
@@ -112,18 +99,26 @@ do {
 // main loops, reading sensors and running control
 void loop() {
 
-  sensor.startAdc();
+  //sensor.startAdc();
   delay(10);
-  temperature_w = sensor.readTemperature();
-  time_w = (float)millis();
-
+  //temperature_w = sensor.readTemperature();
+  //time_w = (float)millis();
 
   float hum(NAN), pres(NAN);
 
    BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
 
+   SerialUSB.println("pres");
    bme.read(pres, temperature_a, hum, tempUnit, presUnit);
+
+   SerialUSB.println("pres");
+   SerialUSB.println(pres);
+   SerialUSB.println("temp");
+   SerialUSB.println(temperature_a);
+   SerialUSB.println("hum");
+   SerialUSB.println(hum);
+
    time_a = (float)millis();
   #ifdef DEBUG
     SerialUSB.print("Temperature is ");
@@ -131,8 +126,10 @@ void loop() {
     SerialUSB.print(",");
     SerialUSB.println(temperature_a);
   #endif
+/*
   mav.set_param("SMV_H20_T",temperature_w, 9);
   mav.send_debug("SMV_H20_T",time_w,temperature_w,mav.longitude,mav.latitude);
+   */
   mav.set_param("SMV_AIR_T",temperature_a, 9);
   mav.send_debug("SMV_AIR_T",time_a,temperature_a,pres,hum);
 

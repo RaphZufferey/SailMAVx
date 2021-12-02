@@ -152,6 +152,7 @@ private:
 	DEFINE_PARAMETERS(
 		(ParamInt<px4::params::HEADING_SET>) _heading_set,   /**< example parameter */
 		(ParamInt<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
+		(ParamFloat<px4::params::SMV_AIR_T>) _smv_air_t,   /**< example parameter */
 		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig  /**< another parameter */
 	)
 };
