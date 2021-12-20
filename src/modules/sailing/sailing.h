@@ -115,7 +115,8 @@ private:
 	float sail_angle_max = 60*(float)M_PI/180;
 	int wnd_angle_to_n = 179;
 	int heading_set = 0;
-
+	int wind_strategy = 0;
+	int rudder_strategy = 0;
 
 	// Publications
 	orb_advert_t vehicle_control_mode_pub;
@@ -151,8 +152,11 @@ private:
 
 	DEFINE_PARAMETERS(
 		(ParamInt<px4::params::HEADING_SET>) _heading_set,   /**< example parameter */
+		(ParamInt<px4::params::WIND_STRATEGY>) _wind_strategy,   /**< example parameter */
+		(ParamInt<px4::params::RUDDER_STRATEGY>) _rudder_strategy,   /**< example parameter */
 		(ParamInt<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
 		(ParamFloat<px4::params::SMV_AIR_T>) _smv_air_t,   /**< example parameter */
+		(ParamFloat<px4::params::SMV_H2O_T>) _smv_h2o_t,   /**< example parameter */
 		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig  /**< another parameter */
 	)
 };

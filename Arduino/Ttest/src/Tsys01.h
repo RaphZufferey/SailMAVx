@@ -15,7 +15,7 @@
 
 //Change this is you change I2C address through CS pin of board!
 //You can use either read or write address, appropriate bit is set / unset by code
-#define TSYS01_I2C_ADDR (0xEC >> 1) //arduino library uses 7-bit form of address
+//#define TSYS01_I2C_ADDR (EC >> 1) //arduino library uses 7-bit form of address
 //Use Address EE if you pull down CS while using I2C.
 //#define TSYS01_I2C_ADDR (EE >> 1)
 
@@ -47,7 +47,7 @@ const float TSYS_POW_E = 0.01; //10^(-2/1)
 
 class Tsys01
 {
-  public: 
+  public:
     //constructor
     Tsys01(uint8_t communicationProtocol, uint8_t powerPin );
     Tsys01(uint8_t communicationProtocol, uint8_t powerPin, uint8_t slaveSelect);
@@ -56,7 +56,7 @@ class Tsys01
     //This constructor is only for creating global variables.
     //A constructor with parameters should always be used to get a working Tsys01 object.
     Tsys01();
-    
+
     void startAdc(void);
     float readTemperature(); //float?
     //comment about power savings, reboot times
@@ -66,15 +66,15 @@ class Tsys01
   private:
     uint16_t coefficients[5];
     uint8_t communicationProtocol;
-    uint8_t powerPin; 
+    uint8_t powerPin;
     uint8_t slaveSelectPin;
     uint8_t protocolPin;
-            
+
     uint8_t* readBytes(uint8_t address, uint8_t bytes[], uint8_t numBytes);
     void writeBytes(uint8_t address, uint8_t bytes[], uint8_t numBytes);
 
     SPISettings spiSettingsObject = SPISettings(1000000UL, MSBFIRST, SPI_MODE0);
-    
+
     // Read and write functions for I2C
     uint8_t* i2cReadBytes(uint8_t address, uint8_t bytes[], uint8_t numBytes);
     void i2cWriteBytes(uint8_t address, uint8_t bytes[], uint8_t numBytes);
@@ -82,7 +82,7 @@ class Tsys01
     // Read and write functions for SPI
     void spiReadBytes(uint8_t address, uint8_t bytes[], uint8_t numBytes);
     void spiWriteBytes(uint8_t address, uint8_t bytes[], uint8_t numBytes);
-    
+
     void readCalibration(void);
     void reset(void);
 };

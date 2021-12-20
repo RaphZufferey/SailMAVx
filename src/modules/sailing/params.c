@@ -11,6 +11,28 @@
  */
 PARAM_DEFINE_INT32(HEADING_SET, 0);
 
+/**
+ * Wind strategy
+ *
+ * Test of to add a new parameter.
+ *
+ * @min 0
+ * @max 360
+ * @group Custom Parameters
+ */
+PARAM_DEFINE_INT32(WIND_STRATEGY, 0);
+
+/**
+ * Rudder strategy
+ *
+ * Test of to add a new parameter.
+ *
+ * @min 0
+ * @max 360
+ * @group Custom Parameters
+ */
+PARAM_DEFINE_INT32(RUDDER_STRATEGY, 0);
+
 
 /**
  * Wind angle
