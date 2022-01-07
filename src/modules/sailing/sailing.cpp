@@ -286,10 +286,10 @@ void Sailing::run()
 	//param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
 	param_t param_heading_strategy = param_find("HEADING_STRATEGY");
 	param_get(param_heading_strategy, &heading_strategy);
-	param_t param_heading_latitude = param_find("HEADING_LATITUDE");
-	param_get(param_heading_latitude, &heading_latitude);
-	param_t param_heading_longitude = param_find("HEADING_LONGITUDE");
-	param_get(param_heading_longitude, &heading_longitude);
+	//param_t param_heading_latitude = param_find("HEADING_LATITUDE");
+	//param_get(param_heading_latitude, &heading_latitude);
+	//param_t param_heading_longitude = param_find("HEADING_LONGITUDE");
+	//param_get(param_heading_longitude, &heading_longitude);
 	param_t param_heading_set = param_find("HEADING_SET");
 	param_get(param_heading_set, &heading_set);
 	param_t param_wind_strategy = param_find("WIND_STRATEGY");
@@ -396,16 +396,19 @@ void Sailing::run()
 				float heading_setpoint;
 				switch(heading_strategy)
 				{
-					case 1: // heading setpoint, just the angle
-						param_get(param_heading_set, &heading_set);
-						heading_setpoint = (float)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
-						// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
+					case 1: // waypoints to reach known a priori
+						heading_setpoint = (float)atan2(heading_latitude - vehicle_global_position.lat, heading_longitude - vehicle_global_position.lon); // online heading angle computation
 						break;
-					case 2: // waypoints to reach
+					case 2: // waypoints to reach taken from PX4 parameter
 						param_get(param_heading_longitude, &heading_longitude);
 						param_get(param_heading_latitude, &heading_latitude);
 						heading_setpoint = (float)atan2(heading_latitude - vehicle_global_position.lat, heading_longitude - vehicle_global_position.lon); // online heading angle computation
 						break;
+					default: // heading setpoint, just the angle
+						param_get(param_heading_set, &heading_set);
+						heading_setpoint = (float)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
+						// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
+
 				}
 
 				float error_heading = heading_setpoint - current_yaw; // /epsilon_{theta}
