@@ -178,10 +178,16 @@ void Sailing::vehicle_poll()
 		orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
 	}
 
-	/* check if vehicle status has changed */
+	/* check if vehicle odometry has changed */
 	orb_check(vehicle_odometry_sub, &updated);
 	if (updated) {
 		orb_copy(ORB_ID(vehicle_odometry), vehicle_odometry_sub, &vehicle_odometry);
+	}
+
+	/* check if vehicle global position has changed */
+	orb_check(vehicle_global_position_sub, &updated);
+	if (updated) {
+		orb_copy(ORB_ID(vehicle_global_position), vehicle_global_position_sub, &vehicle_global_position);
 	}
 
 	/* check if vehicle status has changed */
@@ -233,6 +239,8 @@ void Sailing::run()
  	vehicle_control_mode_sub = 	orb_subscribe(ORB_ID(vehicle_control_mode));// subscribe and advertise to vehicle control mode
 	vehicle_status_sub = 		orb_subscribe(ORB_ID(vehicle_status));
 	sensor_wind_angle_sub = 	orb_subscribe(ORB_ID(sensor_wind_angle));
+	vehicle_global_position_sub = 	orb_subscribe(ORB_ID(vehicle_global_position));
+
 
 
 	//vehicle odometry subscription
@@ -276,6 +284,12 @@ void Sailing::run()
 	bool updated = false;
 	//param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
 	//param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
+	param_t param_heading_strategy = param_find("HEADING_STRATEGY");
+	param_get(param_heading_strategy, &heading_strategy);
+	param_t param_heading_latitude = param_find("HEADING_LATITUDE");
+	param_get(param_heading_latitude, &heading_latitude);
+	param_t param_heading_longitude = param_find("HEADING_LONGITUDE");
+	param_get(param_heading_longitude, &heading_longitude);
 	param_t param_heading_set = param_find("HEADING_SET");
 	param_get(param_heading_set, &heading_set);
 	param_t param_wind_strategy = param_find("WIND_STRATEGY");
@@ -362,14 +376,15 @@ void Sailing::run()
 
 				//PX4_INFO("Yaw  \t%d, actuators: \t%d", (int)((current_yaw*180.0f/myPi)), (int)((cmd_sail_angle*180.0f/myPi)));
 
-				// rudder
+				// rudder, reference for the rudder control: Position keeping control of an autonomous sailboat Par 3.1
 				float current_yaw =  matrix::Eulerf(matrix::Quatf(raw_att.q)).psi(); //psi corresponds to Yaw (heading)
 				float wnd_angle_to_n = wnd_to_boat - M_PI + current_yaw; // just for the tester, to check the wind angle and decide the heading direction. This can be compared to the station one
 				wnd_angle_to_n = wnd_angle_to_n > 0 ? wnd_angle_to_n : wnd_angle_to_n + 2*M_PI ; // normalize from 0 to 360
 
-				// reference for the rudder control: Position keeping control of an autonomous sailboat Par 3.1
 				float velocity_x = vehicle_odometry.vx;
 				float velocity_y = vehicle_odometry.vy;
+
+				// check tolerance for velocities
 				if (velocity_x > 0.01 || velocity_x < -0.01 || velocity_y > 0.01 || velocity_y < -0.01){ // tolerance to check if SailMAV is moving
 					course_angle = current_yaw + atan2(velocity_y , velocity_x); //actual angle of the boat trajectory  check
 				}
@@ -378,10 +393,21 @@ void Sailing::run()
 				}
 				//PX4_INFO("course_angle %f", course_angle);
 
-				param_get(param_heading_set, &heading_set);
-				float heading_setpoint = (float)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
+				float heading_setpoint;
+				switch(heading_strategy)
+				{
+					case 1: // heading setpoint, just the angle
+						param_get(param_heading_set, &heading_set);
+						heading_setpoint = (float)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
+						// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
+						break;
+					case 2: // waypoints to reach
+						param_get(param_heading_longitude, &heading_longitude);
+						param_get(param_heading_latitude, &heading_latitude);
+						heading_setpoint = (float)atan2(heading_latitude - vehicle_global_position.lat, heading_longitude - vehicle_global_position.lon); // online heading angle computation
+						break;
+				}
 
-				// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
 				float error_heading = heading_setpoint - current_yaw; // /epsilon_{theta}
 
 				// construct to decide the value of (upper)Theta to decide
@@ -432,7 +458,7 @@ void Sailing::run()
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
-				act.control[actuator_controls_s::INDEX_PITCH] = ACT_CTRL_PITCH_TRIM; // not control
+				//act.control[actuator_controls_s::INDEX_PITCH] = ACT_CTRL_PITCH_TRIM; // not control
 				//act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
 				act.control[actuator_controls_s::INDEX_YAW] = cmd_rudder_angle;  // yaw = RUDDER
 				act.control[actuator_controls_s::INDEX_THROTTLE] = cmd_sail_throttle;	 // thrust

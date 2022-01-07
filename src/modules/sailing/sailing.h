@@ -131,6 +131,7 @@ private:
 	int param_update_sub;
 	int vehicle_status_sub;
 	int sensor_wind_angle_sub;
+	int vehicle_global_position_sub;
 
 	struct manual_control_setpoint_s manual_sp; 		// RC input
 	struct actuator_controls_s act;						// actuator outputs manual
