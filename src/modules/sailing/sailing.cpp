@@ -270,6 +270,12 @@ void Sailing::run()
 	float course_angle;
 	float cmd_rudder_angle;
 
+	int i = 0;
+	Waypoint lake; // create lake list
+	//lake.latitude(0) = ;
+	//lake.longitude(0) = ;
+	float tolerance_radius;
+
 	float tmp_max = 1;
 	float tmp = tmp_max;
 	float wind_angle_actual = 0;
@@ -393,17 +399,26 @@ void Sailing::run()
 				}
 				//PX4_INFO("course_angle %f", course_angle);
 
-				float heading_setpoint;
+				float heading_setpoint;lake.is_approached
 				switch(heading_strategy)
 				{
 					case 1: // waypoints to reach known a priori
-						heading_setpoint = (float)atan2(heading_latitude - vehicle_global_position.lat, heading_longitude - vehicle_global_position.lon); // online heading angle computation
+						//heading_setpoint = lake.setpoint_heading(i, vehicle_global_position.lat, vehicle_global_position.lon);
+						heading_setpoint = (float)atan2(lake.latitude(i) - vehicle_global_position.lat, lake.longitude(i) - vehicle_global_position.lon); // online heading angle computation
+						// if(tolerance_circle(i, vehicle_global_position.lat, vehicle_global_position.lon) < M_PI*tolerance_radius^2 && i < lake.number_points - 1){i++;}
+						if((lake.latitude(i) - vehicle_global_position.lat)^2 + (lake.longitude(i) - vehicle_global_position.lon)^2 < M_PI*tolerance_radius^2 && i < lake.number_points - 1){
+							i++;
+						}
+						//if(i < number_points - 1){point_reached = 1;}
 						break;
 					case 2: // waypoints to reach taken from PX4 parameter
 						param_get(param_heading_longitude, &heading_longitude);
 						param_get(param_heading_latitude, &heading_latitude);
 						heading_setpoint = (float)atan2(heading_latitude - vehicle_global_position.lat, heading_longitude - vehicle_global_position.lon); // online heading angle computation
-						break;
+						/*if(heading_latitude - vehicle_global_position.lat)^2 + (heading_longitude - vehicle_global_position.lon)^2 < M_PI*tolerance_radius^2){
+							point_reached = 1;
+						};
+						break;*/
 					default: // heading setpoint, just the angle
 						param_get(param_heading_set, &heading_set);
 						heading_setpoint = (float)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight

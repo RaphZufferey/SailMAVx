@@ -23,6 +23,28 @@ PARAM_DEFINE_INT32(HEADING_SET, 0);
 PARAM_DEFINE_INT32(HEADING_STRATEGY, 0);
 
 /**
+ * Heading latitude
+ *
+ * Test of to add a new parameter.
+ *
+ * @min 0
+ * @max 360
+ * @group Custom Parameters
+ */
+PARAM_DEFINE_INT32(HEADING_LATITUDE, 0);
+
+/**
+ * Heading latitude
+ *
+ * Test of to add a new parameter.
+ *
+ * @min 0
+ * @max 360
+ * @group Custom Parameters
+ */
+PARAM_DEFINE_INT32(HEADING_LONGITUDE, 0);
+
+/**
  * Wind strategy
  *
  * Test of to add a new parameter.

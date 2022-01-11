@@ -72,6 +72,17 @@
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/sensor_wind_angle.h>
 
+class Waypoint{
+		float latitude;
+		float longitude;
+		size_t number_points;
+		float setpoint_heading(int i, float vehicle_latitude, float vehicle_longitude){
+			return (float)atan2(this->latitude(i) - vehicle_latitude, this->longitude(i) - vehicle_longitude); // online heading angle computation
+		}
+		float tolerance_circle(int i, float vehicle_latitude, float vehicle_longitude){
+			return (this->latitude(i) - vehicle_global_position.lat)^2 + (this->longitude(i) - vehicle_global_position.lon)^2;
+		}
+}
 
 extern "C" __EXPORT int sailing_main(int argc, char *argv[]);
 
@@ -122,7 +133,7 @@ private:
 	orb_advert_t vehicle_control_mode_pub;
 	orb_advert_t act_pub;
 
-	// Subscription
+	// Subscriptionheading_set
 	int vehicle_control_mode_sub;
 	int vehicle_attitude_sub;
 	int vehicle_odometry_sub;
@@ -158,6 +169,8 @@ private:
 		(ParamInt<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
 		(ParamFloat<px4::params::SMV_AIR_T>) _smv_air_t,   /**< example parameter */
 		(ParamFloat<px4::params::SMV_H2O_T>) _smv_h2o_t,   /**< example parameter */
-		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig  /**< another parameter */
+		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig,  /**< another parameter */
+		(ParamInt<px4::params::HEADING_LATITUDE>) _heading_latitude,   /**< example parameter */
+		(ParamInt<px4::params::HEADING_LONGITUDE>) _heading_longitude,   /**< example parameter */
 	)
 };

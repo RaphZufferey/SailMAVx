@@ -52,7 +52,7 @@ do {
     //Pass if test is successful
     pass = HIGH;
     //Re-init sensor.
-    
+
     readTemp();
 
     if(temperature_w > TEMPERATURE_MIN && temperature_w < TEMPERATURE_MAX){
@@ -86,7 +86,7 @@ do {
        break;
      default:
        SerialUSB.println("Found UNKNOWN sensor! Error!");
-  } 
+  }
   //Wire.end();
 
 ////////// Start MAVlink ///////////
@@ -105,13 +105,13 @@ do {
 void loop() {
 
   readTemp();
-    
+
    Wire.begin();
    delay(100);
    bme.read(pres, temperature_a, hum, tempUnit, presUnit);
    Wire.end();
    delay(100);
-   
+
  #ifdef DEBUG
    SerialUSB.println("pres");
    SerialUSB.println(pres);
@@ -123,10 +123,10 @@ void loop() {
    SerialUSB.println(hum);
    //SerialUSB.println(bme.readHumidity());
  #endif
- 
+
    delay(100);
 
-   time_a = (float)millis(); 
+   time_a = (float)millis();
   #ifdef DEBUG
     SerialUSB.print("Temperature is ");
     SerialUSB.print(temperature_w);
@@ -136,7 +136,7 @@ void loop() {
 
   mav.set_param("SMV_H2O_T",temperature_w, 9);
   mav.send_debug("SMV_H2O_T",time_w,temperature_w,mav.longitude,mav.latitude);
-   
+
   mav.set_param("SMV_AIR_T",temperature_a, 9);
   mav.send_debug("SMV_AIR_T",time_a,temperature_a,pres,hum);
 
