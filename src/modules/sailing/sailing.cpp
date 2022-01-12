@@ -184,7 +184,7 @@ void Sailing::vehicle_poll()
 		orb_copy(ORB_ID(vehicle_odometry), vehicle_odometry_sub, &vehicle_odometry);
 	}
 
-	/* check if vehicle global position has changed */
+	/* check if vehicle global position has changed*/
 	orb_check(vehicle_global_position_sub, &updated);
 	if (updated) {
 		orb_copy(ORB_ID(vehicle_global_position), vehicle_global_position_sub, &vehicle_global_position);
@@ -292,10 +292,10 @@ void Sailing::run()
 	//param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
 	param_t param_heading_strategy = param_find("HEADING_STRATEGY");
 	param_get(param_heading_strategy, &heading_strategy);
-	//param_t param_heading_latitude = param_find("HEADING_LATITUDE");
-	//param_get(param_heading_latitude, &heading_latitude);
-	//param_t param_heading_longitude = param_find("HEADING_LONGITUDE");
-	//param_get(param_heading_longitude, &heading_longitude);
+	param_t param_heading_latitude = param_find("HEADING_LAT");
+	param_get(param_heading_latitude, &heading_latitude);
+	param_t param_heading_longitude = param_find("HEADING_LONG");
+	param_get(param_heading_longitude, &heading_longitude);
 	param_t param_heading_set = param_find("HEADING_SET");
 	param_get(param_heading_set, &heading_set);
 	param_t param_wind_strategy = param_find("WIND_STRATEGY");
@@ -399,16 +399,16 @@ void Sailing::run()
 				}
 				//PX4_INFO("course_angle %f", course_angle);
 
-				float heading_setpoint;lake.is_approached
+				float heading_setpoint;
 				switch(heading_strategy)
 				{
 					case 1: // waypoints to reach known a priori
-						//heading_setpoint = lake.setpoint_heading(i, vehicle_global_position.lat, vehicle_global_position.lon);
-						heading_setpoint = (float)atan2(lake.latitude(i) - vehicle_global_position.lat, lake.longitude(i) - vehicle_global_position.lon); // online heading angle computation
-						// if(tolerance_circle(i, vehicle_global_position.lat, vehicle_global_position.lon) < M_PI*tolerance_radius^2 && i < lake.number_points - 1){i++;}
-						if((lake.latitude(i) - vehicle_global_position.lat)^2 + (lake.longitude(i) - vehicle_global_position.lon)^2 < M_PI*tolerance_radius^2 && i < lake.number_points - 1){
-							i++;
-						}
+						heading_setpoint = lake.setpoint_heading(i, vehicle_global_position.lat, vehicle_global_position.lon);
+						//heading_setpoint = (float)atan2(lake.latitude[i] - vehicle_global_position.lat, lake.longitude[i] - vehicle_global_position.lon); // online heading angle computation
+						if(lake.tolerance_circle(i, vehicle_global_position.lat, vehicle_global_position.lon) < M_PI*tolerance_radius^2 && i < lake.number_points - 1){i++;}
+						//if((lake.latitude[i] - vehicle_global_position.lat)^2 + (lake.longitude[i] - vehicle_global_position.lon)^2 < M_PI*tolerance_radius^2 && i < lake.number_points - 1){
+						//	i++;
+						//}
 						//if(i < number_points - 1){point_reached = 1;}
 						break;
 					case 2: // waypoints to reach taken from PX4 parameter
@@ -503,6 +503,7 @@ void Sailing::run()
 	orb_unsubscribe(vehicle_control_mode_sub);
 	orb_unsubscribe(vehicle_status_sub);
 	orb_unsubscribe(sensor_wind_angle_sub);
+	orb_unsubscribe(vehicle_global_position_sub);
 }
 
 int sailing_main(int argc, char *argv[])

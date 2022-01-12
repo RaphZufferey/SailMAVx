@@ -41,6 +41,7 @@
 #include <poll.h>
 #include <string.h>
 #include <math.h>
+#include <cmath>
 
 #include <px4_getopt.h>
 #include <px4_log.h>
@@ -71,18 +72,20 @@
 #include <uORB/topics/vehicle_control_mode.h>
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/sensor_wind_angle.h>
+#include <uORB/topics/vehicle_global_position.h>
 
 class Waypoint{
-		float latitude;
-		float longitude;
+	public:
 		size_t number_points;
+		float latitude[];
+		float longitude[];
 		float setpoint_heading(int i, float vehicle_latitude, float vehicle_longitude){
-			return (float)atan2(this->latitude(i) - vehicle_latitude, this->longitude(i) - vehicle_longitude); // online heading angle computation
+			return (float)atan2(latitude[i] - vehicle_latitude, this->longitude[i] - vehicle_longitude); // online heading angle computation
 		}
 		float tolerance_circle(int i, float vehicle_latitude, float vehicle_longitude){
-			return (this->latitude(i) - vehicle_global_position.lat)^2 + (this->longitude(i) - vehicle_global_position.lon)^2;
+			return pow(latitude[i] - vehicle_latitude,2) + pow(this->longitude[i] - vehicle_longitude,2);
 		}
-}
+};
 
 extern "C" __EXPORT int sailing_main(int argc, char *argv[]);
 
@@ -128,6 +131,9 @@ private:
 	int heading_set = 0;
 	int wind_strategy = 0;
 	int rudder_strategy = 0;
+	int heading_strategy = 0;
+	int heading_latitude = 0;
+	int heading_longitude = 0;
 
 	// Publications
 	orb_advert_t vehicle_control_mode_pub;
@@ -153,6 +159,8 @@ private:
 	struct vehicle_status_s vehicle_status;			// navigation state
 	struct vehicle_odometry_s vehicle_odometry;		// vehicle odometry
 	struct sensor_wind_angle_s sensor_wind_angle;				// wind sensor
+	struct vehicle_global_position_s vehicle_global_position;		// global position
+
 
 	/**
 	 * Check for parameter changes and update them if needed.
@@ -170,7 +178,8 @@ private:
 		(ParamFloat<px4::params::SMV_AIR_T>) _smv_air_t,   /**< example parameter */
 		(ParamFloat<px4::params::SMV_H2O_T>) _smv_h2o_t,   /**< example parameter */
 		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig,  /**< another parameter */
-		(ParamInt<px4::params::HEADING_LATITUDE>) _heading_latitude,   /**< example parameter */
-		(ParamInt<px4::params::HEADING_LONGITUDE>) _heading_longitude,   /**< example parameter */
+		(ParamInt<px4::params::HEADING_STRATEGY>) _heading_strategy,   /**< example parameter */
+		(ParamFloat<px4::params::HEADING_LAT>) _heading_latitude,   /**< example parameter */
+		(ParamFloat<px4::params::HEADING_LON>) _heading_longitude   /**< example parameter */
 	)
 };
