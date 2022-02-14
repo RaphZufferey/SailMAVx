@@ -77,12 +77,54 @@
 
 using matrix::wrap_pi;
 
+float get_bearing_to_next_waypoint_sailing(double lat_now, double lon_now, double lat_next, double lon_next){
+
+	double lat_next_rad = math::radians(lat_next);
+	double lat_now_rad = math::radians(lat_now);
+
+	double d_lon = math::radians(lon_next) - math::radians(lon_now);
+
+	double d_lat = lat_next_rad - math::radians(lat_now);
+
+	/* conscious mix of double and float trig function to maximize speed and efficiency */
+
+	double a = sin(d_lat / 2.0) * sin(d_lat / 2.0) + sin(d_lon / 2.0) * sin(d_lon / 2.0) * cos(lat_now_rad) * cos(lat_next_rad);
+
+	double c = atan2(sqrt(a), sqrt(1.0 - a));
+
+	float y = (double)(sin(d_lon) * cos(lat_next_rad));
+	float x = (double)(cos(lat_now_rad) * sin(lat_next_rad) - sin(lat_now_rad) * cos(lat_next_rad) * cos(d_lon));
+
+	return (double)wrap_pi(atan2f(y, x));
+}
+
+float get_distance_to_next_waypoint_sailing(double lat_now, double lon_now, double lat_next, double lon_next){
+
+	double lat_next_rad = math::radians(lat_next);
+	double lat_now_rad = math::radians(lat_now);
+
+	double d_lon = math::radians(lon_next) - math::radians(lon_now);
+
+	double d_lat = lat_next_rad - lat_now_rad;
+
+	/* conscious mix of double and float trig function to maximize speed and efficiency */
+
+	double a = sin(d_lat / 2.0) * sin(d_lat / 2.0) + sin(d_lon / 2.0) * sin(d_lon / 2.0) * cos(lat_now_rad) * cos(lat_next_rad);
+
+	double c = atan2(sqrt(a), sqrt(1.0 - a));
+	//double c = asin(sqrt(a));
+
+	float y = (double)(sin(d_lon) * cos(lat_next_rad));
+	float x = (double)(cos(lat_now_rad) * sin(lat_next_rad) - sin(lat_now_rad) * cos(lat_next_rad) * cos(d_lon));
+
+	return (double)(6371000.0 * 2.0 * c);
+}
 
 class Waypoint{
 	public:
 		size_t number_points;
-		int32_t latitude[];
-		int32_t longitude[];
+		float latitude[];
+		float longitude[];
 		float setpoint_heading(int i, float vehicle_latitude, float vehicle_longitude){
 			return (float)atan2(latitude[i] - vehicle_latitude, this->longitude[i] - vehicle_longitude); // online heading angle computation
 		}
