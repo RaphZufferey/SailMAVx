@@ -72,13 +72,17 @@
 #include <uORB/topics/vehicle_control_mode.h>
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/sensor_wind_angle.h>
-#include <uORB/topics/vehicle_global_position.h>
+#include <uORB/topics/vehicle_gps_position.h>
+
+
+using matrix::wrap_pi;
+
 
 class Waypoint{
 	public:
 		size_t number_points;
-		float latitude[];
-		float longitude[];
+		int32_t latitude[];
+		int32_t longitude[];
 		float setpoint_heading(int i, float vehicle_latitude, float vehicle_longitude){
 			return (float)atan2(latitude[i] - vehicle_latitude, this->longitude[i] - vehicle_longitude); // online heading angle computation
 		}
@@ -132,8 +136,8 @@ private:
 	int wind_strategy = 0;
 	int rudder_strategy = 0;
 	int heading_strategy = 0;
-	int heading_latitude = 0;
-	int heading_longitude = 0;
+	int32_t heading_latitude = 0;
+	int32_t heading_longitude = 0;
 
 	// Publications
 	orb_advert_t vehicle_control_mode_pub;
@@ -148,7 +152,7 @@ private:
 	int param_update_sub;
 	int vehicle_status_sub;
 	int sensor_wind_angle_sub;
-	int vehicle_global_position_sub;
+	int vehicle_gps_position_sub;
 
 	struct manual_control_setpoint_s manual_sp; 		// RC input
 	struct actuator_controls_s act;						// actuator outputs manual
@@ -159,7 +163,7 @@ private:
 	struct vehicle_status_s vehicle_status;			// navigation state
 	struct vehicle_odometry_s vehicle_odometry;		// vehicle odometry
 	struct sensor_wind_angle_s sensor_wind_angle;				// wind sensor
-	struct vehicle_global_position_s vehicle_global_position;		// global position
+	struct vehicle_gps_position_s vehicle_gps_position{};		// global position
 
 
 	/**

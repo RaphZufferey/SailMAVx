@@ -475,7 +475,7 @@ AMS_AS5048B::get_exp_avg_raw_angle()
     angle = static_cast<float>(acos(_moving_avg_exp_cos));
   }
 
-  angle *= AS5048B_RESOLUTION / two_PI;
+  angle *= AS5048B_RESOLUTION / two_PI; //this seems fishy
   return angle;
 }
 

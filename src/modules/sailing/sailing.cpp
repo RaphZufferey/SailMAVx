@@ -38,6 +38,7 @@
 //px4_module_params.h to get the DEFINE_PARAMETERS macro
 #include <px4_module_params.h>
 #include "params.c"
+#include <lib/ecl/geo/geo.h>
 
 
 #define DOWNWARDS (0)
@@ -185,9 +186,9 @@ void Sailing::vehicle_poll()
 	}
 
 	/* check if vehicle global position has changed*/
-	orb_check(vehicle_global_position_sub, &updated);
+	orb_check(vehicle_gps_position_sub, &updated);
 	if (updated) {
-		orb_copy(ORB_ID(vehicle_global_position), vehicle_global_position_sub, &vehicle_global_position);
+		orb_copy(ORB_ID(vehicle_gps_position), vehicle_gps_position_sub, &vehicle_gps_position);
 	}
 
 	/* check if vehicle status has changed */
@@ -239,7 +240,7 @@ void Sailing::run()
  	vehicle_control_mode_sub = 	orb_subscribe(ORB_ID(vehicle_control_mode));// subscribe and advertise to vehicle control mode
 	vehicle_status_sub = 		orb_subscribe(ORB_ID(vehicle_status));
 	sensor_wind_angle_sub = 	orb_subscribe(ORB_ID(sensor_wind_angle));
-	vehicle_global_position_sub = 	orb_subscribe(ORB_ID(vehicle_global_position));
+	vehicle_gps_position_sub = 	orb_subscribe(ORB_ID(vehicle_gps_position));
 
 
 
@@ -269,18 +270,24 @@ void Sailing::run()
 	double rudder_PI;
 	float course_angle;
 	float cmd_rudder_angle;
+	float lon;
+	float lat;
+	float lat_next = 514971423.0 * 1e-7d;
+	float lon_next = -122751027.0 * 1e-7d;
 
 	int i = 0;
 	Waypoint lake; // create lake list
-	//lake.latitude(0) = ;
-	//lake.longitude(0) = ;
-	float tolerance_radius;
+	lake.latitude[0] = 524987405.0;
+	lake.longitude[0] = -1751027.0;
+	lake.number_points = 1;
+	float tolerance_radius = 0.01;
+	//int number_points = 1;
 
-	float tmp_max = 1;
-	float tmp = tmp_max;
-	float wind_angle_actual = 0;
-	float last_wind_angle = 0;
-	float cmd_sail_throttle = 0; // from 0 to 1
+	//float tmp_max = 1;
+	//float tmp = tmp_max;
+	float wind_angle_actual = 0.0;
+	float last_wind_angle = 0.0;
+	float cmd_sail_throttle = 0.0; // from 0 to 1
 
 	float Kp = .1; // PI parameters
 	float Ki = .05; // PI parameters
@@ -333,7 +340,7 @@ void Sailing::run()
 				sails_are_down = false;
 			}
 
-			PX4_INFO("sail controller: polling vehicle_attitude_sub");
+			//PX4_INFO("sail controller: polling vehicle_attitude_sub");
 
 			// wait for up to 1000ms for data
 			int pret = px4_poll(fds, (sizeof(fds) / sizeof(fds[0])), 1000);
@@ -397,34 +404,100 @@ void Sailing::run()
 				else{
 					course_angle = current_yaw;
 				}
+				PX4_INFO("course_angle %f",course_angle);
+
+				param_get(param_heading_strategy, &heading_strategy); //applying another control strategy sqrt(1-cos)
+				//float distance_waypoint = sqrtf((heading_longitude - _global_pos.lat) * (heading_longitude - _global_pos.lat) + (heading_longitude - _global_pos.lat) * (heading_longitude - _global_pos.lat));
+
+				//PX4_INFO("latitude: %f longitude: %f", (double)vehicle_gps_position.lat, (double)vehicle_gps_position.lon); // (double)Theta);
+				//PX4_INFO("%"PRIu32 , (float)latitude1); // (double)Theta);
+
+				lon = (double)math::radians(((vehicle_gps_position.lon)) * 1e-7d);
+				lat = (double)math::radians(((vehicle_gps_position.lat)) * 1e-7d);
+				double lat_next_rad = math::radians(lat_next);
+
+
+				double d_lon = math::radians(lon_next) - math::radians(lon);
+
+				double cos_lat_next = cos(lat_next_rad);
+
+				double d_lat = lat_next_rad - lat;
+
+
+	/* conscious mix of double and float trig function to maximize speed and efficiency */
+
+				double a = sin(d_lat / 2.0) * sin(d_lat / 2.0) + sin(d_lon / 2.0) * sin(d_lon / 2.0) * cos(lat) * cos(lat_next_rad);
+
+				double c = atan2(sqrt(a), sqrt(1.0 - a));
+
+				float y = static_cast<float>(sin(d_lon) * cos_lat_next);
+				float x = static_cast<float>(cos(lat) * sin(lat_next_rad) - sin(lat) * cos_lat_next * cos(d_lon));
+
+
+				//const double lat_now_rad = math::radians(lat);
+				//const double lat_next_rad = math::radians(lat_next);
+
+				//lon = get_distance_to_next_waypoint_sailing((double)vehicle_gps_position.lat, (double)vehicle_gps_position.lon, (double) latitude1, (double)longitude1);
+
+				//lat = get_bearing_to_next_waypoint_sailing((double)vehicle_gps_position.lat, (double)vehicle_gps_position.lon, (double) latitude1, (double)longitude1);
+				float heading_setpoint = (float)(atan2f(y, x));
+
+				//get_distance_to_next_waypoint_sailing
+
+
 				//PX4_INFO("course_angle %f", course_angle);
 
-				float heading_setpoint;
-				switch(heading_strategy)
+				//PX4_INFO("lat: %f lon: %f", wind_angle_actual, wind_angle_actual); // (double)Theta);
+
+
+				//float heading_setpoint;
+				/* if (heading_strategy == 1){
+					float distance_waypoint = get_distance_to_next_waypoint_sailing(vehicle_gps_position.lat, vehicle_gps_position.lon, latitude1, longitude1);
+					if (distance_waypoint > tolerance_radius){
+						heading_setpoint = get_bearing_to_next_waypoint(vehicle_gps_position.lat, vehicle_gps_position.lon, latitude1, longitude1);
+					}
+					else if (i < lake.number_points - 1){
+						i++;
+					}
+					//PX4_INFO("distance waypoint: %f heading direction: %f", (double)distance_waypoint, (double)heading_setpoint); // (double)Theta);
+				}
+				else {*/
+					//param_get(param_heading_set, &heading_set);
+					//heading_setpoint = (float64)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
+				//}
+				/*switch(heading_strategy)
 				{
 					case 1: // waypoints to reach known a priori
-						heading_setpoint = lake.setpoint_heading(i, vehicle_global_position.lat, vehicle_global_position.lon);
-						//heading_setpoint = (float)atan2(lake.latitude[i] - vehicle_global_position.lat, lake.longitude[i] - vehicle_global_position.lon); // online heading angle computation
-						if(lake.tolerance_circle(i, vehicle_global_position.lat, vehicle_global_position.lon) < M_PI*tolerance_radius^2 && i < lake.number_points - 1){i++;}
-						//if((lake.latitude[i] - vehicle_global_position.lat)^2 + (lake.longitude[i] - vehicle_global_position.lon)^2 < M_PI*tolerance_radius^2 && i < lake.number_points - 1){
+						float distance_waypoint = get_distance_to_next_waypoint(vehicle_gps_position.lat, vehicle_gps_position.lon, lake.latitude[i], lake.longitude[i]);
+						if (distance_waypoint > M_PI*tolerance_radius^2){
+							heading_setpoint = get_bearing_to_next_waypoint(vehicle_gps_position.lat, vehicle_gps_position.lon, lake.latitude[i], lake.longitude[i]);
+						}
+						else if (i < lake.number_points - 1){
+							i++;
+						}
+						PX4_INFO("distance waypoint: %f heading direction: %f", (double)distance_waypoint, (double)heading_setpoint); // (double)Theta);
+						//heading_setpoint = lake.setpoint_heading(i, vehicle_gps_position.lat, vehicle_gps_position.lon);
+						//heading_setpoint = (float)atan2(lake.latitude[i] - vehicle_gps_position.lat, lake.longitude[i] - vehicle_gps_position.lon); // online heading angle computation
+						//if(lake.tolerance_circle(i, vehicle_gps_position.lat, vehicle_gps_position.lon) < M_PI*tolerance_radius^2){i++;}
+						//if((lake.latitude[i] - vehicle_gps_position.lat)^2 + (lake.longitude[i] - vehicle_gps_position.lon)^2 < M_PI*tolerance_radius^2 && i < lake.number_points - 1){
 						//	i++;
 						//}
 						//if(i < number_points - 1){point_reached = 1;}
 						break;
-					case 2: // waypoints to reach taken from PX4 parameter
-						param_get(param_heading_longitude, &heading_longitude);
-						param_get(param_heading_latitude, &heading_latitude);
-						heading_setpoint = (float)atan2(heading_latitude - vehicle_global_position.lat, heading_longitude - vehicle_global_position.lon); // online heading angle computation
-						/*if(heading_latitude - vehicle_global_position.lat)^2 + (heading_longitude - vehicle_global_position.lon)^2 < M_PI*tolerance_radius^2){
-							point_reached = 1;
-						};
-						break;*/
+					//case 2: // waypoints to reach taken from PX4 parameter
+						//param_get(param_heading_longitude, &heading_longitude);
+						//param_get(param_heading_latitude, &heading_latitude);
+						//heading_setpoint = (float)atan2(heading_latitude - vehicle_gps_position.lat, heading_longitude - vehicle_gps_position.lon); // online heading angle computation
+						//if(pow(heading_latitude - vehicle_gps_position.lat,2) + pow(heading_longitude - vehicle_gps_position.lon,2) > M_PI*pow(tolerance_radius,2)){
+						//	heading_setpoint = (float64)atan2(heading_latitude - vehicle_gps_position.lat, heading_longitude - vehicle_gps_position.lon); // online heading angle computation
+						//};
+						//break;
 					default: // heading setpoint, just the angle
 						param_get(param_heading_set, &heading_set);
-						heading_setpoint = (float)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
+						heading_setpoint = (float64)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
 						// float error_heading = Theta - heading_setpoint; // /epsilon_{theta}
 
-				}
+				}*/
 
 				float error_heading = heading_setpoint - current_yaw; // /epsilon_{theta}
 
@@ -471,8 +544,10 @@ void Sailing::run()
 					PX4_INFO("PI rudder");
 					cmd_rudder_angle = (P_error + I_error < max_rudder_angle && (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading); //rudder is computed by PI controller until it reaches the max threshold. The if-else limits to -1/1
 				}
+				wind_angle_actual = 5456378329.0;
+				//latitude1 = 5456378329.0;
 
-				PX4_INFO("cmd_sail: %f wnd_angle %f yaw %f course_ang %f  cmd_rudder %f head_set %f wind_to_n %f", (double)cmd_sail_angle, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle, (double)heading_set, (double)wnd_angle_to_n*180/M_PI); // (double)Theta);
+				PX4_INFO("cmd_sail: %f wnd_angle %f yaw %f course_ang %f  cmd_rudder %f head_set %f wind_to_n %f", (double)cmd_sail_angle, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle, (double)heading_setpoint, (double)wnd_angle_to_n*180/M_PI); // (double)Theta);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
@@ -503,7 +578,7 @@ void Sailing::run()
 	orb_unsubscribe(vehicle_control_mode_sub);
 	orb_unsubscribe(vehicle_status_sub);
 	orb_unsubscribe(sensor_wind_angle_sub);
-	orb_unsubscribe(vehicle_global_position_sub);
+	orb_unsubscribe(vehicle_gps_position_sub);
 }
 
 int sailing_main(int argc, char *argv[])
