@@ -272,13 +272,13 @@ void Sailing::run()
 	float cmd_rudder_angle;
 	float lon;
 	float lat;
-	float lat_next = 514971423.0 * 1e-7d;
-	float lon_next = -122751027.0 * 1e-7d;
+	float lat_next = 514986985.0 * 1e-7d;
+	float lon_next = 11751629.0 * 1e-7d;
 
 	int i = 0;
 	Waypoint lake; // create lake list
-	lake.latitude[0] = 524987405.0;
-	lake.longitude[0] = -1751027.0;
+	lake.latitude[0] = 524987405.0; // 514986985
+	lake.longitude[0] = -1751027.0; //-1751629
 	lake.number_points = 1;
 	float tolerance_radius = 0.01;
 	//int number_points = 1;
@@ -421,7 +421,7 @@ void Sailing::run()
 
 				double cos_lat_next = cos(lat_next_rad);
 
-				double d_lat = lat_next_rad - lat;
+				double d_lat = lat_next_rad - math::radians(lat);
 
 
 	/* conscious mix of double and float trig function to maximize speed and efficiency */
@@ -432,6 +432,8 @@ void Sailing::run()
 
 				float y = static_cast<float>(sin(d_lon) * cos_lat_next);
 				float x = static_cast<float>(cos(lat) * sin(lat_next_rad) - sin(lat) * cos_lat_next * cos(d_lon));
+
+
 
 
 				//const double lat_now_rad = math::radians(lat);
