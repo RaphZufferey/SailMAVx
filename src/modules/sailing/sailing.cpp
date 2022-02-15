@@ -267,20 +267,31 @@ void Sailing::run()
 	double max_rudder_angle = M_PI/4; // hypothesis: 45 degree max rudder angle
 	//float Theta; //This is the (upper)Theta angle in the reference
 	double rudder;
-	double rudder_PI;
+	//double rudder_PI;
 	float course_angle;
 	float cmd_rudder_angle;
 	float lon;
 	float lat;
-	float lat_next = 518486985.0 * 1e-7d;
-	float lon_next = 1751629.0 * 1e-7d;
+	int number_points = 3;
+	//float lat_next[number_points] = {515069853.0 * 1e-7d, 515055023.0 * 1e-7d, 515064603.0 * 1e-7d}; //51506297.0 * 1e-7d, 51505502.0 * 1e-7d, 51506460.0 * 1e-7d
+	//float lon_next[number_points] = {-1843449.0 * 1e-7d, -1822099.0 * 1e-7d, -1821509.0 * 1e-7d}; //-184344.0 * 1e-7d, -182209.0 * 1e-7d, -182150.0 * 1e-7d
+	//float lat_next_point = lat_next[0];
+	//float lon_next_point = lon_next[0];
+	float lat_next_point = 515062979.0 * 1e-7d;
+	float lon_next_point = -1843443.0 * 1e-7d;
+	float lat_second = 515055023.0 * 1e-7d;
+	float lon_second = -1843449.0 * 1e-7d;
+	float lat_third = 515064603.0 * 1e-7d;
+	float lon_third = -1821509.0 * 1e-7d;
+	//float lat_next = 518486985.0 * 1e-7d;
+	//float lon_next = 1751629.0 * 1e-7d;
 
 	int i = 0;
-	Waypoint lake; // create lake list
-	lake.latitude[0] = 524987405.0; // 514986985
-	lake.longitude[0] = -1751027.0; //-1751629
-	lake.number_points = 1;
-	float tolerance_radius = 3;
+	//Waypoint lake; // create lake list
+	//lake.latitude[0] = 51.8486985; // 514986985
+	//lake.longitude[0] = .1751629; //-1751629
+	//lake.number_points = 1;
+	float tolerance_radius = 10;
 	//int number_points = 1;
 
 	//float tmp_max = 1;
@@ -289,10 +300,10 @@ void Sailing::run()
 	float last_wind_angle = 0.0;
 	float cmd_sail_throttle = 0.0; // from 0 to 1
 
-	float Kp = .1; // PI parameters
-	float Ki = .05; // PI parameters
-	float P_error;
-	float I_error;
+	//float Kp = .1; // PI parameters
+	//float Ki = .05; // PI parameters
+	//float P_error;
+	//float I_error;
 	float heading_setpoint;
 	float distance_waypoint;
 
@@ -307,10 +318,10 @@ void Sailing::run()
 	param_get(param_heading_longitude, &heading_longitude);
 	param_t param_heading_set = param_find("HEADING_SET");
 	param_get(param_heading_set, &heading_set);
-	param_t param_wind_strategy = param_find("WIND_STRATEGY");
+	/*param_t param_wind_strategy = param_find("WIND_STRATEGY");
 	param_get(param_wind_strategy, &wind_strategy);
 	param_t param_rudder_strategy = param_find("RUDDER_STRATEGY");
-	param_get(param_rudder_strategy, &rudder_strategy);
+	param_get(param_rudder_strategy, &rudder_strategy);*/
 
 	// Get parameter updates
 	parameters_update(true);
@@ -507,21 +518,32 @@ void Sailing::run()
 				//param_get(param_heading_latitude, &heading_latitude);
 
 				if (heading_strategy == 1){
-					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, (double)lat_next, (double)lon_next);
+					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, (double)lat_next_point, (double)lon_next_point); // with 0 works
 					if (distance_waypoint > tolerance_radius){
-					heading_setpoint = get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, (double)lat_next, (double)lon_next);
+					heading_setpoint = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, (double)lat_next_point, (double)lon_next_point);
 					}
-					else if (i < lake.number_points - 1){
+					else if (i < number_points - 1){
+					//if (distance_waypoint < tolerance_radius && i < number_points - 1){
 						i++;
+						if (i == 1){
+							lat_next_point = lat_second;
+							lon_next_point = lon_second;
+						}
+						if (i == 2){
+							lat_next_point = lat_third;
+							lon_next_point = lon_third;
+						}
+						//lat_next_point = lat_next[i];
+						//lon_next_point = lon_next[i];
 					}
 				}
-				else if (heading_strategy == 2){
+				//else if (heading_strategy == 2){
 					//param_get(param_heading_longitude, &heading_longitude);
-					param_get(param_heading_latitude, &heading_latitude);
+					//param_get(param_heading_latitude, &heading_latitude);
 					//heading_longitude = (double)heading_longitude;
 					//heading_latitude = (double)heading_latitude;
 					//heading_setpoint = get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, (double)heading_latitude, (double)heading_longitude);
-				}
+				//}
 				else {
 					param_get(param_heading_set, &heading_set);
 					heading_setpoint = (double)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
@@ -566,7 +588,7 @@ void Sailing::run()
 
 				//PI rudder for comparison
 
-				P_error = Kp*sin(error_heading);
+				/*P_error = Kp*sin(error_heading);
 				I_error+= Ki*sin(error_heading);
 
 				param_get(param_rudder_strategy, &rudder_strategy);
@@ -574,10 +596,10 @@ void Sailing::run()
 					PX4_INFO("PI rudder");
 					cmd_rudder_angle = (P_error + I_error < max_rudder_angle && (P_error + I_error) > - max_rudder_angle) ? P_error + I_error : sgn(error_heading); //rudder is computed by PI controller until it reaches the max threshold. The if-else limits to -1/1
 				}
-				wind_angle_actual = 5456378329.0;
+				wind_angle_actual = 5456378329.0;*/
 				//latitude1 = 5456378329.0;
 
-				PX4_INFO("cmd_sail: %f wnd_angle %f yaw %f course_ang %f  cmd_rudder %f head_set %f wind_to_n %f", (double)cmd_sail_angle, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle, (double)heading_setpoint, (double)distance_waypoint); // (double)Theta);
+				PX4_INFO("cmd_sail: %f wnd_angle %f yaw %f course_ang %f  cmd_rudder %f head_set %f wind_to_n %f", (double)cmd_sail_angle, (double)wnd_to_boat, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle, (double)heading_setpoint, (double)distance_waypoint); // (double)Theta);
 
 		 		//Control
 				act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS

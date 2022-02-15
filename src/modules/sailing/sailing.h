@@ -111,16 +111,16 @@ float get_distance_to_next_waypoint_sailing(double lat_now, double lon_now, doub
 
 	double a = sin(d_lat / 2.0) * sin(d_lat / 2.0) + sin(d_lon / 2.0) * sin(d_lon / 2.0) * cos(lat_now_rad) * cos(lat_next_rad);
 
-	double c = atan2(sqrt(a), sqrt(1.0 - a));
-	//double c = asin(sqrt(a));
+	//double c = atan2(sqrt(a), sqrt(1.0 - a));
+	double c = asin(sqrt(a));
 
-	float y = (double)(sin(d_lon) * cos(lat_next_rad));
-	float x = (double)(cos(lat_now_rad) * sin(lat_next_rad) - sin(lat_now_rad) * cos(lat_next_rad) * cos(d_lon));
+	//float y = (double)(sin(d_lon) * cos(lat_next_rad));
+	//float x = (double)(cos(lat_now_rad) * sin(lat_next_rad) - sin(lat_now_rad) * cos(lat_next_rad) * cos(d_lon));
 
 	return (double)(6371000.0 * 2.0 * c);
 }
 
-class Waypoint{
+/*class Waypoint{
 	public:
 		size_t number_points;
 		float latitude[];
@@ -131,7 +131,7 @@ class Waypoint{
 		float tolerance_circle(int i, float vehicle_latitude, float vehicle_longitude){
 			return pow(latitude[i] - vehicle_latitude,2) + pow(this->longitude[i] - vehicle_longitude,2);
 		}
-};
+};*/
 
 extern "C" __EXPORT int sailing_main(int argc, char *argv[]);
 
