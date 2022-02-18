@@ -80,7 +80,7 @@ static constexpr uint16_t AS5048B_RESOLUTION     = 16384;   // 14 bits
  * Moving average is calculated on Sine et Cosine values of the angle to provide an extrapolated accurate angle value.
  * Keep in mind the moving average will be impacted by the measurement frequency too.
  */
-static constexpr uint8_t EXP_MOVAVG_N    = 5; // History length impact on moving average impact.
+static constexpr uint8_t EXP_MOVAVG_N    = 100; // History length impact on moving average impact.
 static constexpr uint8_t EXP_MOVAVG_LOOP = 1; // Number of measurements before starting moving Average.
 
 /** Unit constants for readability. */
@@ -309,8 +309,9 @@ AMS_AS5048B::collect()
 
   sensor_wind_angle_s report{};
 
+  update_moving_avg_exp();
   report.timestamp           = hrt_absolute_time();
-  report.wind_magnetic_angle = read_angle();
+  report.wind_magnetic_angle = _moving_avg_exp_angle;//read_angle();
 
   orb_publish_auto(ORB_ID(sensor_wind_angle), &_wind_angle_topic, &report,
        &_orb_class_instance, ORB_PRIO_DEFAULT);
@@ -475,7 +476,9 @@ AMS_AS5048B::get_exp_avg_raw_angle()
     angle = static_cast<float>(acos(_moving_avg_exp_cos));
   }
 
-  angle *= AS5048B_RESOLUTION / two_PI; //this seems fishy
+  //angle *= AS5048B_RESOLUTION / two_PI; //this seems fishy
+  angle *= 360 / two_PI; //this seems fishy
+
   return angle;
 }
 
