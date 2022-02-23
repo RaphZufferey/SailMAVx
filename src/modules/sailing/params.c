@@ -31,7 +31,7 @@ PARAM_DEFINE_INT32(HEADING_STRATEGY, 0);
  * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_FLOAT(HEADING_LAT, 0);
+PARAM_DEFINE_INT32(HEADING_LAT, 0);
 
 /**
  * Heading latitude
@@ -42,7 +42,7 @@ PARAM_DEFINE_FLOAT(HEADING_LAT, 0);
  * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_FLOAT(HEADING_LON, 0);
+PARAM_DEFINE_INT32(HEADING_LON, 0);
 
 /**
  * Wind strategy
@@ -64,7 +64,7 @@ PARAM_DEFINE_FLOAT(HEADING_LON, 0);
  * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_INT32(SAILING_FREEZE, 0);
+//PARAM_DEFINE_INT32(SAILING_FREEZE, 0);
 
 /**
  * Stop strategy
@@ -75,7 +75,7 @@ PARAM_DEFINE_INT32(SAILING_FREEZE, 0);
  * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_INT32(STOP_STRATEGY, 0);
+//PARAM_DEFINE_INT32(STOP_STRATEGY, 0);
 
 /**
  * Rudder strategy
@@ -99,7 +99,7 @@ PARAM_DEFINE_INT32(STOP_STRATEGY, 0);
  * @group Custom Parameters
  */
 
-PARAM_DEFINE_INT32(WND_ANGLE_TO_N, 0);
+//PARAM_DEFINE_INT32(WND_ANGLE_TO_N, 0);
 
 /**
  * Sailmav water temperature
@@ -133,4 +133,4 @@ PARAM_DEFINE_FLOAT(SMV_AIR_T, 0);
  * @group Custom Parameters
  */
 
-PARAM_DEFINE_INT32(SETPOINT_TO_N, 0);
+//PARAM_DEFINE_INT32(SETPOINT_TO_N, 0);

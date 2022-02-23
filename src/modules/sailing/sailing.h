@@ -173,15 +173,15 @@ private:
 
 	bool sails_are_down = true;
 	float sail_angle_max = 60*(float)M_PI/180;
-	int wnd_angle_to_n = 179;
+	//int wnd_angle_to_n = 179;
 	int heading_set = 0;
-	int wind_strategy = 0;
-	int rudder_strategy = 0;
+	//int wind_strategy = 0;
+	//int rudder_strategy = 0;
 	int heading_strategy = 0;
-	int sailing_freeze = 0;
-	int stop_strategy = 0;
-	float heading_latitude = 0.0;
-	float heading_longitude = 0.0;
+	//int sailing_freeze = 0;
+	//int stop_strategy = 0;
+	int heading_latitude = 0;
+	int heading_longitude = 0;
 
 	// Publications
 	orb_advert_t vehicle_control_mode_pub;
@@ -222,14 +222,14 @@ private:
 		(ParamInt<px4::params::HEADING_SET>) _heading_set,   /**< example parameter */
 		//(ParamInt<px4::params::WIND_STRATEGY>) _wind_strategy,   /**< example parameter */
 		//(ParamInt<px4::params::RUDDER_STRATEGY>) _rudder_strategy,   /**< example parameter */
-		(ParamInt<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
+		//(ParamInt<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
 		(ParamFloat<px4::params::SMV_AIR_T>) _smv_air_t,   /**< example parameter */
 		(ParamFloat<px4::params::SMV_H2O_T>) _smv_h2o_t,   /**< example parameter */
 		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig,  /**< another parameter */
 		(ParamInt<px4::params::HEADING_STRATEGY>) _heading_strategy,   /**< example parameter */
-		(ParamInt<px4::params::HEADING_STRATEGY>) _sailing_freeze,   /**< example parameter */
-		(ParamInt<px4::params::HEADING_STRATEGY>) _stop_strategy,   /**< example parameter */
-		(ParamFloat<px4::params::HEADING_LAT>) _heading_latitude,   /**< example parameter */
-		(ParamFloat<px4::params::HEADING_LON>) _heading_longitude   /**< example parameter */
+		//(ParamInt<px4::params::SAILING_FREEZE>) _sailing_freeze,   /**< example parameter */
+		//(ParamInt<px4::params::STOP_STRATEGY>) _stop_strategy,   /**< example parameter */
+		(ParamInt<px4::params::HEADING_LAT>) _heading_latitude,   /**< example parameter */
+		(ParamInt<px4::params::HEADING_LON>) _heading_longitude   /**< example parameter */
 	)
 };
