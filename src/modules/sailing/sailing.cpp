@@ -272,7 +272,7 @@ void Sailing::run()
 	float cmd_rudder_angle;
 	float lon;
 	float lat;
-	int number_points = 1; //CHECKKKKKKKKKKK
+	int number_points = 2; //CHECKKKKKKKKKKK
 
 	int SAILING_FREEZE = 400;
 	int STOP_STRAGEY = 500;
@@ -284,31 +284,55 @@ void Sailing::run()
 	// 43.92723217530203, 15.512963778188496, cat position
 
 	/*
+
+	24/02 2nd test, afternoon
+	43.931426611375514, 15.523641068716234
+	43.93630961764398, 15.519263703693461
+
+	24/02 test in the morning
+	43.860825547483145, 15.624223915461155
+	43.85525554064115, 15.620318619132343
+
 	put primorja test
 	43.95968751513365, 15.431223925279266
 	43.958568637087524, 15.432585218207707
 	43.960410559735344, 15.435873606461644
 
-	mission 2 23/02
+	mission 2.2 23/02
 	43.91842204510791, 15.567688308956908
 	43.8657923715425, 15.607481561796753
 	43.853430376454185, 15.625334345005802
 
-	mission 1 23/02
+	mission 2.1 23/02
 	43.91881286837626, 15.567478351377776
 	43.89542068744201, 15.585494571158346
 	43.853485426382576, 15.624032551101113
 	43.849895484157045, 15.634160572349456
+
+	25/02 morning mission
+	43.921098554490605, 15.515230301575633
+	43.9295368605759, 15.516861084657991
+	43.933400154324836, 15.522225502692073
+	43.936119762600875, 15.530679825513783
+	43.93642880112596, 15.546086434107663
+	43.923725994234736, 15.562565926308357
+
+	25/02 mission 2
+	43.936444230854555, 15.545367566623355
 	*/
 
-	float lat_next_point = 43.95968751;
-	float lon_next_point = 15.43122392;
-	float lat_second = 43.95856863;
-	float lon_second = 15.43258521;
-	float lat_third = 43.96041055;
-	float lon_third = 15.43587360;
-	float lat_fourth = 43.85348542;
-	float lon_fourth = 15.62403255;
+	float lat_next_point = 51.505424;
+	float lon_next_point = -0.184490;
+	float lat_second = 51.506573;
+	float lon_second = -0.182409;
+	float lat_third = 43.93340015;
+	float lon_third = 15.52222550;
+	float lat_fourth = 43.93611976;
+	float lon_fourth = 15.53067982;
+	float lat_fifth = 43.93642880;
+	float lon_fifth = 15.54608643;
+	float lat_sixth = 43.92372599;
+	float lon_sixth = 15.56256592;
 	int stop_index = 0;
 	//float lat_next = 518486985.0 * 1e-7d;
 	//float lon_next = 1751629.0 * 1e-7d;
@@ -318,7 +342,7 @@ void Sailing::run()
 	//lake.latitude[0] = 51.8486985; // 514986985
 	//lake.longitude[0] = .1751629; //-1751629
 	//lake.number_points = 1;
-	float tolerance_radius = 20.0;
+	float tolerance_radius = 25.0;
 	//int number_points = 1;
 
 	//float tmp_max = 1;
@@ -486,6 +510,14 @@ void Sailing::run()
 						if (i == 3){
 							lat_next_point = lat_fourth;
 							lon_next_point = lon_fourth;
+						}
+						if (i == 4){
+							lat_next_point = lat_fifth;
+							lon_next_point = lon_fifth;
+						}
+						if (i == 5){
+							lat_next_point = lat_sixth;
+							lon_next_point = lon_sixth;
 						}
 						//lat_next_point = lat_next[i];
 						//lon_next_point = lon_next[i];
