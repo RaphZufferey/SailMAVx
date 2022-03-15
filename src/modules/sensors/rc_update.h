@@ -51,6 +51,7 @@
 #include <uORB/topics/manual_control_setpoint.h>
 #include <uORB/topics/rc_channels.h>
 #include <uORB/topics/rc_parameter_map.h>
+#include <uORB/topics/vehicle_status.h>
 
 namespace sensors
 {
@@ -105,7 +106,9 @@ private:
 	 */
 	void set_params_from_rc(const ParameterHandles &parameter_handles);
 
-
+	//struct vehicle_status_s vehicle_status;
+	//int vehicle_status_sub;
+	uORB::Subscription	_vehicle_status_sub{ORB_ID(vehicle_status)};
 	uORB::Subscription	_rc_sub{ORB_ID(input_rc)};				/**< raw rc channels data subscription */
 	uORB::Subscription	_rc_parameter_map_sub{ORB_ID(rc_parameter_map)};	/**< rc parameter map subscription */
 

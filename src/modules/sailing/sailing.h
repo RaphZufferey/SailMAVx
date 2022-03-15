@@ -66,6 +66,7 @@
 #include <uORB/topics/vehicle_attitude.h>                  // this topic holds the orientation of the hippocampus
 #include <uORB/topics/vehicle_odometry.h>                // this msg structure holds for odometry
 #include <uORB/topics/parameter_update.h>
+#include <uORB/topics/actuator_outputs.h>
 #include <uORB/topics/manual_control_setpoint.h>
 #include <drivers/drv_hrt.h>
 // additions for navigation modes
@@ -120,6 +121,21 @@ float get_distance_to_next_waypoint_sailing(double lat_now, double lon_now, doub
 	return (double)(6371000.0 * 2.0 * c);
 }
 
+float scaling(float val, float inMin, float inMax, float outMin, float outMax)
+{
+	float retVal = 0.0;
+
+	retVal = (val - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
+
+	if (retVal < outMin) {
+		retVal = outMin;
+
+	} else if (retVal > outMax) {
+		retVal = outMax;
+	}
+
+	return retVal;
+}
 /*class Waypoint{
 	public:
 		size_t number_points;
@@ -186,11 +202,12 @@ private:
 	// Publications
 	orb_advert_t vehicle_control_mode_pub;
 	orb_advert_t act_pub;
+	orb_advert_t _outputs_pub;
 
 	// Subscriptionheading_set
 	int vehicle_control_mode_sub;
 	int vehicle_attitude_sub;
-	int vehicle_odometry_sub;
+	//int vehicle_odometry_sub;
 	int parameter_update_sub;
 	int manual_sp_sub;
 	int param_update_sub;
@@ -205,9 +222,10 @@ private:
 	struct parameter_update_s param_upd;				// parameter handling (with QGC)
 	struct vehicle_control_mode_s vehicle_control_mode;	// flags
 	struct vehicle_status_s vehicle_status;			// navigation state
-	struct vehicle_odometry_s vehicle_odometry;		// vehicle odometry
+	//struct vehicle_odometry_s vehicle_odometry;		// vehicle odometry
 	struct sensor_wind_angle_s sensor_wind_angle;				// wind sensor
 	struct vehicle_gps_position_s vehicle_gps_position{};		// global position
+	struct actuator_outputs_s  _outputs;      // actuator output
 
 
 	/**

@@ -115,11 +115,20 @@ bool CRSFTelemetry::send_attitude()
 		return false;
 	}
 
-	matrix::Eulerf attitude = matrix::Quatf(vehicle_attitude.q);
-	int16_t pitch = attitude(1) * 1e4f;
-	int16_t roll = attitude(0) * 1e4f;
-	int16_t yaw = attitude(2) * 1e4f;
-	return crsf_send_telemetry_attitude(_uart_fd, pitch, roll, yaw);
+	vehicle_status_s vehicle_status;
+
+	if (!_vehicle_status_sub.update(&vehicle_status)) {
+		return false;
+	}
+
+	if(vehicle_status.nav_state != vehicle_status_s::NAVIGATION_STATE_SAIL){
+		matrix::Eulerf attitude = matrix::Quatf(vehicle_attitude.q);
+		int16_t pitch = attitude(1) * 1e4f;
+		int16_t roll = attitude(0) * 1e4f;
+		int16_t yaw = attitude(2) * 1e4f;
+		return crsf_send_telemetry_attitude(_uart_fd, pitch, roll, yaw);
+	}
+
 }
 
 bool CRSFTelemetry::send_flight_mode()

@@ -220,9 +220,13 @@ RCUpdate::rc_poll(const ParameterHandles &parameter_handles)
 		/* read low-level values from FMU or IO RC inputs (PPM, Spektrum, S.Bus) */
 		input_rc_s rc_input{};
 		_rc_sub.copy(&rc_input);
+		vehicle_status_s vehicle_status{};
 
 		/* detect RC signal loss */
 		bool signal_lost;
+
+		/*detected vehicle_status*/
+		bool updated;
 
 		/* check flags and require at least four channels to consider the signal valid */
 		if (rc_input.rc_lost || rc_input.rc_failsafe || rc_input.channel_count < 4) {
@@ -420,8 +424,19 @@ RCUpdate::rc_poll(const ParameterHandles &parameter_handles)
 			actuator_group_3.control[6] = manual.aux2;
 			actuator_group_3.control[7] = manual.aux3;
 
-			/* publish actuator_controls_3 topic */
-			_actuator_group_3_pub.publish(actuator_group_3);
+			/* publish actuator_controls_3 topic
+			orb_check(vehicle_status_sub, &updated);
+			if (updated) {
+				orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
+			}*/
+
+			_vehicle_status_sub.copy(&vehicle_status);
+			if(vehicle_status.nav_state != vehicle_status_s::NAVIGATION_STATE_SAIL){
+				_actuator_group_3_pub.publish(actuator_group_3);
+				//PX4_INFO("no sail %d", vehicle_status.nav_state);
+				//px4_usleep(5000);
+			}
+			px4_usleep(5000);
 
 			/* Update parameters from RC Channels (tuning with RC) if activated */
 			if (hrt_elapsed_time(&_last_rc_to_param_map_time) > 1e6) {
