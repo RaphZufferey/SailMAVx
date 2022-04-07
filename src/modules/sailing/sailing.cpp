@@ -247,9 +247,9 @@ void Sailing::run()
 	//vehicle_odometry_sub = 		orb_subscribe(ORB_ID(vehicle_odometry));
 
 	vehicle_control_mode_pub = 	orb_advertise(ORB_ID(vehicle_control_mode), &vehicle_control_mode);
-	//act_pub = 			orb_advertise(ORB_ID(actuator_controls_0), &act);/* advertise to actuator_control topic */
+	act_pub = 			orb_advertise(ORB_ID(actuator_controls_0), &act);/* advertise to actuator_control topic */
 
-	_outputs_pub = 			orb_advertise(ORB_ID(actuator_outputs), &_outputs); /* advertise to actuator_control topic */
+	//_outputs_pub = 			orb_advertise(ORB_ID(actuator_outputs), &_outputs); /* advertise to actuator_control topic */
 
 	if(_outputs_pub != nullptr){
 		PX4_WARN("act_pub is null");
@@ -258,10 +258,6 @@ void Sailing::run()
 	//if(act_pub != nullptr){
 	//	PX4_WARN("act_pub is null");
 	//}
-
-	// esc parameters
-	float _pwm_min = 1000.0;
-	float _pwm_max = 2000.0;
 
 	// Options
 	orb_set_interval(vehicle_attitude_sub, 100); //200 /* limit the update rate to X ms */
@@ -283,7 +279,9 @@ void Sailing::run()
 	int number_points = 2; //CHECKKKKKKKKKKK
 
 	int SAILING_FREEZE = 400;
-	int STOP_STRAGEY = 500;
+	int STOP_STRATEGY = 500;
+	int WAYPOINT_STRATEGY = 600;
+	int TACKING_STRATEGY = 700;
 	//float lat_next[number_points] = {515069853.0 * 1e-7d, 515055023.0 * 1e-7d, 515064603.0 * 1e-7d}; //51506297.0 * 1e-7d, 51505502.0 * 1e-7d, 51506460.0 * 1e-7d
 	//float lon_next[number_points] = {-1843449.0 * 1e-7d, -1822099.0 * 1e-7d, -1821509.0 * 1e-7d}; //-184344.0 * 1e-7d, -182209.0 * 1e-7d, -182150.0 * 1e-7d
 	//float lat_next_point = lat_next[0];
@@ -302,16 +300,22 @@ void Sailing::run()
 	float lat_sixth = 43.92372599;
 	float lon_sixth = 15.56256592;
 	int stop_index = 0;
+	lat_next_point = lat;
+	lon_next_point = lon;
 	//float lat_next = 518486985.0 * 1e-7d;
 	//float lon_next = 1751629.0 * 1e-7d;
 
 	int i = 0;
+	int head_sign = 1;
 	//Waypoint lake; // create lake list
 	//lake.latitude[0] = 51.8486985; // 514986985
 	//lake.longitude[0] = .1751629; //-1751629
 	//lake.number_points = 1;
 	float tolerance_radius = 25.0;
 	//int number_points = 1;
+
+	int sign;
+	float wnd_to_boat_ave = 50*M_PI/180;
 
 	//float tmp_max = 1;
 	//float tmp = tmp_max;
@@ -323,27 +327,30 @@ void Sailing::run()
 	//float I_error;
 	float heading_setpoint = 0.0;
 	float distance_waypoint = 0.0;
+	float heading_initial = 0.0;
+	float heading_tolerance = 90.0*M_PI/180;
+	int wnd_contribution = 3*M_PI/180;
 
-	//act.control[actuator_controls_s::INDEX_PITCH] = 0;
+	act.control[actuator_controls_s::INDEX_PITCH] = 0;
 
 	bool updated = false;
 	//param_t param_wnd_angle_to_n = param_find("WND_ANGLE_TO_N");
 	//param_get(param_wnd_angle_to_n, &wnd_angle_to_n);
-	param_t param_heading_strategy = param_find("HEADING_STRATEGY");
+	/*param_t param_heading_strategy = param_find("HEADING_STRATEGY");
 	param_get(param_heading_strategy, &heading_strategy);
-	/*param_t param_sailing_freeze = param_find("SAILING_FREEZE");
+	param_t param_sailing_freeze = param_find("SAILING_FREEZE");
 	param_get(param_sailing_freeze, &sailing_freeze);
 	param_t param_stop_strategy = param_find("STOP_STRATEGY");
-	param_get(param_stop_strategy, &stop_strategy);*/
+	param_get(param_stop_strategy, &stop_strategy);
 	param_t param_heading_latitude = param_find("HEADING_LAT");
 	param_get(param_heading_latitude, &heading_latitude);
 	param_t param_heading_longitude = param_find("HEADING_LONG");
-	param_get(param_heading_longitude, &heading_longitude);
+	param_get(param_heading_longitude, &heading_longitude);*/
 	param_t param_heading_set = param_find("HEADING_SET");
 	param_get(param_heading_set, &heading_set);
-	/*param_t param_wind_strategy = param_find("WIND_STRATEGY");
-	param_get(param_wind_strategy, &wind_strategy);
-	param_t param_rudder_strategy = param_find("RUDDER_STRATEGY");
+	param_t param_sail_strategy = param_find("SAIL_STRATEGY");
+	param_get(param_sail_strategy, &sail_strategy);
+	/*param_t param_rudder_strategy = param_find("RUDDER_STRATEGY");
 	param_get(param_rudder_strategy, &rudder_strategy);*/
 
 	// Get parameter updates
@@ -355,7 +362,7 @@ void Sailing::run()
 	orb_check(sensor_wind_angle_sub, &updated); // instead of odometry_sub we can use vehicle_gps_position
 	if(updated){/* copy sensors raw data into local buffer */
 		orb_copy(ORB_ID(sensor_wind_angle), sensor_wind_angle_sub, &sensor_wind_angle);
-		}
+	}
 
 	float scale_wind_angle = sensor_wind_angle.wind_magnetic_angle;
 
@@ -411,12 +418,26 @@ void Sailing::run()
 				else if (wnd_to_boat < -M_PI){
 					wnd_to_boat = wnd_to_boat +2*M_PI;
 				}
-				float sail_angle = sgn(wnd_to_boat)*M_PI/6*(-cos(wnd_to_boat)+1);
-				cmd_sail_angle_left = sail_angle/sail_angle_max; // from -1 to 1
-				cmd_sail_angle_right = sail_angle/sail_angle_max; // from -1 to 1
+				float cmd_sail_angle = sgn(wnd_to_boat)*M_PI/4*(-cos(wnd_to_boat)+1)/sail_angle_max; // from -PI/2 to PI/2
+				cmd_sail_angle = sgn(cmd_sail_angle)*cmd_sail_angle <= 1 ? cmd_sail_angle : sgn(cmd_sail_angle); // saturation of the sail
+				cmd_sail_angle_left = cmd_sail_angle; // from -1 to 1
+				cmd_sail_angle_right = cmd_sail_angle; // from -1 to 1
 
 				//if (wnd_to_boat > 8.0f*M_PI/180 && wnd_to_boat < 69.0f*M_PI/180)
-
+				param_get(param_sail_strategy, &sail_strategy); //applying another control strategy sqrt(1-cos)
+				px4_usleep(5000);
+				if (sail_strategy == 1){
+					if (wnd_to_boat > 8.0*M_PI/180 && wnd_to_boat < 69.0*M_PI/180){
+						cmd_sail_angle = 0.9775*wnd_to_boat - 0.133; // Andre's strategy
+						cmd_sail_angle_right = cmd_sail_angle/sail_angle_max;
+						//PX4_INFO("wind 2 %f", cmd_sail_angle);
+					}
+					if (wnd_to_boat < -8.0*M_PI/180 && wnd_to_boat > -69.0*M_PI/180){
+						cmd_sail_angle = 0.9775*wnd_to_boat + 0.133; // Andre's strategy
+						cmd_sail_angle_left = cmd_sail_angle/sail_angle_max;
+						//PX4_INFO("wind 2 %f", cmd_sail_angle);
+					}
+				}
 
 				//PX4_INFO("wind 1 %f", cmd_sail_angle);
 
@@ -438,19 +459,6 @@ void Sailing::run()
 				float wnd_angle_to_n = wnd_to_boat - M_PI + current_yaw; // just for the tester, to check the wind angle and decide the heading direction. This can be compared to the station one
 				wnd_angle_to_n = wnd_angle_to_n > 0 ? wnd_angle_to_n : wnd_angle_to_n + 2*M_PI ; // normalize from 0 to 360
 
-				//float velocity_x = vehicle_odometry.vx;
-				//float velocity_y = vehicle_odometry.vy;
-
-				// check tolerance for velocities
-				/*if (velocity_x > 0.01 || velocity_x < -0.01 || velocity_y > 0.01 || velocity_y < -0.01){ // tolerance to check if SailMAV is moving
-					course_angle = current_yaw + atan2(velocity_y , velocity_x); //actual angle of the boat trajectory  check
-				}
-				else{
-					course_angle = current_yaw;
-				}
-				PX4_INFO("course_angle %f",course_angle);*/
-
-
 				param_get(param_heading_set, &heading_set);
 				//float distance_waypoint = sqrtf((heading_longitude - _global_pos.lat) * (heading_longitude - _global_pos.lat) + (heading_longitude - _global_pos.lat) * (heading_longitude - _global_pos.lat));
 
@@ -463,12 +471,53 @@ void Sailing::run()
 				//param_get(param_heading_longitude, &heading_longitude);
 				//param_get(param_heading_latitude, &heading_latitude);
 
-				param_get(param_heading_strategy, &heading_strategy);
+				//param_get(param_heading_strategy, &heading_strategy);
 
-				if (heading_strategy == 1 && heading_set != STOP_STRAGEY){
+				/* something more reliable can be: get to know the wind angle to N, follow 45 degree to it fixing heading angles and check the tolerance adjusting this heading angle
+
+				if (heading_set == TACKING_STRATEGY){
+					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, lon_next_point); // with 0 works
+					if(distance_waypoint < 100.0){
+						if (head_sign && (wnd_to_boat < 40*M_PI/180 || wnd_to_boat > 60*M_PI/180) || !head_sign && (wnd_to_boat > -40*M_PI/180 || wnd_to_boat < -60*M_PI/180))){
+							//rudder = rudder + (wnd_to_boat - wnd_to_boat_ave)*P //check the sign, better to play on heading than directly rudder
+							heading_setpoint = heading_setpoint + (wnd_to_boat - wnd_to_boat_ave)*P;
+						}
+					}
+					else {
+						lat_next_point = lat;
+						lon_next_point = lon;
+						head_sign = -head_sign;
+						heading_setpoint = heading_initial + sign*wnd_to_boat_ave;
+					}
+				}*/
+
+				if (heading_set == WAYPOINT_STRATEGY){
 					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, lon_next_point); // with 0 works
 					if (distance_waypoint > tolerance_radius){
-					heading_setpoint = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, (double)lon_next_point);
+						heading_setpoint = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, (double)lon_next_point);
+						if (((heading_setpoint - heading_initial > heading_tolerance || heading_setpoint - heading_initial < -heading_tolerance) && distance_waypoint < 5*tolerance_radius) && i < number_points - 1){
+							i++;
+							if (i == 1){
+								lat_next_point = lat_second;
+								lon_next_point = lon_second;
+							}
+							if (i == 2){
+								lat_next_point = lat_third;
+								lon_next_point = lon_third;
+							}
+							if (i == 3){
+								lat_next_point = lat_fourth;
+								lon_next_point = lon_fourth;
+							}
+							if (i == 4){
+								lat_next_point = lat_fifth;
+								lon_next_point = lon_fifth;
+							}
+							if (i == 5){
+								lat_next_point = lat_sixth;
+								lon_next_point = lon_sixth;
+							}
+						}
 					}
 					else if (i < number_points - 1){
 					//if (distance_waypoint < tolerance_radius && i < number_points - 1){
@@ -495,7 +544,12 @@ void Sailing::run()
 						}
 						//lat_next_point = lat_next[i];
 						//lon_next_point = lon_next[i];
+						heading_initial = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, (double)lon_next_point);
 					}
+				}
+				else if (heading_set != STOP_STRATEGY){
+				//else {
+					heading_setpoint = (double)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
 				}
 				/*else if (heading_strategy == 2){
 					param_get(param_heading_longitude, &heading_longitude);
@@ -504,14 +558,17 @@ void Sailing::run()
 					lat_next_point = (double)heading_latitude;
 					heading_setpoint = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, (double)lat_next_point, (double)lon_next_point);
 				}*/
-				else if (heading_set != STOP_STRAGEY){
-				//else {
-					heading_setpoint = (double)heading_set*M_PI/180; // North (reference frame) setpoint in heading, tester/developer decision (put on top of the file?). 0 obviously means go straight
-				}
 
 				//param_get(param_heading_latitude, &heading_latitude);
 
 				float error_heading = heading_setpoint - current_yaw; // /epsilon_{theta}
+
+				if (sail_strategy != 2){ // we take advantage of this parameter for convinience of the next tests
+					error_heading = heading_setpoint - current_yaw; // /epsilon_{theta}
+				}
+				else{
+					error_heading = heading_setpoint - current_yaw + sgn(wnd_to_boat)*wnd_contribution; //we add a contribution for drift compensation
+				}
 
 				// construct to apply the control
 				if(cos(error_heading) >= 0){
@@ -538,29 +595,6 @@ void Sailing::run()
 					cmd_sail_throttle = min(manual_sp.z, 1);
 				}
 
-				/* do mixing */
-				_outputs.noutputs = 6; // pixracer
-
-				/* disable unused ports by setting their output to NaN */
-				for (size_t i = _outputs.noutputs -1; i < _outputs.NUM_ACTUATOR_OUTPUTS; i++) { // -1 because we don't want to use propellers
-					_outputs.output[i] = 0.0;
-				}
-
-				/*uint16_t min_pwm[actuator_outputs_s::NUM_ACTUATOR_OUTPUTS];*/
-
-				for (unsigned int i = 0; i < _outputs.noutputs - 1; i++) {
-					_outputs.output[i] = 1700.0;
-				}
-
-				//_outputs.output[1] = scaling(0.0, -1.0f, 1.0f, _pwm_min, _pwm_max); // rudder
-				//_outputs.output[2] = scaling(0.1, -1.0f, 1.0f, _pwm_min, _pwm_max); // left sail (?)
-				//_outputs.output[3] = scaling(0.2, -1.0f, 1.0f, _pwm_min, _pwm_max); // right sail (?)
-				_outputs.output[1] = 1499.0; // rudder
-
-				_outputs.timestamp = hrt_absolute_time();
-
-
-				orb_publish(ORB_ID(actuator_outputs), _outputs_pub, &_outputs);
 
 				//PI rudder for comparison
 
@@ -574,35 +608,39 @@ void Sailing::run()
 				}
 				wind_angle_actual = 5456378329.0;*/
 				//latitude1 = 5456378329.0;
-				PX4_INFO("cmd_sail: %f wnd_angle %f yaw %f course_ang %f cmd_rudder %f head_set %f distance %f", (double)cmd_sail_angle_left, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle, (double)heading_setpoint*180/M_PI, (double)distance_waypoint); // (double)Theta);
+				//PX4_INFO("cmd_sail: %f wnd_angle %f yaw %f course_ang %f cmd_rudder %f head_set %f distance %f", (double)cmd_sail_angle_left, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)cmd_sail_angle_right, (double)cmd_rudder_angle, (double)heading_setpoint*180/M_PI, (double)distance_waypoint); // (double)Theta);
 				//PX4_INFO("cmd_sail: %f wnd_angle %f yaw %f course_ang %f cmd_rudder %f head_set %f distance %f", (double)cmd_sail_angle, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)course_angle*180/M_PI, (double)cmd_rudder_angle, (double)heading_setpoint*180/M_PI, (double)distance_waypoint); // (double)Theta);
 				//PX4_INFO("head_set %f dist_point %f, lat_next %f, lon_next %f", (double)heading_setpoint*180/M_PI, (double)distance_waypoint, (double)lat_next_point, (double)lon_next_point); // (double)Theta);
 		 		//Control
 				//if (stop_strategy != 1){ // if stop strategy is not active
-				/*if (heading_set != STOP_STRAGEY){
+				if (heading_set != STOP_STRATEGY){
 					//param_get(param_sailing_freeze, &sailing_freeze);
 					if (heading_set != SAILING_FREEZE){ // if sailing are not freezed
-						act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle;   // roll = SAILS
+						act.control[actuator_controls_s::INDEX_ROLL] = cmd_sail_angle_left;   // roll = SAILS
+						act.control[actuator_controls_s::INDEX_FLAPS] = cmd_sail_angle_right;
 					}
 					//act.control[actuator_controls_s::INDEX_PITCH] = ACT_CTRL_PITCH_TRIM; // not control
 					//act.control[actuator_controls_s::INDEX_YAW] = manual_sp.r;	 // yaw = RUDDER (in SailMAV : servo line 5)
 					act.control[actuator_controls_s::INDEX_YAW] = cmd_rudder_angle;  // yaw = RUDDER
 					act.control[actuator_controls_s::INDEX_THROTTLE] = cmd_sail_throttle;	 // thrust
 					stop_index = 0;
+					PX4_INFO("cmd_sail: %f wnd_angle %f yaw %f course_ang %f cmd_rudder %f head_set %f distance %f", (double)cmd_sail_angle_left, (double)wnd_to_boat*180/M_PI, (double)current_yaw*180/M_PI, (double)cmd_sail_angle_right, (double)cmd_rudder_angle, (double)heading_setpoint*180/M_PI, (double)distance_waypoint); // (double)Theta);
+
 				}
 				//}
 				else if (stop_index != 1){ //put everything to 0
 					stop_index = 1;
 					act.control[actuator_controls_s::INDEX_YAW] = 0;  // yaw = RUDDER
 					act.control[actuator_controls_s::INDEX_THROTTLE] = 0;	 // thrust
-					act.control[actuator_controls_s::INDEX_ROLL] = 0;   // roll = SAILS
+					act.control[actuator_controls_s::INDEX_ROLL] = 0;   // left SAIL
+					act.control[actuator_controls_s::INDEX_FLAPS] = 0;  // RIGHT SAIL
 					//act.control[actuator_controls_s::INDEX_PITCH] = 0; // not control
 
 				}
 				act.timestamp = hrt_absolute_time();
 				//PX4_INFO("Rudder: %d", (int)(act.control[actuator_controls_s::INDEX_YAW]*100.0f));
 				// Write to actuators
-				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);*/
+				orb_publish(ORB_ID(actuator_controls_0), act_pub, &act);
 				px4_usleep(20000);
 			}
 

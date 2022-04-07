@@ -20,7 +20,7 @@ PARAM_DEFINE_INT32(HEADING_SET, 0);
  * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_INT32(HEADING_STRATEGY, 0);
+//PARAM_DEFINE_INT32(HEADING_STRATEGY, 0);
 
 /**
  * Heading latitude
@@ -31,7 +31,7 @@ PARAM_DEFINE_INT32(HEADING_STRATEGY, 0);
  * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_INT32(HEADING_LAT, 0);
+//PARAM_DEFINE_INT32(HEADING_LAT, 0);
 
 /**
  * Heading latitude
@@ -42,7 +42,7 @@ PARAM_DEFINE_INT32(HEADING_LAT, 0);
  * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_INT32(HEADING_LON, 0);
+//PARAM_DEFINE_INT32(HEADING_LON, 0);
 
 /**
  * Wind strategy
@@ -53,7 +53,7 @@ PARAM_DEFINE_INT32(HEADING_LON, 0);
  * @max 360
  * @group Custom Parameters
  */
-//PARAM_DEFINE_INT32(WIND_STRATEGY, 0);
+PARAM_DEFINE_INT32(SAIL_STRATEGY, 0);
 
 /**
  * Sailing freeze parameter

@@ -449,7 +449,7 @@ void FixedwingAttitudeControl::Run()
 
 	perf_begin(_loop_perf);
 
-	if (_att_sub.update(&_att) && _vehicle_status.nav_state != vehicle_status_s::NAVIGATION_STATE_SAIL) {
+	if (_att_sub.update(&_att)) {
 
 		// only update parameters if they changed
 		bool params_updated = _parameter_update_sub.updated();

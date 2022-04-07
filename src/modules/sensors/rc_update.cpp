@@ -430,12 +430,9 @@ RCUpdate::rc_poll(const ParameterHandles &parameter_handles)
 				orb_copy(ORB_ID(vehicle_status), vehicle_status_sub, &vehicle_status);
 			}*/
 
-			_vehicle_status_sub.copy(&vehicle_status);
-			if(vehicle_status.nav_state != vehicle_status_s::NAVIGATION_STATE_SAIL){
-				_actuator_group_3_pub.publish(actuator_group_3);
+			_actuator_group_3_pub.publish(actuator_group_3);
 				//PX4_INFO("no sail %d", vehicle_status.nav_state);
 				//px4_usleep(5000);
-			}
 			px4_usleep(5000);
 
 			/* Update parameters from RC Channels (tuning with RC) if activated */
