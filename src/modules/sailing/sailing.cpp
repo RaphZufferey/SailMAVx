@@ -468,11 +468,6 @@ void Sailing::run()
 				lon = (double)((vehicle_gps_position.lon) * 1e-7d);
 				lat = (double)((vehicle_gps_position.lat) * 1e-7d);
 
-				//param_get(param_heading_longitude, &heading_longitude);
-				//param_get(param_heading_latitude, &heading_latitude);
-
-				//param_get(param_heading_strategy, &heading_strategy);
-
 				/* something more reliable can be: get to know the wind angle to N, follow 45 degree to it fixing heading angles and check the tolerance adjusting this heading angle
 
 				if (heading_set == TACKING_STRATEGY){
@@ -495,7 +490,8 @@ void Sailing::run()
 					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, lon_next_point); // with 0 works
 					if (distance_waypoint > tolerance_radius){
 						heading_setpoint = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, (double)lon_next_point);
-						if (((heading_setpoint - heading_initial > heading_tolerance || heading_setpoint - heading_initial < -heading_tolerance) && distance_waypoint < 5*tolerance_radius) && i < number_points - 1){
+						if ((((heading_initial < 3*heading_tolerance && heading_setpoint - heading_initial > heading_tolerance) || (heading_initial > 3 * heading_tolerance && heading_setpoint - heading_initial > - 3 * heading_tolerance) || // going counterclockwise (positive), check if heading_setipoint goes between 0 and 2*PI
+							(heading_initial > heading_tolerance && heading_setpoint - heading_initial < -heading_tolerance) || heading_initial < heading_tolerance && heading_setpoint - heading_initial > 3*heading_tolerance) && distance_waypoint < 5 * tolerance_radius) && i < number_points - 1){ // going clockwise (negative)
 							i++;
 							if (i == 1){
 								lat_next_point = lat_second;
@@ -567,7 +563,7 @@ void Sailing::run()
 					error_heading = heading_setpoint - current_yaw; // /epsilon_{theta}
 				}
 				else{
-					error_heading = heading_setpoint - current_yaw + sgn(wnd_to_boat)*wnd_contribution; //we add a contribution for drift compensation
+					error_heading = heading_setpoint - current_yaw + sgn(wnd_to_boat)*wnd_contribution; //we add a contribution for drift compensation, sign checked V
 				}
 
 				// construct to apply the control
