@@ -287,10 +287,20 @@ void Sailing::run()
 	//float lat_next_point = lat_next[0];
 	//float lon_next_point = lon_next[0];
 
-	float lat_next_point = 51.505424;
-	float lon_next_point = -0.184490;
-	float lat_second = 51.506573;
-	float lon_second = -0.182409;
+	/*
+	drift mission:
+		51.50641521257077, -0.1840398167715271
+		51.50537010635161, -0.18445287704585855
+
+	asymmetrical
+		51.50551034563928, -0.1835033748568109
+		51.50645528006372, -0.18216227007002037
+	*/
+
+	float lat_next_point = 51.50641521;
+	float lon_next_point = -0.18403981;
+	float lat_second = 51.50537010;
+	float lon_second = -0.18445287;
 	float lat_third = 43.93340015;
 	float lon_third = 15.52222550;
 	float lat_fourth = 43.93611976;
@@ -300,8 +310,8 @@ void Sailing::run()
 	float lat_sixth = 43.92372599;
 	float lon_sixth = 15.56256592;
 	int stop_index = 0;
-	lat_next_point = lat;
-	lon_next_point = lon;
+	//lat_next_point = lat;
+	//lon_next_point = lon;
 	//float lat_next = 518486985.0 * 1e-7d;
 	//float lon_next = 1751629.0 * 1e-7d;
 
@@ -311,7 +321,7 @@ void Sailing::run()
 	//lake.latitude[0] = 51.8486985; // 514986985
 	//lake.longitude[0] = .1751629; //-1751629
 	//lake.number_points = 1;
-	float tolerance_radius = 25.0;
+	float tolerance_radius = 15.0;
 	//int number_points = 1;
 
 	int sign;
@@ -328,8 +338,10 @@ void Sailing::run()
 	float heading_setpoint = 0.0;
 	float distance_waypoint = 0.0;
 	float heading_initial = 0.0;
+	float heading_wind = 140.0;
+	float P_wind = 0.5;
 	float heading_tolerance = 90.0*M_PI/180;
-	int wnd_contribution = 3*M_PI/180;
+	int wnd_contribution = 10*M_PI/180;
 
 	act.control[actuator_controls_s::INDEX_PITCH] = 0;
 
@@ -365,6 +377,16 @@ void Sailing::run()
 	}
 
 	float scale_wind_angle = sensor_wind_angle.wind_magnetic_angle;
+
+	orb_check(vehicle_gps_position_sub, &updated);
+	if (updated) {
+		orb_copy(ORB_ID(vehicle_gps_position), vehicle_gps_position_sub, &vehicle_gps_position);
+	}
+
+	lon = (double)((vehicle_gps_position.lon) * 1e-7d);
+	lat = (double)((vehicle_gps_position.lat) * 1e-7d);
+
+	heading_initial = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, (double)lon_next_point);
 
 	while (!should_exit()) {
 
@@ -468,23 +490,26 @@ void Sailing::run()
 				lon = (double)((vehicle_gps_position.lon) * 1e-7d);
 				lat = (double)((vehicle_gps_position.lat) * 1e-7d);
 
-				/* something more reliable can be: get to know the wind angle to N, follow 45 degree to it fixing heading angles and check the tolerance adjusting this heading angle
+				// something more reliable can be: get to know the wind angle to N, follow 45 degree to it fixing heading angles and check the tolerance adjusting this heading angle
 
 				if (heading_set == TACKING_STRATEGY){
 					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, lon_next_point); // with 0 works
-					if(distance_waypoint < 100.0){
-						if (head_sign && (wnd_to_boat < 40*M_PI/180 || wnd_to_boat > 60*M_PI/180) || !head_sign && (wnd_to_boat > -40*M_PI/180 || wnd_to_boat < -60*M_PI/180))){
+					if(distance_waypoint < 50.0){
+						if (!head_sign && (wnd_to_boat < 35*M_PI/180) || head_sign && (wnd_to_boat < -65*M_PI/180)){
 							//rudder = rudder + (wnd_to_boat - wnd_to_boat_ave)*P //check the sign, better to play on heading than directly rudder
-							heading_setpoint = heading_setpoint + (wnd_to_boat - wnd_to_boat_ave)*P;
+							heading_setpoint = heading_wind + head_sign*wnd_to_boat_ave + (wnd_to_boat - wnd_to_boat_ave)*P_wind;
+						}
+						else if (head_sign && (wnd_to_boat > -35*M_PI/180) || !head_sign && (wnd_to_boat > 65*M_PI/180)){
+							heading_setpoint = heading_wind + head_sign*wnd_to_boat_ave + (wnd_to_boat - wnd_to_boat_ave)*P_wind;
 						}
 					}
 					else {
 						lat_next_point = lat;
 						lon_next_point = lon;
 						head_sign = -head_sign;
-						heading_setpoint = heading_initial + sign*wnd_to_boat_ave;
+						heading_setpoint = heading_wind + head_sign*wnd_to_boat_ave;
 					}
-				}*/
+				}
 
 				if (heading_set == WAYPOINT_STRATEGY){
 					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, lon_next_point); // with 0 works
