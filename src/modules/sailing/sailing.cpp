@@ -325,7 +325,7 @@ void Sailing::run()
 	//int number_points = 1;
 
 	int sign;
-	float wnd_to_boat_ave = 50*M_PI/180;
+	float wnd_to_boat_ave = 50.0*M_PI/180;
 
 	//float tmp_max = 1;
 	//float tmp = tmp_max;
@@ -338,10 +338,11 @@ void Sailing::run()
 	float heading_setpoint = 0.0;
 	float distance_waypoint = 0.0;
 	float heading_initial = 0.0;
-	float heading_wind = 140.0;
+	float heading_wind = 290.0*M_PI/180;
 	float P_wind = 0.5;
 	float heading_tolerance = 90.0*M_PI/180;
 	int wnd_contribution = 10*M_PI/180;
+	int tacking;
 
 	act.control[actuator_controls_s::INDEX_PITCH] = 0;
 
@@ -365,7 +366,7 @@ void Sailing::run()
 	/*param_t param_rudder_strategy = param_find("RUDDER_STRATEGY");
 	param_get(param_rudder_strategy, &rudder_strategy);*/
 
-	// Get parameter updates
+	// Get parameter updatesheading_set
 	parameters_update(true);
 
 	//int i = 0;
@@ -387,6 +388,12 @@ void Sailing::run()
 	lat = (double)((vehicle_gps_position.lat) * 1e-7d);
 
 	heading_initial = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, (double)lon_next_point);
+
+	if (heading_set == TACKING_STRATEGY){
+		lat_next_point = lat;
+		lon_next_point = lon;
+		tacking = 1;
+	}
 
 	while (!should_exit()) {
 
@@ -491,15 +498,16 @@ void Sailing::run()
 				lat = (double)((vehicle_gps_position.lat) * 1e-7d);
 
 				// something more reliable can be: get to know the wind angle to N, follow 45 degree to it fixing heading angles and check the tolerance adjusting this heading angle
-
-				if (heading_set == TACKING_STRATEGY){
+				px4_usleep(50000);
+				//if (heading_set == TACKING_STRATEGY){
+				if (tacking == 1){
 					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, lon_next_point); // with 0 works
 					if(distance_waypoint < 50.0){
-						if (!head_sign && (wnd_to_boat < 35*M_PI/180) || head_sign && (wnd_to_boat < -65*M_PI/180)){
+						if (!sgn(head_sign) && (wnd_to_boat < 35*M_PI/180) || sgn(head_sign) && (wnd_to_boat < -65*M_PI/180)){
 							//rudder = rudder + (wnd_to_boat - wnd_to_boat_ave)*P //check the sign, better to play on heading than directly rudder
 							heading_setpoint = heading_wind + head_sign*wnd_to_boat_ave + (wnd_to_boat - wnd_to_boat_ave)*P_wind;
 						}
-						else if (head_sign && (wnd_to_boat > -35*M_PI/180) || !head_sign && (wnd_to_boat > 65*M_PI/180)){
+						else if (sgn(head_sign) && (wnd_to_boat > -35*M_PI/180) || !sgn(head_sign) && (wnd_to_boat > 65*M_PI/180)){
 							heading_setpoint = heading_wind + head_sign*wnd_to_boat_ave + (wnd_to_boat - wnd_to_boat_ave)*P_wind;
 						}
 					}
@@ -510,8 +518,9 @@ void Sailing::run()
 						heading_setpoint = heading_wind + head_sign*wnd_to_boat_ave;
 					}
 				}
+				//}
 
-				if (heading_set == WAYPOINT_STRATEGY){
+				else if (heading_set == WAYPOINT_STRATEGY){
 					distance_waypoint = (double)get_distance_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, lon_next_point); // with 0 works
 					if (distance_waypoint > tolerance_radius){
 						heading_setpoint = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, (double)lon_next_point);
