@@ -91,7 +91,7 @@ float get_bearing_to_next_waypoint_sailing(double lat_now, double lon_now, doubl
 
 	double a = sin(d_lat / 2.0) * sin(d_lat / 2.0) + sin(d_lon / 2.0) * sin(d_lon / 2.0) * cos(lat_now_rad) * cos(lat_next_rad);
 
-	double c = atan2(sqrt(a), sqrt(1.0 - a));
+	//double c = atan2(sqrt(a), sqrt(1.0 - a));
 
 	float y = (double)(sin(d_lon) * cos(lat_next_rad));
 	float x = (double)(cos(lat_now_rad) * sin(lat_next_rad) - sin(lat_now_rad) * cos(lat_next_rad) * cos(d_lon));
