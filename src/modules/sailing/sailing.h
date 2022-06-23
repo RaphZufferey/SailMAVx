@@ -85,11 +85,11 @@ float get_bearing_to_next_waypoint_sailing(double lat_now, double lon_now, doubl
 
 	double d_lon = math::radians(lon_next) - math::radians(lon_now);
 
-	double d_lat = lat_next_rad - math::radians(lat_now);
+	double d_lat = lat_next_rad - lat_now_rad;
 
 	/* conscious mix of double and float trig function to maximize speed and efficiency */
 
-	double a = sin(d_lat / 2.0) * sin(d_lat / 2.0) + sin(d_lon / 2.0) * sin(d_lon / 2.0) * cos(lat_now_rad) * cos(lat_next_rad);
+	//double a = sin(d_lat / 2.0) * sin(d_lat / 2.0) + sin(d_lon / 2.0) * sin(d_lon / 2.0) * cos(lat_now_rad) * cos(lat_next_rad);
 
 	//double c = atan2(sqrt(a), sqrt(1.0 - a));
 
@@ -189,7 +189,7 @@ private:
 
 	bool sails_are_down = true;
 	float sail_angle_max = 60*(float)M_PI/180;
-	//int wnd_angle_to_n = 179;
+	float wnd_angle_to_n = 0;
 	int heading_set = 0;
 	int sail_strategy = 0;
 	//int rudder_strategy = 0;
@@ -238,9 +238,9 @@ private:
 
 	DEFINE_PARAMETERS(
 		(ParamInt<px4::params::HEADING_SET>) _heading_set,   /**< example parameter */
-		(ParamInt<px4::params::SAIL_STRATEGY>) _sail_strategy,   /**< example parameter */
+		//(ParamInt<px4::params::SAIL_STRATEGY>) _sail_strategy,   /**< example parameter */
 		//(ParamInt<px4::params::RUDDER_STRATEGY>) _rudder_strategy,   /**< example parameter */
-		//(ParamInt<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
+		(ParamFloat<px4::params::WND_ANGLE_TO_N>) _wnd_angle_to_n,   /**< example parameter */
 		(ParamFloat<px4::params::SMV_AIR_T>) _smv_air_t,   /**< example parameter */
 		(ParamFloat<px4::params::SMV_H2O_T>) _smv_h2o_t,   /**< example parameter */
 		(ParamInt<px4::params::SYS_AUTOCONFIG>) _sys_autoconfig  /**< another parameter */

@@ -53,7 +53,7 @@ PARAM_DEFINE_INT32(HEADING_SET, 0);
  * @max 360
  * @group Custom Parameters
  */
-PARAM_DEFINE_INT32(SAIL_STRATEGY, 0);
+//PARAM_DEFINE_INT32(SAIL_STRATEGY, 0);
 
 /**
  * Sailing freeze parameter
@@ -99,7 +99,7 @@ PARAM_DEFINE_INT32(SAIL_STRATEGY, 0);
  * @group Custom Parameters
  */
 
-//PARAM_DEFINE_INT32(WND_ANGLE_TO_N, 0);
+PARAM_DEFINE_FLOAT(WND_ANGLE_TO_N, 0);
 
 /**
  * Sailmav water temperature
