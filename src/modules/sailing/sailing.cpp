@@ -276,7 +276,7 @@ void Sailing::run()
 	float cmd_rudder_angle;
 	float lon;
 	float lat;
-	int number_points = 3; //CHECKKKKKKKKKKK
+	int number_points = 4; //CHECKKKKKKKKKKK
 
 	int SAILING_FREEZE = 400;
 	int STOP_STRATEGY = 500;
@@ -298,14 +298,16 @@ void Sailing::run()
 	*/
 	//float lat_next[number_points] = {51.505584878, 51.505177516, 51.505177516};
 	//float lon_next[number_points] = {-0.184398442, -0.183609872, 51.505177516};
-	float lat_next_point = 51.505584878;
-	float lon_next_point = -0.184398442;
-	float lat_second = 51.505177516;
-	float lon_second = -0.183609872;
-	float lat_third = 51.506596590;
-	float lon_third = -0.182520896;
-	float lat_fourth = 43.93611976;
-	float lon_fourth = 15.53067982;
+	float lat_next_point = 43.92817837;
+	float lon_next_point = 15.51208952;
+	float lat_second = 43.93602850;
+	float lon_second = 15.52084425;
+	float lat_third = 43.93602850;
+	float lon_third = 15.54642179;
+	float lat_fourth = 43.91074367;
+	float lon_fourth = 15.57388761;
+	float lat_fifth = 43.88984003;
+	float lon_fifth = 15.56762197;
 	//float lat_fifth = 43.93642880;
 	//float lon_fifth = 15.54608643;
 	//float lat_sixth = 43.92372599;
@@ -322,7 +324,7 @@ void Sailing::run()
 	//lake.latitude[0] = 51.8486985; // 514986985
 	//lake.longitude[0] = .1751629; //-1751629
 	//lake.number_points = 1;
-	float tolerance_radius = 25.0;
+	float tolerance_radius = 100.0;
 	//int number_points = 1;
 
 	//int sign;
@@ -549,11 +551,11 @@ void Sailing::run()
 								lat_next_point = lat_fourth;
 								lon_next_point = lon_fourth;
 							}
-							/*if (i == 4){
+							if (i == 4){
 								lat_next_point = lat_fifth;
 								lon_next_point = lon_fifth;
 							}
-							if (i == 5){
+							/*if (i == 5){
 								lat_next_point = lat_sixth;
 								lon_next_point = lon_sixth;
 							}*/
@@ -589,7 +591,10 @@ void Sailing::run()
 							lat_next_point = lat_fourth;
 							lon_next_point = lon_fourth;
 						}
-
+						if (i == 4){
+							lat_next_point = lat_fifth;
+							lon_next_point = lon_fifth;
+						}
 						//lat_next_point = lat_next[i];
 						//lon_next_point = lon_next[i];
 						heading_initial = (double)get_bearing_to_next_waypoint_sailing((double)lat, (double)lon, lat_next_point, (double)lon_next_point);
